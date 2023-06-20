@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang='en'>
+<head>
+<meta charset='utf-8'>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="author" content="Jonathan Hall">
+<link rel="stylesheet" href="/styles/main.css">
+<link rel="icon" type="image/png" href="/media/favicon192.png" sizes=192x192>
+<link rel="apple-touch-icon" href="/media/favicon192.png" sizes=192x192>
+<script src='/scripts/utilities.js'></script>
+<meta name="description" content="Interactive directed number activity for use in the classroom.">
+<title>Directed Number Patterns</title>
+<script type="text/javascript" charset="utf-8">
+            var terms;
+            var rows;
+            var op, sign;
+            var size;
+            var showingTerms = false;
+            var showingZeros = false;
+            function createGrid() {
+                var data = "";
+                terms = [];
+                op = opSelect.value;
+                rows = rowSelect.value;
+                size = 1.4 * Math.pow(0.98, rows);
+                width = Math.min(2, 30 / rows);
+                height = size * 20;
+                showingZeros = false;
+                if (zeroSelect.checked) {
+                    showingZeros = true;
+                }
+                switch (op) {
+                    case "0":
+                        sign = "+";
+                        break;
+                    case "1":
+                        sign = "-";
+                        break;
+                    case "2":
+                        sign = "&#215;";
+                        break;
+                }
+                var value = 1;
+                data += "<div class='row'>";
+                data += "<div class='box axis' style='font-size: " + size + "em; width: " + width + "em; height: " + height + "px;'>" + sign + "</div>";
+                for (var j = -rows; j <= rows; j++) {
+                    data += "<div class='box axis' style='font-size: " + size + "em; width: " + width + "em; height: " + height + "px;'>" + j + "</div>";
+                }
+                data += "</div>";
+                for (var i = -rows; i <= rows; i++) {
+                    terms[i] = [];
+                    data += "<div class='row'>";
+                    for (var j = -rows; j <= rows; j++) {
+                        if (j === -rows) {
+                            data += "<div class='box axis' style='font-size: " + size + "em; width: " + width + "em; height: " + height + "px;'>" + (-i) + "</div>";
+                        }
+                        var id = '(' + i + ',' + j + ')';
+                        switch (op) {
+                            case "0":
+                                terms[i][j] = -i + j;
+                                break;
+                            case "1":
+                                terms[i][j] = -i - j;
+                                break;
+                            case "2":
+                                terms[i][j] = -i * j;
+                                break;
+                        }
+                        value++;
+                        data += "<div id='" + id + "'";
+                        if (terms[i][j] === 0 && showingZeros) {
+                            data += "class='box zero' ";
+                        } else if (terms[i][j] > 0 && showingZeros) {
+                            data += "class='box positive'";
+                        } else if (terms[i][j] < 0 && showingZeros) {
+                            data += "class='box negative'";
+                        } else {
+                            data += "class='box'";
+                        }
+                        data += "style='font-size: " + size + "em; width: " + width + "em; height: " + height + "px;' onclick='toggleTerm(" + i + "," + j + ")'>";
+                        data += terms[i][j] + "</div>";
+                    }
+                    data += "</div>";
+                }
+
+                grid.innerHTML = data;
+                if (!showingTerms) {
+                    showingTerms = true;
+                    toggleAll();
+                }
+            }
+            function toggleAll() {
+                if (showingTerms) {
+                    for (var i = -rows; i <= rows; i++) {
+                        for (var j = -rows; j <= rows; j++) {
+                            var id = '(' + i + ',' + j + ')';
+                            document.getElementById(id).innerHTML = "";
+
+                        }
+                    }
+                    showingTerms = false;
+                    showHideButton.value = "Show Values";
+                } else {
+                    for (var i = -rows; i <= rows; i++) {
+                        for (var j = -rows; j <= rows; j++) {
+                            id = '(' + i + ',' + j + ')';
+                            document.getElementById(id).innerHTML = terms[i][j];
+                        }
+                    }
+                    showingTerms = true;
+                    showHideButton.value = "Hide Values";
+                }
+            }
+            function toggleTerm(i, j) {
+                var id = '(' + i + ',' + j + ')';
+                if (document.getElementById(id).innerHTML === "") {
+                    document.getElementById(id).innerHTML = terms[i][j];
+                } else {
+                    document.getElementById(id).innerHTML = "";
+                }
+            }
+            function randomise() {
+                for (var i = -rows; i <= rows; i++) {
+                    for (var j = -rows; j <= rows; j++) {
+                        if (Math.random() < 0.5) {
+                            toggleTerm(i, j);
+                        }
+                    }
+                }
+            }
+        </script>
+<style>
+            div.grid {
+                margin: 0.5em;
+                text-align: center;
+            }
+            div.box {
+                margin: 1px;
+                margin-left: 2px;
+                margin-right: 2px;
+                display: inline-block;
+                border: 1px solid black;
+                background: #fff;
+                overflow: hidden;
+                cursor: pointer;
+            }
+            div.positive {
+                background: #ff9;
+            }
+            div.negative {
+                background: #faa;
+            }
+            div.zero {
+                background: #eee;
+            }
+            div.axis {
+                color: #fff;
+                background: #959;
+            }
+            div.box:hover {
+                border: 1px solid red;
+            }
+            div.checkBox {
+                margin: 0.2em;
+            }
+        </style>
+<script async src='/cdn-cgi/bm/cv/669835187/api.js'></script></head>
+<body onload="createGrid()">
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-44508399-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+<input title='Toggle Full Screen.' onclick='goFull()' class='fullScreen' type='button' value='&#10019;'>
+<section id="controls" class="controls border">
+<h1>Directed Number Patterns</h1>
+<div>
+<label for="opSelect">Operation</label>
+<select id="opSelect" onchange="createGrid()">
+<option value="2">Multiplication</option>
+<option value="0">Addition</option>
+<option value="1">Subtraction</option>
+</select>
+<label for="rowSelect">Size</label>
+<select id="rowSelect" onchange="createGrid()">
+<option value='1'>-1 to 1</option><option value='2'>-2 to 2</option><option value='3'>-3 to 3</option><option selected value='4'>-4 to 4</option><option value='5'>-5 to 5</option><option value='6'>-6 to 6</option><option value='7'>-7 to 7</option><option value='8'>-8 to 8</option><option value='9'>-9 to 9</option><option value='10'>-10 to 10</option> </select>
+</div>
+<div>
+<input type="button" id="showHideButton" value="Show Values" onclick="toggleAll()">
+<input type="button" value="Random" onclick="randomise()">
+<label for="zeroSelect">Highlight?</label>
+<input type="checkbox" id="zeroSelect" onclick="createGrid()">
+</div>
+</section>
+<section>
+<div id="content">
+<div class='questionBox border'>
+<div class="grid" id="grid"></div>
+</div>
+</div>
+</section>
+<footer id="footer">
+<div>
+<small>
+<a href="/">Home</a> |
+<a href="/doNowMenu">Do Nows</a> |
+<a href="/gcseMenu">GCSE Resources</a> |
+<a href="/manipulativeMenu">Manipulatives</a> |
+<a href="/printableMenu">Printables</a> |
+<a href="/generatorMenu">Question Generators</a> |
+<a href="/starterMenu">Starters</a> |
+<a href="/toolMenu">Tools</a> |
+<a href="/privacy">Privacy</a> |
+<a href="/about">Contact</a> |
+Copyright &copy;
+</small>
+</div>
+</footer> <script type="text/javascript">(function(){window['__CF$cv$params']={r:'6828d7910ea9e855',m:'13ccbbeb5ffc434002b303d85578b77b1a643b31-1629601134-1800-ASCVw3oVlaMUVqYEJenBVGKHHgOIq+K/oissLemr4mWBTSHqQ61jdCPW3EFF3Fpa640pZKu7Oi+92JkkYiy8YPNscdQCykHz5LBfTrPzM27TfD+rwBXf1mHZtgMer8qWBupV2euunm/wgQusuNXCITQ=',s:[0xfb269cc370,0xe217ba8c02],}})();</script></body>
+</html>

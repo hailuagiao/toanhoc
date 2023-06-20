@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang='en'>
+<head>
+<meta charset='utf-8'>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="author" content="Jonathan Hall">
+<link rel="icon" type="image/png" href="/media/favicon192.png" sizes=192x192>
+<link rel="apple-touch-icon" href="/media/favicon192.png" sizes=192x192>
+<link rel="stylesheet" href="/styles/main.css">
+<script src='/scripts/utilities.js'></script>
+<meta name="description" content="Interactive missing percentages grid for use in the classroom.">
+<title>Missing Percentages Grid</title>
+<script type="text/javascript" charset="utf-8">
+            var tiles;
+            var rows;
+            var columns;
+            var op, sign;
+            var size;
+            var showingTerms = true;
+            var percentage;
+            var baseValue;
+            var fraction = true;
+            var percentage;
+            var units = new Array("cm", "m", "mm", "km", "g", "kg", "mg", "cl", "ml", "&pound;");
+            var ingredient = new Array("flour", "sugar", "potatoes", "beans", "haddock", "mince", "butter", "milk", "water", "cream", "yoghurt");
+            var ingredientUnit = new Array("g", "g", "g", "g", "g", "g", "g", "ml", "ml", "ml", "ml");
+            function createGrid() {
+                percentage = new Array(100, 50, 25, 75, 10, 20, 5, 2.5, 17.5, 1, 2, 35, 99, 150, getRandom(151, 300));
+                proportion = new Array(4, 8, 12, 2, 1, 3, 10, 20, 40, 5, 15, getRandom(1, 100), getRandom(1, 100), getRandom(1, 100), getRandom(1, 100));
+                showHideButton.value = "Show Values";
+                showingTerms = false;
+                var data = "";
+                tiles = [];
+                baseValue = [];
+                columns = columnSelect.value;
+                rows = rowSelect.value;
+                width = Math.floor(100 / columns);
+                data += "<table><tr>";
+                for (var i = 0; i < columns; i++) {
+                    if (fractionSelect.checked) {
+                        title.innerHTML = "Missing Fractions Grid";
+                        var num = percentage[i];
+                        var den = 100;
+                        while (num !== Math.round(num)) {
+                            num *= 10;
+                            den *= 10;
+                        }
+                        var hcf = HCF(num, den);
+                        num /= hcf;
+                        den /= hcf;
+                        if (i > 0) {
+                            data += "<th style='width: " + width + "%'>" + getFraction(num, den) + "</th>";
+                        } else {
+                            data += "<th style='width: " + width + "%'>Whole</th>";
+                        }
+                    } else if (decimalSelect.checked) {
+                        title.innerHTML = "Missing Decimals Grid";
+                        data += "<th style='width: " + width + "%'>&#215;" + percentage[i] / 100 + "</th>";
+                    } else if (percentageSelect.checked) {
+                        title.innerHTML = "Missing Percentages Grid";
+                        data += "<th style='width: " + width + "%'>" + percentage[i] + "%</th>";
+                    } else {
+                        title.innerHTML = "Missing Recipes Grid";
+                        data += "<th style='width: " + width + "%'>Serves " + proportion[i] + "</th>";
+                    }
+                }
+                data += "</tr>";
+                var choice = getRandom(0, ingredient.length - 1);
+                for (i = 0; i < rows; i++) {
+                    baseValue.push(40 * getRandom(1, 40));
+                    if (proportionSelect.checked) {
+                        baseValue[i] /= 5;
+                    }
+                    if (i > 2) {
+                        baseValue[i] /= 2;
+                    }
+                    if (i > 4) {
+                        baseValue[i] /= 2;
+                    }
+                    if (i > 6) {
+                        baseValue[i] /= 2;
+                    }
+                    if (i > 8) {
+                        baseValue[i] /= 2;
+                    }
+                    data += "<tr>";
+                    tiles[i] = [];
+                    if (!proportionSelect.checked) {
+                        var unit = units[getRandom(0, units.length - 1)];
+                    } else {
+                        choice++;
+                        var ing = ingredient[choice % ingredient.length];
+                        unit = ingredientUnit[choice % ingredient.length];
+                    }
+                    for (var j = 0; j < columns; j++) {
+                        tiles[i][j] = {};
+                        if (!proportionSelect.checked) {
+                            tiles[i][j].value = baseValue[i] * percentage[j] / 100;
+                        } else {
+                            tiles[i][j].value = baseValue[i] / proportion[0] * proportion[j];
+                        }
+                        tiles[i][j].unit = unit;
+                        tiles[i][j].showing = false;
+                        if (unitSelect.checked) {
+                            if (tiles[i][j].unit === "&pound;") {
+                                if (tiles[i][j].value !== Math.round(tiles[i][j].value)) {
+                                    tiles[i][j].value = tiles[i][j].value.toFixed(2);
+                                }
+                                tiles[i][j].display = tiles[i][j].unit + tiles[i][j].value;
+                            } else {
+                                tiles[i][j].display = tiles[i][j].value + " " + tiles[i][j].unit;
+                            }
+                        } else {
+                            tiles[i][j].display = tiles[i][j].value;
+                        }
+                        if (j === 0 && proportionSelect.checked) {
+                            tiles[i][j].ingredient = ing;
+                            tiles[i][j].display += " " + tiles[i][j].ingredient;
+                        }
+                        var id = '(' + i + ',' + j + ')';
+                        data += "<td id='" + id + "' onclick='toggleTerm(" + i + "," + j + ")'></td>";
+                    }
+                    data += "</tr>"
+                }
+
+                grid.innerHTML = data;
+                revealInitial();
+            }
+            function toggleUnits() {
+                for (i = 0; i < rows; i++) {
+                    for (var j = 0; j < columns; j++) {
+                        var id = '(' + i + ',' + j + ')';
+                        if (unitSelect.checked) {
+                            if (tiles[i][j].unit === "&pound;") {
+                                tiles[i][j].display = tiles[i][j].unit + tiles[i][j].value;
+                            } else {
+                                tiles[i][j].display = tiles[i][j].value + " " + tiles[i][j].unit;
+                            }
+                        } else {
+                            tiles[i][j].display = tiles[i][j].value;
+                        }
+                        if (j === 0 && proportionSelect.checked) {
+                            if (unitSelect.checked) {
+                                tiles[i][j].display = tiles[i][j].value + " " + tiles[i][j].unit + " " + tiles[i][j].ingredient;
+                            } else {
+                                tiles[i][j].display = tiles[i][j].value + " " + tiles[i][j].ingredient;
+                            }
+                        }
+                        if (tiles[i][j].showing) {
+                            document.getElementById(id).innerHTML = tiles[i][j].display;
+                        }
+                    }
+                }
+            }
+            function revealInitial() {
+                for (var i = 0; i < rows; i++) {
+                    if (proportionSelect.checked) {
+                        toggleTerm(i, 0);
+                    } else {
+                        switch (i) {
+                            case 0:
+                                toggleTerm(i, 0);
+                                break;
+                            case 1:
+                                toggleTerm(i, 1);
+                                break;
+                            case 2:
+                                toggleTerm(i, 2);
+                                break;
+                            case 3:
+                                toggleTerm(i, 3);
+                                break;
+                            default:
+                                toggleTerm(i, getRandom(0, columns - 1));
+                                break;
+                        }
+                    }
+                }
+            }
+            function toggleAll() {
+                if (showingTerms) {
+                    for (var i = 0; i < rows; i++) {
+                        for (var j = 0; j < columns; j++) {
+                            var id = '(' + i + ',' + j + ')';
+                            document.getElementById(id).innerHTML = "";
+                            tiles[i][j].showing = false;
+                        }
+                    }
+                    showingTerms = false;
+                    showHideButton.value = "Show Values";
+                } else {
+                    for (var i = 0; i < rows; i++) {
+                        for (var j = 0; j < columns; j++) {
+                            id = '(' + i + ',' + j + ')';
+                            document.getElementById(id).innerHTML = tiles[i][j].display;
+                            tiles[i][j].showing = true;
+                        }
+                    }
+                    showingTerms = true;
+                    showHideButton.value = "Hide Values";
+                }
+            }
+            function toggleTerm(i, j) {
+                var id = '(' + i + ',' + j + ')';
+                if (document.getElementById(id).innerHTML === "") {
+                    document.getElementById(id).innerHTML = tiles[i][j].display;
+                    tiles[i][j].showing = true;
+                } else {
+                    document.getElementById(id).innerHTML = "";
+                    tiles[i][j].showing = false;
+                }
+            }
+            function getFraction(a, b) {
+                var fraction = "<div class='num'>" + a + "</div><div class='den'>" + b + "</div>";
+                return fraction;
+            }
+        </script>
+<style>
+            div.grid {
+                text-align: center;
+            }
+            table {
+                margin: 1em auto;
+                font-size: 1.5vw;
+                max-width: 100%;
+            }
+            td, th {
+                height: 2em;
+                padding: 0.2em;
+                box-sizing: border-box;
+                border: 1px solid black;
+                min-width: 3em;
+            }
+            th {
+                background-color: #959;
+                color: #fff;
+                font-weight: normal;
+            }
+            td:hover {
+                background-color: #959;
+                color: #fff;
+            }
+            div.num {
+                font-size: 0.9em;
+                display: inline-block;
+                min-width: 2em;
+            }
+            div.den {
+                font-size: 0.9em;
+                text-decoration:overline;
+            }
+            .controls div {
+                margin: 0.2em;
+            }
+            @media print {
+                .border {
+                    border: none;
+                }
+                @page {size: landscape}
+            }
+        </style>
+<script async src='/cdn-cgi/bm/cv/669835187/api.js'></script></head>
+<body onload="createGrid()">
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-44508399-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+<input title='Toggle Full Screen.' onclick='goFull()' class='fullScreen' type='button' value='&#10019;'>
+ <section id="controls" class="controls border">
+<h1 id="title">Missing Percentages Grid</h1>
+<div>
+<label for="rowSelect">Rows:</label>
+<select id="rowSelect" onchange="createGrid();">
+<option value='1'>1</option><option value='2'>2</option><option value='3'>3</option><option value='4'>4</option><option value='5'>5</option><option value='6'>6</option><option value='7'>7</option><option selected value='8'>8</option><option value='9'>9</option><option value='10'>10</option><option value='11'>11</option><option value='12'>12</option><option value='13'>13</option><option value='14'>14</option><option value='15'>15</option><option value='16'>16</option><option value='17'>17</option><option value='18'>18</option><option value='19'>19</option><option value='20'>20</option> </select>
+<label for="columnSelect">Columns:</label>
+<select id="columnSelect" onchange="createGrid();">
+<option value='2'>2</option><option value='3'>3</option><option value='4'>4</option><option value='5'>5</option><option value='6'>6</option><option value='7'>7</option><option value='8'>8</option><option value='9'>9</option><option selected value='10'>10</option><option value='11'>11</option><option value='12'>12</option><option value='13'>13</option><option value='14'>14</option><option value='15'>15</option> </select>
+</div>
+<div>
+<label for="fractionSelect">Fractions</label>
+<input onclick="createGrid()" name="fdp" type="radio" checked=checked id="fractionSelect">
+<label for="decimalSelect">Decimals</label>
+<input onclick="createGrid()" name="fdp" type="radio" id="decimalSelect">
+<label for="percentageSelect">Percentages</label>
+<input onclick="createGrid()" name="fdp" type="radio" id="percentageSelect">
+<label for="proportionSelect">Recipes</label>
+<input onclick="createGrid()" name="fdp" type="radio" id="proportionSelect">
+</div>
+<div>
+<input type="button" value="New Grid" onclick="createGrid()">
+<input type="button" id="showHideButton" value="Hide Values" onclick="toggleAll()">
+<input type="button" value="Print Grid" onclick="window.print()">
+<label for='unitSelect'>Units?</label>
+<input id='unitSelect' onclick='toggleUnits()' type="checkbox" checked="checked">
+</div>
+</section>
+<section>
+<div id="content" class='questionBox border'>
+<div class="grid" id="grid"></div>
+</div>
+</section>
+<footer id="footer">
+<div>
+<small>
+<a href="/">Home</a> |
+<a href="/doNowMenu">Do Nows</a> |
+<a href="/gcseMenu">GCSE Resources</a> |
+<a href="/manipulativeMenu">Manipulatives</a> |
+<a href="/printableMenu">Printables</a> |
+<a href="/generatorMenu">Question Generators</a> |
+<a href="/starterMenu">Starters</a> |
+<a href="/toolMenu">Tools</a> |
+<a href="/privacy">Privacy</a> |
+<a href="/about">Contact</a> |
+Copyright &copy;
+</small>
+</div>
+</footer> <script type="text/javascript">(function(){window['__CF$cv$params']={r:'6828d8914890e855',m:'9ab2bffe4a4bf29dfe03101e7b55b1bda43ea5f7-1629601175-1800-AWVN5ds9RuO/t2+pCGyz4dBd742q0kStpjcXAIo/aq91uxy0v3+MKFR5tspHCq6Y0hWGflcWU9Xmh+xD0ecBv6MHzoCyw+gdBH5Gy/qSHFdsX8g7HN2uNreAJX7q5azuqm47UeZ4V8j/khs2YZT2rpg=',s:[0xbfb0af581e,0xbac3145de9],}})();</script></body>
+</html>

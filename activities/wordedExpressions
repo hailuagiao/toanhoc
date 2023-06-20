@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang='en'>
+<head>
+<meta charset='UTF-8'>
+<meta name="viewport" content="width=device-width, initial-width=1">
+<meta name="author" content="Jonathan Hall">
+<link rel="stylesheet" href="/styles/main.css">
+<link rel="icon" type="image/png" href="/media/favicon192.png" sizes=192x192>
+<link rel="apple-touch-icon" href="/media/favicon192.png" sizes=192x192>
+<script src='/scripts/utilities.js'></script>
+<meta name="description" content="Practise generating expressions from sentences. Each expression is randomly generated with a choice of 1 or 2 variable expressions.">
+<title>Worded Expressions</title>
+<script>
+            var expressions;
+            var totalExpressions;
+            var showingSentences = true;
+            var showingExpressions = true;
+            var mixed = true;
+            function createSheet() {
+                var letter = new Array('a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z');
+                expressions = [];
+                totalExpressions = totalSelect.value;
+                if (varSelect.value < 2) {
+                    var types = 10;
+                } else {
+                    types = 17;
+                }
+                var data = "<table>";
+                for (var i = 0; i < totalExpressions; i++) {
+                    expressions.push(getExpression(mixedLetters.checked, getRandom(0, types)));
+                    expressions[i].originalW = expressions[i].worded;
+                    expressions[i].originalE = expressions[i].algebraic;
+                    expressions[i].showWord = true;
+                    expressions[i].showExpression = true;
+                }
+                if (mixed) {
+                    mixExpressions();
+                }
+                for (i = 0; i < totalExpressions; i++) {
+                    data += "<tr>";
+                    data += "<td class='Qnum' onclick='toggleWord(" + i + ")'>" + (i + 1) + ")</td>";
+                    if (expressions[i].showWord) {
+                        data += "<td id='w" + i + "' onclick='toggleWord(" + i + ")' class='worded'>" + expressions[i].worded + "</td>";
+                    } else {
+                        data += "<td id='w" + i + "' onclick='toggleWord(" + i + ")' class='worded'></td>";
+                    }
+                    data += "<td class='Qnum' onclick='toggleExpression(" + i + ")'>" + letter[i] + ")</td>";
+                    if (expressions[i].showExpression) {
+                        data += "<td id='e" + i + "' onclick='toggleExpression(" + i + ")' class='algebraic'>" + expressions[i].algebraic + "</td>";
+                    } else {
+                        data += "<td id='e" + i + "' onclick='toggleExpression(" + i + ")' class='algebraic'></td>";
+                    }
+                    data += "</tr>";
+                }
+                data += "</table>";
+                sheet.innerHTML = data;
+            }
+            function toggleWord(i) {
+                var id = "w" + i;
+                if (expressions[i].showWord) {
+                    document.getElementById(id).innerHTML = "";
+                    expressions[i].showWord = false;
+                } else {
+                    document.getElementById(id).innerHTML = expressions[i].worded;
+                    expressions[i].showWord = true;
+                }
+            }
+            function toggleExpression(i) {
+                var id = "e" + i;
+                if (expressions[i].showExpression) {
+                    document.getElementById(id).innerHTML = "";
+                    expressions[i].showExpression = false;
+                } else {
+                    document.getElementById(id).innerHTML = expressions[i].algebraic;
+                    expressions[i].showExpression = true;
+                }
+            }
+            function toggleAll(type) {
+                switch (type) {
+                    case "words":
+                        for (var i = 0; i < totalExpressions; i++) {
+                            if (showingSentences) {
+                                expressions[i].showWord = true;
+                            } else {
+                                expressions[i].showWord = false;
+                            }
+                            toggleWord(i);
+                        }
+                        if (showingSentences) {
+                            showingSentences = false;
+                            wordButton.value = "Show Sentences";
+                        } else {
+                            showingSentences = true;
+                            wordButton.value = "Hide Sentences";
+                        }
+                        break;
+                    case "exp":
+                        for (i = 0; i < totalExpressions; i++) {
+                            if (showingExpressions) {
+                                expressions[i].showExpression = true;
+                            } else {
+                                expressions[i].showExpression = false;
+                            }
+                            toggleExpression(i);
+                        }
+                        if (showingExpressions) {
+                            showingExpressions = false;
+                            expButton.value = "Show Expressions";
+                        } else {
+                            showingExpressions = true;
+                            expButton.value = "Hide Expressions";
+                        }
+                        break;
+                }
+            }
+            function toggleSort() {
+                if (mixed) {
+                    sortExpressions();
+                    mixed = false;
+                    sortButton.value = "Jumble";
+                } else {
+                    mixExpressions();
+                    mixed = true;
+                    sortButton.value = "Sort";
+                }
+                for (var i = 0; i < totalExpressions; i++) {
+                    if (expressions[i].showWord) {
+                        document.getElementById('w' + i).innerHTML = expressions[i].worded;
+                    } else {
+                        document.getElementById('w' + i).innerHTML = "";
+                    }
+                    if (expressions[i].showExpression) {
+                        document.getElementById('e' + i).innerHTML = expressions[i].algebraic;
+                    } else {
+                        document.getElementById('e' + i).innerHTML = "";
+                    }
+                }
+            }
+            function sortExpressions() {
+                for (var i = 0; i < expressions.length; i++) {
+                    expressions[i].worded = expressions[i].originalW;
+                    expressions[i].algebraic = expressions[i].originalE;
+                }
+            }
+            function mixExpressions() {
+                for (var i = 0; i < expressions.length * 10; i++) {
+                    var choice = getRandom(0, expressions.length - 1);
+                    var temp = expressions[choice].algebraic;
+                    expressions[choice].algebraic = expressions[0].algebraic;
+                    expressions[0].algebraic = temp;
+                }
+            }
+            function getExpression(mixed, type) {
+                var x = {};
+                if (mixed) {
+                    var var1 = letterPicker();
+                    do {
+                        var var2 = letterPicker();
+                    } while (var1 === var2);
+                } else {
+                    var1 = "x";
+                    var2 = "y";
+                }
+                var product = "multiplied";
+                if (toss()) {
+                    product = "times";
+                }
+                var c1 = getRandom(2, 12);
+                var c2 = getRandom(2, 12);
+                switch (type) {
+                    case 0:
+                        if (toss()) {
+                            if (toss()) {
+                                x.worded = "A number plus " + c1 + ".";
+                            } else {
+                                x.worded = c1 + " added to a number.";
+                            }
+                            x.algebraic = var1 + " + " + c1;
+                        } else {
+                            x.worded = c1 + " plus a number.";
+                            x.algebraic = c1 + " + " + var1;
+                        }
+                        break;
+                    case 1:
+                        if (toss()) {
+                            x.worded = "A number minus " + c1 + ".";
+                            x.algebraic = var1 + " - " + c1;
+                        } else {
+                            x.worded = c1 + " minus a number.";
+                            x.algebraic = c1 + " - " + var1;
+                        }
+                        break;
+                    case 2:
+                        if (toss()) {
+                            x.worded = "A number " + product + " by " + c1 + ".";
+                        } else {
+                            x.worded = c1 + " " + product + " by a number.";
+                        }
+                        x.algebraic = c1 + "" + var1;
+                        break;
+                    case 3:
+                        if (c1 === 0) {
+                            c1++;
+                        }
+                        if (toss()) {
+                            x.worded = "A number divided by " + c1 + ".";
+                            x.algebraic = getFraction(var1, c1);
+                        } else {
+                            x.worded = c1 + " divided by a number.";
+                            x.algebraic = getFraction(c1, var1);
+                        }
+                        break;
+                    case 4:
+                        if (toss()) {
+                            x.worded = "A number " + product + " by itself.";
+                            x.algebraic = var1 + "&sup2;";
+                        } else {
+                            x.worded = "A number " + product + " by itself, then " + product + " by itself again.";
+                            x.algebraic = var1 + "&sup3;";
+                        }
+                        break;
+                    case 5:
+                        if (toss()) {
+                            x.worded = "A number plus " + c1 + " all " + product + " by " + c2 + ".";
+                            x.algebraic = c2 + "(" + var1 + " + " + c1 + ")";
+                        } else {
+                            x.worded = "A number minus " + c1 + " all " + product + " by " + c2 + ".";
+                            x.algebraic = c2 + "(" + var1 + " - " + c1 + ")";
+                        }
+                        break;
+                    case 6:
+                        if (toss()) {
+                            x.worded = "A number " + product + " by " + c1 + " then add " + c2 + ".";
+                            x.algebraic = c1 + var1 + " + " + c2;
+                        } else {
+                            x.worded = "A number " + product + " by " + c1 + " then subtract " + c2 + ".";
+                            x.algebraic = c1 + var1 + " - " + c2;
+                        }
+                        break;
+                    case 7:
+                        if (toss()) {
+                            x.worded = "A number squared then " + product + " by " + c1 + ".";
+                            x.algebraic = c1 + var1 + "&sup2;";
+                        } else {
+                            x.worded = "A number " + product + " by " + c1 + " then all squared.";
+                            x.algebraic = "(" + c1 + var1 + ")&sup2;";
+                        }
+                        break;
+                    case 8:
+                        if (toss()) {
+                            x.worded = "A number plus " + c1 + " all " + product + " by the number.";
+                            x.algebraic = var1 + "(" + var1 + " + " + c1 + ")";
+                        } else {
+                            x.worded = "A number minus " + c1 + " all " + product + " by the number.";
+                            x.algebraic = var1 + "(" + var1 + " - " + c1 + ")";
+                        }
+                        break;
+                    case 9:
+                        x.worded = "A number divided by " + c1 + " then " + product + " by " + c2 + ".";
+                        x.algebraic = getFraction(c2 + var1, c1);
+                        break;
+                        // Code for two var1s starts here
+                    case 10:
+                        if (toss()) {
+                            x.worded = "A number added to another number.";
+                            x.algebraic = var1 + " + " + var2;
+                        } else {
+                            x.worded = "A number subtracted from another number.";
+                            x.algebraic = var1 + " - " + var2;
+                        }
+                        break;
+                    case 11:
+                        if (toss()) {
+                            x.worded = "A number " + product + " by another number.";
+                            x.algebraic = var1 + var2;
+                        } else {
+                            x.worded = "A number divided by another number.";
+                            x.algebraic = getFraction(var1, var2);
+                        }
+                        break;
+                    case 12:
+                        if (toss()) {
+                            x.worded = c1 + " times a number added to " + c2 + " times another number.";
+                            x.algebraic = c1 + var1 + " + " + c2 + var2;
+                        } else {
+                            x.worded = c1 + " times a number subtracted from " + c2 + " times another number.";
+                            x.algebraic = c2 + var2 + " - " + c1 + var1;
+                        }
+                        break;
+                    case 13:
+                        if (toss()) {
+                            x.worded = "A number squared multiplied by another number.";
+                            x.algebraic = var1 + var2 + "&sup2;";
+                        } else {
+                            x.worded = "A number " + product + " by another number all squared.";
+                            x.algebraic = "(" + var1 + var2 + ")&sup2;";
+                        }
+                    case 14:
+                        if (toss()) {
+                            x.worded = "A number add " + c1 + " divided into another number.";
+                            x.algebraic = getFraction(var2, var1 + " + " + c1);
+                        } else {
+                            x.worded = "A number add " + c1 + " divided into another number.";
+                            x.algebraic = getFraction(var2, var1 + " + " + c1);
+                        }
+                    case 15:
+                        if (toss()) {
+                            if (toss()) {
+                                x.worded = "The difference between two square numbers.";
+                                x.algebraic = var1 + "&sup2; - " + var2 + "&sup2;";
+                            } else {
+                                x.worded = "The sum of two square numbers.";
+                                x.algebraic = var1 + "&sup2; + " + var2 + "&sup2;";
+                            }
+                        } else {
+                            x.worded = "A square number divided by another square number.";
+                            x.algebraic = getFraction(var1 + "&sup2;", var2 + "&sup2;");
+                        }
+                        break;
+                    case 16:
+                        if (toss()) {
+                            x.worded = c2 + " times a number added to another number all " + product + " by " + c1 + ".";
+                            x.algebraic = c1 + "(" + c2 + var2 + " + " + var1 + ")";
+                        } else {
+                            x.worded = "A number added to " + c1 + " times another number all " + product + " by " + c2 + ".";
+                            x.algebraic = c2 + "(" + var1 + " + " + c1 + var2 + ")";
+                        }
+                        break;
+                    case 17:
+                        if (toss()) {
+                            x.worded = c1 + " times a number added to " + c2 + " all " + product + " by another number.";
+                            x.algebraic = var2 + "(" + c1 + var1 + " + " + c2 + ")";
+                        } else {
+                            x.worded = c1 + " times a number subtracted from " + c2 + " all " + product + " by another number.";
+                            x.algebraic = var2 + "(" + c2 + " - " + c1 + var1 + ")";
+                        }
+                        break;
+                }
+                return x;
+            }
+            function toss() {
+                if (Math.random() < 0.5) {
+                    return true;
+                } else {
+                    return false;
+                }
+            }
+
+            function getFraction(a, b) {
+                var fraction = "<div class='num'>" + a + "</div><div class='den'>" + b + "</div>";
+                return fraction;
+            }
+        </script>
+<style>
+            table {
+                margin: auto;
+                font-size: 2vw;
+                min-width: 80%;
+                border-collapse: collapse;
+            }
+            td {
+                border: none;
+                height: 2em;
+            }
+            td:hover {
+                color: #959;
+                cursor: pointer;
+            }
+            td.qNum {
+                text-align: center;
+            }
+            td.worded {
+                text-align: left;
+                width: 75%;
+            }
+            td.algebraic {
+                width: 15%;
+            }
+            div.num {
+                display: block;
+
+                font-size: 0.8em;
+            }
+            div.den {
+                display: inline-block;
+                font-size: 0.8em;
+                min-width: 1.8em;
+                border-top: 2px solid #000;
+            }
+            @media print {
+                @page {size: landscape}
+                .border {
+                    border: none;
+                }
+            }
+        </style>
+<script async src='/cdn-cgi/challenge-platform/h/b/scripts/invisible.js'></script></head>
+<body onload='createSheet()'>
+ <script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-44508399-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+<section id="controls" class="controls border">
+<h1>Worded Expressions</h1>
+<div>
+<label for="totalSelect">Expressions:</label>
+<select id="totalSelect" onchange="createSheet()">
+<option value='0'>0</option><option value='1'>1</option><option value='2'>2</option><option value='3'>3</option><option value='4'>4</option><option value='5'>5</option><option value='6'>6</option><option value='7'>7</option><option selected value='8'>8</option><option value='9'>9</option><option value='10'>10</option><option value='11'>11</option><option value='12'>12</option><option value='13'>13</option><option value='14'>14</option><option value='15'>15</option><option value='16'>16</option><option value='17'>17</option><option value='18'>18</option><option value='19'>19</option><option value='20'>20</option><option value='21'>21</option><option value='22'>22</option><option value='23'>23</option><option value='24'>24</option><option value='25'>25</option><option value='26'>26</option> </select>
+<label for="varSelect">Max Variables:</label>
+<select id="varSelect" onchange="createSheet()">
+<option value='1'>1</option><option selected value='2'>2</option> </select>
+<label for="mixedLetters">Mixed Letters?</label>
+<input id="mixedLetters" type="checkbox" checked="checked">
+</div>
+<div>
+<input type="button" id='wordButton' value="Hide Sentences" onclick="toggleAll('words');">
+<input type="button" id='expButton' value="Hide Expressions" onclick="toggleAll('exp');">
+<input type="button" id='sortButton' value="Sort" onclick="toggleSort();">
+<input type="button" value="New" onclick="createSheet()">
+<input type="button" value="Print" onclick="window.print()">
+<label for='bgSelect'>Background:</label><input style='max-width: 4em' oninput='changeBG(this.value)' onchange='changeBG(this.value)' value='#ffffff' type='color' id='bgSelect'> </div>
+</section>
+<section>
+<div class='questionBox border'>
+<div id="sheet"></div>
+</div>
+</section>
+<footer id="footer">
+<div>
+<small>
+<a href="/">Home</a> |
+<a href="/doNowMenu">Do Nows</a> |
+<a href="/gcseMenu">GCSE Resources</a> |
+<a href="/manipulativeMenu">Manipulatives</a> |
+<a href="/printableMenu">Printables</a> |
+<a href="/generatorMenu">Question Generators</a> |
+<a href="/starterMenu">Starters</a> |
+<a href="/toolMenu">Tools</a> |
+<a href="/privacy">Privacy</a> |
+<a href="/about">Contact</a> |
+Copyright &copy;
+</small>
+</div>
+</footer> <script type="text/javascript">(function(){window['__CF$cv$params']={r:'6828d881ce70e855',m:'1322c2471406ebb738cda2aef8cf2ee9839cf932-1629601173-1800-ASlHzNu4Y+zemcmjTE8cVhCD2nbfTzycES5eMHNG36srOGPeaJGoFS8Itf192awgmIZMTen5v9EazA+8c7HYrBUJbbCoLY1aZzs3wQ4to2fLtacfB7O3A5vd3KVs7Lb5JGv54VYvUfqBeCXtyiAQEA0=',s:[0x2d64c6b0af,0xbee1169364],u:'/cdn-cgi/challenge-platform/h/b'}})();</script></body>
+</html>

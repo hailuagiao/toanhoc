@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang='en'>
+<head>
+<meta charset='UTF-8'>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="author" content="Jonathan Hall">
+<link rel="stylesheet" href="/styles/main.css">
+<script src='/scripts/utilities.js'></script>
+<meta name="description" content="Randomly generated maths drills on a growing range of topics.">
+<title>Maths Drill Generator</title>
+<script>
+            var totalRows;
+            var totalColumns;
+            var answer;
+            var showingAnswers;
+            var time = 0;
+            var sheetTimer;
+            var timerStarted = false;
+            function createSheet() {
+                showingAnswers = false;
+                time = parseInt(timeSelect.value);
+                clearTimeout(sheetTimer);
+                sheetTimer = setInterval(timedCount, 1000);
+                timerStarted = true;
+                timedCount();
+                totalRows = totalRowsSelect.value;
+                totalColumns = totalColumnsSelect.value;
+                answer = new Array(totalRows);
+                for (var i = 0; i < totalColumns; i++) {
+                    answer[i] = new Array(totalColumns);
+                }
+                var top = [];
+                var left = [];
+                var data = "";
+                data = "<div class='questionBox border'><table>";
+                data += "<tr><th id='opHolder'></th>";
+                for (var j = 0; j < totalColumns; j++) {
+                    switch (topSelect.value) {
+                        case '0':
+                            top.push(getRandom(1, 10));
+                            break;
+                        case '1':
+                            top.push(10);
+                            break;
+                        case '2':
+                            top.push(10 * getRandom(1, 9));
+                            break;
+                        case '3':
+                            top.push(getRandom(11, 99));
+                            break;
+                        case '4':
+                            top.push(100);
+                            break;
+                        case '5':
+                            top.push(100 * getRandom(1, 9));
+                            break;
+                        case '6':
+                            top.push(getRandom(100, 999));
+                            break;
+                        case '7':
+                            top.push(0.1);
+                            break;
+                        case '8':
+                            top.push(getRandom(1, 9) / 10);
+                            break;
+                        case '9':
+                            top.push(getRandom(11, 99) / 10);
+                            break;
+                    }
+                    data += "<th>" + top[j] + "</th>";
+                }
+                data += "</tr>";
+                for (var i = 0; i < totalRows; i++) {
+                    switch (leftSelect.value) {
+                        case '0':
+                            left.push(getRandom(1, 10));
+                            break;
+                        case '1':
+                            left.push(10);
+                            break;
+                        case '2':
+                            left.push(10 * getRandom(1, 9));
+                            break;
+                        case '3':
+                            left.push(getRandom(11, 99));
+                            break;
+                        case '4':
+                            left.push(100);
+                            break;
+                        case '5':
+                            left.push(100 * getRandom(1, 9));
+                            break;
+                        case '6':
+                            left.push(getRandom(100, 999));
+                            break;
+                        case '7':
+                            left.push(0.1);
+                            break;
+                        case '8':
+                            left.push(getRandom(1, 9) / 10);
+                            break;
+                        case '9':
+                            left.push(getRandom(11, 99) / 10);
+                            break;
+                    }
+                    data += "<tr><th>" + left[i] + "</th>";
+                    for (j = 0; j < totalColumns; j++) {
+                        data += "<td onclick='toggleAnswer(" + i + ", " + j + ")' id='r" + i + "c" + j + "'></td>";
+                        switch (opSelect.value) {
+                            case "0":
+                                var op = "&#215;";
+                                answer[j][i] = top[j] * left[i];
+                                break;
+                            case "1":
+                                op = "+";
+                                answer[j][i] = top[j] + left[i];
+                                break;
+                            case "2":
+                                op = "-";
+                                answer[j][i] = left[i] - top[j];
+                                break;
+                            case "3":
+                                op = "&divide;";
+                                answer[j][i] = Math.round(1000 * left[i] / top[j]) / 1000;
+                                break;
+                            case "4":
+                                op = "Diff.";
+                                answer[j][i] = Math.abs(top[j] - left[i]);
+                                break;
+                            case "5":
+                                op = "%";
+                                answer[j][i] = left[i] * top[j] / 100;
+                                break;
+                        }
+                        answer[j][i] = roundError(answer[j][i]);
+                    }
+                    data += "</tr>";
+                }
+                data += "</table></div>";
+                drill.innerHTML = data;
+                opHolder.innerHTML = op;
+                changeBG(bgSelect.value);
+                document.getElementById("controls").style.display = "none";
+                document.getElementById("display").style.display = "block";
+                answerButton.value = "Show Answers";
+            }
+            function setUp() {
+                totalRows = totalRowsSelect.value;
+                totalColumns = totalColumnsSelect.value;
+                var data = "";
+                data = "<div class='questionBox border'><table>";
+                data += "<tr>";
+                for (j = 0; j <= totalColumns; j++) {
+                    data += "<th>&nbsp;</th>";
+                }
+                data += "</tr>";
+                for (var i = 0; i < totalRows; i++) {
+                    data += "<tr><th>&nbsp;</th>";
+                    for (j = 0; j < totalColumns; j++) {
+                        data += "<td>&nbsp;</td>";
+                    }
+                    data += "</tr>";
+                }
+                data += "</table></div>";
+                drill.innerHTML = data;
+                changeBG(bgSelect.value);
+            }
+            function toggleAnswers() {
+                if (showingAnswers) {
+                    for (var i = 0; i < totalRows; i++) {
+                        for (j = 0; j < totalColumns; j++) {
+                            document.getElementById("r" + i + "c" + j).innerHTML = "";
+                        }
+                    }
+                    answerButton.value = "Show Answers";
+                    showingAnswers = false;
+                } else {
+                    for (var i = 0; i < totalRows; i++) {
+                        for (j = 0; j < totalColumns; j++) {
+                            document.getElementById("r" + i + "c" + j).innerHTML = answer[j][i];
+                        }
+                    }
+                    answerButton.value = "Hide Answers";
+                    showingAnswers = true;
+                }
+            }
+            function toggleAnswer(i, j) {
+                if (document.getElementById("r" + i + "c" + j).innerHTML == answer[j][i]) {
+                    document.getElementById("r" + i + "c" + j).innerHTML = "";
+                } else {
+                    document.getElementById("r" + i + "c" + j).innerHTML = answer[j][i];
+                }
+            }
+            function timedCount() {
+                if (!timerStarted) {
+                    sheetTimer = setInterval(timedCount, 1000);
+                    timerStarted = true;
+                }
+                var minutes = Math.floor(time / 60);
+                var seconds = time % 60;
+                if (seconds < 10) {
+                    seconds = "0" + seconds;
+                }
+                time--;
+                timeDisplay.innerHTML = "Time Left: " + minutes + ":" + seconds;
+                if (time < 0) {
+                    clearTimeout(sheetTimer);
+                    timerStarted = false;
+                    timeDisplay.innerHTML = "Time's up!";
+                    time = -1;
+                }
+            }
+            function changeTime(x) {
+                time = parseInt(time) + x;
+            }
+            function showMenu() {
+                document.getElementById('controls').style.display = "block";
+                document.getElementById('display').style.display = "none";
+            }
+        </script>
+<style>
+            table {
+                margin: auto;
+                font-size: 1.6em;
+            }
+            th {
+                background-color: #959;
+                color: #fff;
+                font-weight: normal;
+            }
+            td, th {
+                min-width: 1em;
+                padding: 0.3em;
+            }
+            td:hover {
+                background-color: #515;
+                color: #fff;
+            }
+            #timeDisplay {
+                margin-top: 0.2em;
+                font-size: 1.8em;
+            }
+            #display {
+                display: none;
+            }
+        </style>
+<script async src='/cdn-cgi/bm/cv/669835187/api.js'></script></head>
+<body onload="setUp();">
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-44508399-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+<section id="controls" class="controls border">
+<div class="middleMenu">
+<h1>Maths Drills</h1>
+<div>
+<label for='leftSelect'>Left Column:</label>
+<select onchange='setUp()' id='leftSelect'>
+<option value=0>#</option>
+<option value=1>10</option>
+<option value=2>#0</option>
+<option value=3>##</option>
+<option value=4>100</option>
+<option value=5>#00</option>
+<option value=6>###</option>
+<option value=7>0.1</option>
+<option value=8>0.#</option>
+<option value=9>#.#</option>
+</select>
+<label for='topSelect'>Top Row:</label>
+<select onchange='setUp()' id='topSelect'>
+<option value=0>#</option>
+<option value=1>10</option>
+<option value=2>#0</option>
+<option value=3>##</option>
+<option value=4>100</option>
+<option value=5>#00</option>
+<option value=6>###</option>
+<option value=7>0.1</option>
+<option value=8>0.#</option>
+<option value=9>#.#</option>
+</select>
+</div>
+<div>
+<label for='opSelect'>Operation:</label>
+<select onchange='setUp()' id='opSelect'>
+<option value='1'>Left + Top</option>
+<option value='2'>Left - Top</option>
+<option value='0'>Left &#215 Top</option>
+<option value='3'>Left &divide; Top</option>
+<option value='4'>Difference</option>
+<option value='5'>Left % of Top</option>
+</select>
+<input type='button' value='Start Drill' onclick='createSheet()'>
+</div>
+</div>
+<div class="leftMenu">
+<div>
+<label for='timeSelect'>Time:</label><select id='timeSelect'><option value=60>1 minute</option><option value=120>2 minutes</option><option value=180>3 minutes</option><option value=240>4 minutes</option><option selected='selected' value=300>5 minutes</option><option value=360>6 minutes</option><option value=420>7 minutes</option><option value=480>8 minutes</option><option value=540>9 minutes</option><option value=600>10 minutes</option><option value=660>11 minutes</option><option value=720>12 minutes</option><option value=780>13 minutes</option><option value=840>14 minutes</option><option value=900>15 minutes</option></select> </div>
+<div>
+<label for='bgSelect'>Background:</label><input style='max-width: 4em' oninput='changeBG(this.value)' onchange='changeBG(this.value)' value='#ffffff' type='color' id='bgSelect'> </div>
+</div>
+<div class="rightMenu">
+<div>
+<label for='totalRowsSelect'>Rows:</label>
+<select onchange='setUp()' id='totalRowsSelect'>
+<option value=1>1</option><option value=2>2</option><option value=3>3</option><option value=4>4</option><option value=5>5</option><option value=6>6</option><option value=7>7</option><option value=8>8</option><option value=9>9</option><option selected value=10>10</option><option value=11>11</option><option value=12>12</option><option value=13>13</option><option value=14>14</option><option value=15>15</option><option value=16>16</option><option value=17>17</option><option value=18>18</option><option value=19>19</option><option value=20>20</option> </select>
+</div>
+<div>
+<label for='totalColumnsSelect'>Columns:</label>
+<select onchange='setUp()' id='totalColumnsSelect'>
+<option value=1>1</option><option value=2>2</option><option value=3>3</option><option value=4>4</option><option value=5>5</option><option value=6>6</option><option value=7>7</option><option value=8>8</option><option value=9>9</option><option selected value=10>10</option><option value=11>11</option><option value=12>12</option><option value=13>13</option><option value=14>14</option><option value=15>15</option><option value=16>16</option><option value=17>17</option><option value=18>18</option><option value=19>19</option><option value=20>20</option> </select>
+</div>
+</div>
+</section>
+<section id="display" class="controls border">
+<input type='button' onclick='time -= 29;
+                    timedCount()' value='-30 sec'>
+<input type='button' value='New Drill' onclick='createSheet()'>
+<input type="button" value="Main Menu" onclick="showMenu()">
+<input type="button" value="Print Drill" onclick="window.print()">
+<input id="answerButton" type="button" value="Show Answers" onclick="toggleAnswers()">
+<input type='button' onclick='time += 31;
+                    timedCount()' value='+30 sec'>
+<div id='timeDisplay'></div>
+</section>
+<section id="drill"></section>
+<footer id="footer">
+<div>
+<small>
+<a href="/">Home</a> |
+<a href="/doNowMenu">Do Nows</a> |
+<a href="/gcseMenu">GCSE Resources</a> |
+<a href="/manipulativeMenu">Manipulatives</a> |
+<a href="/printableMenu">Printables</a> |
+<a href="/generatorMenu">Question Generators</a> |
+<a href="/starterMenu">Starters</a> |
+<a href="/toolMenu">Tools</a> |
+<a href="/privacy">Privacy</a> |
+<a href="/about">Contact</a> |
+Copyright &copy;
+</small>
+</div>
+</footer> <script type="text/javascript">(function(){window['__CF$cv$params']={r:'6828d781bf1de855',m:'7bd37cf148590aff68434f7de9e8e89cc2a7000a-1629601132-1800-AcLK6vyA6wdxMZUf7GUiRUYDnmWDE0xdf0cgPfM0Y8+LEzD4y1a3jAwPgVuhjLoeBUSVXpCmvp40zoxoY4de8h7seM1m5VuTTAblaVcMqRx62ZuirXr7PXhNw4yEBCS95qcE0SUmMK3OYU4DwkXNSUY=',s:[0x448afd91fd,0x35fb9c2afc],}})();</script></body>
+</html>

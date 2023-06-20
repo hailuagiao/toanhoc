@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang='en'>
+<head>
+<meta charset='utf-8'>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="author" content="Jonathan Hall">
+<link rel="stylesheet" href="/styles/main.css">
+<link rel="icon" type="image/png" href="/media/favicon192.png" sizes=192x192>
+<link rel="apple-touch-icon" href="/media/favicon192.png" sizes=192x192>
+<script src='/scripts/utilities.js'></script>
+<meta name="description" content="Interactive Multiplication Areas.">
+<title>Multiplication Areas</title>
+<script type="text/javascript" charset="utf-8">
+            var showingGrid = true;
+            var showingLabels = true;
+            var showingTotal = false;
+            var x, y;
+            var xShift, yShift, scale;
+            var theCanvas;
+            var context;
+            function init() {
+                theCanvas = document.getElementById("tileCanvas");
+                context = theCanvas.getContext("2d");
+                context.canvas.width = 0.95 * window.innerWidth;
+                context.canvas.height = 0.80 * window.innerHeight;
+                drawScreen();
+            }
+            function randomValues() {
+                xInput.value = getRandom(10, 99);
+                yInput.value = getRandom(10, 50);
+            }
+            function drawScreen() {
+                context.fillStyle = "#fff";
+                context.fillRect(0, 0, theCanvas.width, theCanvas.height);
+                drawRectangles();
+                if (showingGrid) {
+                    drawGrid();
+                }
+            }
+            function drawRectangles() {
+                var xPart = [];
+                var yPart = [];
+                var areas = [];
+
+                x = parseFloat(xInput.value);
+                y = parseFloat(yInput.value);
+                scale = Math.floor(10 * (Math.min(0.85 * context.canvas.width / x, 0.85 * context.canvas.height / y))) / 10;
+                xShift = context.canvas.width / 2 - (x * scale) / 2;
+                yShift = 30;
+
+                var maxPlace = 3;
+                for (var i = 0; i < maxPlace; i++) {
+                    xPart[i] = Math.floor(x / Math.pow(10, maxPlace - (i + 1))) * Math.pow(10, maxPlace - (i + 1));
+                    x -= xPart[i];
+                    yPart[i] = Math.floor(y / Math.pow(10, maxPlace - (i + 1))) * Math.pow(10, maxPlace - (i + 1));
+                    y -= yPart[i];
+                }
+
+                var currentX = 0;
+                var currentY = 0;
+                context.beginPath();
+                context.strokeStyle = "black";
+                context.lineWidth = 2;
+                for (var i = 0; i < maxPlace; i++) {
+                    for (var j = 0; j < maxPlace; j++) {
+                        context.rect(Math.floor(xShift + currentX * scale), Math.floor(yShift + currentY * scale), Math.floor(xPart[j] * scale), Math.floor(yPart[i] * scale));
+                        currentX += xPart[j];
+                        context.stroke();
+                        areas.push(xPart[j] * yPart[i]);
+                    }
+                    currentX = 0;
+                    currentY += yPart[i];
+                }
+                context.closePath();
+                if (showingLabels) {
+                    context.font = "bold 14pt Arial";
+                    context.fillStyle = "black";
+                    currentX = 0;
+                    currentY = 0;
+                    for (var i = 0; i < xPart.length; i++) {
+                        if (xPart[i] !== 0) {
+                            context.fillText(xPart[i], xShift + currentX * scale + (xPart[i] * scale) / 2 - context.measureText(xPart[i]).width / 2, yShift / 1.5);
+                        }
+                        currentX += xPart[i];
+                    }
+                    for (var i = 0; i < yPart.length; i++) {
+                        if (yPart[i] !== 0) {
+                            context.fillText(yPart[i], xShift - context.measureText(yPart[i]).width / 2 - 20, yShift + currentY * scale + (yPart[i] * scale) / 2 + 8);
+                        }
+                        currentY += yPart[i];
+                    }
+                    context.stroke();
+                }
+                x = parseFloat(xInput.value);
+                y = parseFloat(yInput.value);
+                var sum = x + " &#215; " + y;
+                if (showingTotal) {
+                    sum += " = ";
+                    for (i = 0; i < areas.length; i++) {
+                        if (areas[i] !== 0) {
+                            sum += areas[i] + " + ";
+                        }
+                    }
+                    sum = sum.slice(0, -2);
+                    sum += " = " + (x * y);
+                }
+                area.innerHTML = sum;
+            }
+
+            function drawGrid() {
+                x = parseInt(xInput.value);
+                y = parseInt(yInput.value);
+
+                context.lineWidth = 0.1;
+                for (var i = 0; i < x; i++) {
+                    context.lineWidth = 0.1;
+                    context.strokeStyle = "black";
+                    context.beginPath();
+                    if (i % 10 === 0 || i > Math.floor(x / 10) * 10) {
+                        context.lineWidth = 1;
+                    }
+
+                    context.moveTo(Math.floor(xShift + i * scale), Math.floor(yShift));
+                    context.lineTo(Math.floor(xShift + i * scale), Math.floor(yShift + y * scale));
+                    context.closePath();
+                    context.stroke();
+                }
+                for (i = 0; i < y; i++) {
+                    context.lineWidth = 0.1;
+                    context.strokeStyle = "black";
+                    context.beginPath();
+                    if (i % 10 === 0 || i > Math.floor(y / 10) * 10) {
+                        context.lineWidth = 1;
+                    }
+                    context.moveTo(Math.floor(xShift), Math.floor(yShift + i * scale));
+                    context.lineTo(Math.floor(xShift + x * scale), Math.floor(yShift + i * scale));
+                    context.closePath();
+                    context.stroke();
+                }
+            }
+            function toggleGrid() {
+                if (showingGrid) {
+                    document.getElementById('gridButton').value = "Show Grid";
+                    showingGrid = false;
+                } else {
+                    document.getElementById('gridButton').value = "Hide Grid";
+                    showingGrid = true;
+                }
+                drawScreen();
+            }
+            function toggleLabels() {
+                if (showingLabels) {
+                    document.getElementById('labelButton').value = "Show Labels";
+                    showingLabels = false;
+                } else {
+                    document.getElementById('labelButton').value = "Hide Labels";
+                    showingLabels = true;
+                }
+                drawScreen();
+            }
+            function toggleTotal() {
+                if (showingTotal) {
+                    document.getElementById('totalButton').value = "Show Total";
+                    showingTotal = false;
+                } else {
+                    document.getElementById('totalButton').value = "Hide Total";
+                    showingTotal = true;
+                }
+                drawScreen();
+            }
+        </script>
+<style>
+            input.value {
+                width: 3em;
+                text-align: center;
+            }
+            #area {
+                color: #515;
+                font-size: 1.8em;
+                font-weight: bold;
+                padding: 0.25em;
+            }
+        </style>
+<script async src='/cdn-cgi/bm/cv/669835187/api.js'></script></head>
+<body onload='randomValues();
+            init()'>
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-44508399-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+<section id="controls" class="controls border">
+<h1>Multiplication Areas</h1>
+<div>
+<input class='value' type='number' id='xInput' oninput="init()" maxlength="3" value='1'>
+<label>&#215;</label>
+<input class='value' type='number' id='yInput' oninput="init()" maxlength="3" value='1'>
+</div>
+<div>
+<input type='button' value='New Values' onclick='randomValues();
+                        init()'>
+<input type='button' id='labelButton' value='Hide Labels' onclick='toggleLabels()'>
+<input type='button' id='gridButton' value='Hide Grid' onclick='toggleGrid()'>
+<input type='button' id='totalButton' value='Show Total' onclick='toggleTotal()'>
+</div>
+</section>
+<section>
+<div class='questionBox border'>
+<div id='area'></div>
+<canvas id="tileCanvas">
+Your browser does not support HTML5 canvas.
+</canvas>
+</div>
+</section>
+<footer id="footer">
+<div>
+<small>
+<a href="/">Home</a> |
+<a href="/doNowMenu">Do Nows</a> |
+<a href="/gcseMenu">GCSE Resources</a> |
+<a href="/manipulativeMenu">Manipulatives</a> |
+<a href="/printableMenu">Printables</a> |
+<a href="/generatorMenu">Question Generators</a> |
+<a href="/starterMenu">Starters</a> |
+<a href="/toolMenu">Tools</a> |
+<a href="/privacy">Privacy</a> |
+<a href="/about">Contact</a> |
+Copyright &copy;
+</small>
+</div>
+</footer> <script type="text/javascript">(function(){window['__CF$cv$params']={r:'6828d8a0fba2e855',m:'39d91d1f9d71c80368d62c7de9784d1c0603a617-1629601177-1800-AeY8qqeZ4IQajbL6nBmbyOmuLFtRoeEDZJcacej2/I7qEV7NefQRwx+km9lem3lJZGaw9fz/8Mp2jg6gUmO9HGP3Z/WxcunssZMCM1/8IYFfMLTrp47XUkmAri+UxUQudfMa/ssFPDxPvfDBhsqBuCg=',s:[0xfb269cc370,0x84512ba42f],}})();</script></body>
+</html>

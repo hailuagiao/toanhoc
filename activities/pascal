@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang='en'>
+<head>
+<meta charset='utf-8'>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="author" content="Jonathan Hall">
+<link rel="stylesheet" href="/styles/main.css">
+<link rel="icon" type="image/png" href="/media/favicon192.png" sizes=192x192>
+<link rel="apple-touch-icon" href="/media/favicon192.png" sizes=192x192>
+<script src='/scripts/utilities.js'></script>
+<meta name="description" content="Interactive Pascal's triangle for use in the classroom.">
+<title>Pascal's Triangle</title>
+<script type="text/javascript" charset="utf-8">
+            var terms;
+            var rows;
+            var size;
+            var showingTerms = true;
+            var highlight = true;
+
+            function createTriangle() {
+                var data = "";
+                var base = parseFloat(baseSelect.value);
+                if (isNaN(base)) {
+                    base = 1;
+                }
+                terms = [];
+                rows = rowSelect.value;
+                terms[0] = [];
+                terms[1] = [];
+                terms[0][0] = {};
+                terms[1][0] = {};
+                terms[1][1] = {};
+                terms[0][0].value = base;
+                terms[1][0].value = base;
+                terms[1][1].value = base;
+                for (var i = 0; i < rows; i++) {
+                    terms[i] = [];
+                    data += "<div class='row'>";
+                    for (var j = 0; j <= i; j++) {
+                        terms[i][j] = {};
+                        terms[i][j].shaded = false;
+                        if (i > 1 && j < i && j > 0) {
+                            terms[i][j].value = roundError(terms[i - 1][j - 1].value + terms[i - 1][j].value);
+                        } else {
+                            terms[i][j].value = base;
+                        }
+                        var id = '(' + i + ',' + j + ')';
+                        data += "<div id='" + id + "'";
+                        data += "class='box' ";
+                        data += " onclick='toggleTerm(" + i + "," + j + ")'>";
+                        if (showingTerms) {
+                            data += terms[i][j].value;
+                        }
+                        data += "</div>";
+                    }
+                    data += "</div>";
+                }
+                triangle.innerHTML = data;
+                highlightAll();
+            }
+            function toggleAll() {
+                if (showingTerms) {
+                    for (var i = 0; i < rows; i++) {
+                        for (var j = 0; j <= i; j++) {
+                            var id = '(' + i + ',' + j + ')';
+                            document.getElementById(id).innerHTML = "&nbsp;";
+                        }
+                    }
+                    showingTerms = false;
+                    showHideButton.value = "Show Values";
+                } else {
+                    for (var i = 0; i < rows; i++) {
+                        for (var j = 0; j <= i; j++) {
+                            id = '(' + i + ',' + j + ')';
+                            document.getElementById(id).innerHTML = terms[i][j].value;
+                        }
+                    }
+                    showingTerms = true;
+                    showHideButton.value = "Hide Values";
+                }
+            }
+
+
+            function toggleTerm(i, j) {
+                var id = '(' + i + ',' + j + ')';
+                if (highlight) {
+                    if (!terms[i][j].shaded) {
+                        document.getElementById(id).style.background = colourSelect.value;
+                    } else {
+                        document.getElementById(id).style.background = "#ffffff";
+                    }
+                    terms[i][j].shaded = !terms[i][j].shaded;
+                } else {
+                    if (document.getElementById(id).innerHTML === "&nbsp;") {
+                        document.getElementById(id).innerHTML = terms[i][j].value;
+                    } else {
+                        document.getElementById(id).innerHTML = "&nbsp;";
+                    }
+                }
+            }
+
+            function highlightAll() {
+                for (var i = 0; i < rows; i++) {
+                    for (var j = 0; j <= i; j++) {
+                        highlightTerm(i, j);
+                    }
+                }
+            }
+            function highlightTerm(i, j) {
+                var x = terms[i][j].value;
+                var id = '(' + i + ',' + j + ')';
+                document.getElementById(id).style.background = "#fff";
+                terms[i][j].shaded = false;
+                var m = parseInt(multipleSelect.value);
+                if (x % m === 0 && m !== 0) {
+                    document.getElementById(id).style.background = colourSelect.value;
+                    terms[i][j].shaded = true;
+                }
+                if (x === 0 && m === 0) {
+                    document.getElementById(id).style.background = colourSelect.value;
+                    terms[i][j].shaded = true;
+                }
+            }
+        </script>
+<style>
+            div.leftMenu {
+                text-align: center;
+                margin-top: 0.8em;
+            }
+            div.rightMenu {
+                text-align: center;
+                margin-top: 1.5em;
+            }
+            div.triangle {
+                padding: 1em;
+                text-align: center;
+                min-height: 75vh;
+            }
+            div.row {
+                margin: 0;
+                padding: 0;
+            }
+            div.box {
+                margin: 0;
+                padding: 0;
+                width: 3em;
+                height: 2em;
+                line-height: 2em;
+                display:inline-grid;
+                border: 1px solid black;
+                overflow: hidden;
+                font-size: 1em;
+                cursor: pointer;
+                user-select: none;
+            }
+            #baseSelect, #multipleSelect {
+                width: 2em;
+                text-align: center;
+            }
+
+        </style>
+<script async src='/cdn-cgi/bm/cv/669835187/api.js'></script></head>
+<body onload="createTriangle()">
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-44508399-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+<div class="iconMenu">
+<input title="Background colour" class="icon" title='Background colour' oninput='changeBG(this.value)' type='color' value='#ffffff'>
+<img title="Toggle Fullscreen" class="icon" onclick='goFull()' src="/media/icons/fullscreen.svg">
+</div>
+<section id="controls" class="controls border">
+<div class="middleMenu">
+<h1>Pascal's Triangle</h1>
+<div>
+<input type="button" value="Reset" onclick="rowSelect.value = 16; currentRows.innerHTML = rowSelect.value; multipleSelect.value = 0; createTriangle();">
+<input type="button" id="showHideButton" value="Hide Values" onclick="toggleAll()">
+<label for="toggleRadio">Toggle</label>
+<input name="toggle" id="toggleRadio" onclick="highlight = false" type="radio">
+<label for="highlightRadio">Highlight</label>
+<input name="toggle" id="highlightRadio" onclick="highlight = true" checked type="radio">
+<input type="color" id="colourSelect" onclick="highlight = true;
+                            highlightRadio.checked = true" value="#FFFF00">
+</div>
+</div>
+<div class="leftMenu">
+<div>
+<label for='rowSelect'><span id='currentRows'>16</span> Rows:</label>
+<input oninput="createTriangle(); currentRows.innerHTML = this.value" type="range" min="1" max="32" step="1" value="16" id="rowSelect">
+</div>
+<div>
+<label for="baseSelect">Initial Value:</label>
+<input id='baseSelect' onclick='this.select()' oninput="createTriangle()" value='1'>
+</div>
+</div>
+<div class="rightMenu">
+<div>
+<label for="multipleSelect">Show multiples of: </label>
+<input type="number" min="0" max="100" id='multipleSelect' onclick='this.select()' oninput="createTriangle()" value=''>
+</div>
+</div>
+</section>
+<section>
+<div class='questionBox border'>
+<div class="triangle" id="triangle"></div>
+</div>
+</section>
+<footer id="footer">
+<div>
+<small>
+<a href="/">Home</a> |
+<a href="/doNowMenu">Do Nows</a> |
+<a href="/gcseMenu">GCSE Resources</a> |
+<a href="/manipulativeMenu">Manipulatives</a> |
+<a href="/printableMenu">Printables</a> |
+<a href="/generatorMenu">Question Generators</a> |
+<a href="/starterMenu">Starters</a> |
+<a href="/toolMenu">Tools</a> |
+<a href="/privacy">Privacy</a> |
+<a href="/about">Contact</a> |
+Copyright &copy;
+</small>
+</div>
+</footer> <script type="text/javascript">(function(){window['__CF$cv$params']={r:'6828d8b1d86ee855',m:'1ddca3007f4ec971f29a93589779a9b7e72f9b8b-1629601180-1800-AfHM0YeSCw/gZBdNUVZfu3Vfrn4piZmS0fFZqAdZ9Jqm8vXEPS6rKi2wvz8sMXGa1KORcBrTrnOa7cfufOzEuy7wJb/JOBzdwwI4924wRbx23Yk7lBR983yPI+2F2jQ7UIPEjgCL/xwEeIk5kzgThRg=',s:[0x792cfff166,0x87bbb7c62d],}})();</script></body>
+</html>

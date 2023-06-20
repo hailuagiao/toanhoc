@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang='en'>
+<head>
+<meta charset='UTF-8'>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="author" content="Jonathan Hall">
+<link rel="stylesheet" href="/styles/main.css">
+<link rel="icon" type="image/png" href="/media/favicon192.png" sizes=192x192>
+<link rel="apple-touch-icon" href="/media/favicon192.png" sizes=192x192>
+<script src='/scripts/utilities.js'></script>
+<meta name="description" content="Interactive Product Grids.">
+<title>Product Grids</title>
+<script>
+            var tableTerms;
+            var rows;
+            var columns;
+            var op = 0;
+
+            function setUp() {
+                tableTerms = [];
+                rows = parseInt(rowsSelect.value);
+                columns = parseInt(columnsSelect.value);
+                var digits = [];
+                for (var i = 1; i <= rows * columns; i++) {
+                    digits.push(i);
+                }
+                digits = shuffle(digits);
+                var data = "<p>Fill the grid using each of the numbers 1 to " + rows * columns + " to obtain the products shown.</p>";
+                data += "<table>";
+                var columnTotals = [];
+                for (var k = 0; k < columns; k++) {
+                    columnTotals[k] = 1;
+                }
+                var rowTotals = [];
+                for (k = 0; k < rows; k++) {
+                    rowTotals[k] = 1;
+                }
+                for (i = 0; i < rows; i++) {
+                    data += "<tr>";
+                    tableTerms[i] = [];
+
+                    for (var j = 0; j < columns; j++) {
+                        tableTerms[i][j] = {};
+                        tableTerms[i][j].state = 1;
+                        tableTerms[i][j].value = digits[digits.length - 1];
+                        rowTotals[i] *= tableTerms[i][j].value;
+                        columnTotals[j] *= tableTerms[i][j].value;
+                        digits.pop();
+                        data += "<td onclick='toggleCell(" + i + "," + j + ")' id='(" + i + "," + j + ")' ></td>";
+                    }
+                    data += "<th onclick='toggleRow(" + i + ")'>" + rowTotals[i] + "</th>";
+                    data += "</tr>";
+                }
+                data += "<tr>";
+                for (j = 0; j < columns; j++) {
+                    data += "<th onclick='toggleColumn(" + j + ")'>" + columnTotals[j] + "</th>";
+                }
+                data += "</tr>";
+                data += "</table>";
+                table.innerHTML = data;
+                showValues();
+            }
+            function showValues() {
+                for (var i = 0; i < rows; i++) {
+                    for (var j = 0; j < columns; j++) {
+                        var id = '(' + i + ',' + j + ')';
+                        switch (tableTerms[i][j].state) {
+                            case 0:
+                                document.getElementById(id).innerHTML = tableTerms[i][j].value;
+                                break;
+                            case 1:
+                                document.getElementById(id).innerHTML = "";
+                                break;
+
+                        }
+                    }
+                }
+            }
+            function toggleColumn(x) {
+                for (var i = 0; i < rows; i++) {
+                    tableTerms[i][x].state++;
+                    tableTerms[i][x].state %= 2;
+                }
+                showValues();
+            }
+            function toggleRow(x) {
+                for (var i = 0; i < columns; i++) {
+                    tableTerms[x][i].state++;
+                    tableTerms[x][i].state %= 2;
+                }
+                showValues();
+            }
+            function toggleCell(i, j) {
+                tableTerms[i][j].state++;
+                tableTerms[i][j].state %= 2;
+                showValues();
+            }
+            function setState(x) {
+                for (var i = 0; i < rows; i++) {
+                    for (var j = 0; j < columns; j++) {
+                        tableTerms[i][j].state = parseInt(x);
+                    }
+                }
+                showValues();
+            }
+            function shuffle(array) {
+                var m = array.length, t, i;
+
+                // While there remain elements to shuffle…
+                while (m) {
+
+                    // Pick a remaining element…
+                    i = Math.floor(Math.random() * m--);
+
+                    // And swap it with the current element.
+                    t = array[m];
+                    array[m] = array[i];
+                    array[i] = t;
+                }
+
+                return array;
+            }
+        </script>
+<style>
+            .questionBox {
+                overflow: auto;
+            }
+            table {
+                margin: 1% auto;
+                font-size: 2em;
+            }
+            th {
+                background: #959;
+                color: #fff;
+                font-weight: normal;
+                cursor: pointer;
+                padding: 0.2em;
+            }
+            td {
+                width: 2em;
+                height: 2em;
+                padding: 0.2em;
+                cursor: pointer;
+            }
+            td:hover {
+                color: #959;
+            }
+            section.controls div {
+                margin: 0.25em;
+            }
+        </style>
+<script async src='/cdn-cgi/challenge-platform/h/b/scripts/invisible.js'></script></head>
+<body onload="setUp();">
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-44508399-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+<input title='Toggle Full Screen.' onclick='goFull()' class='fullScreen' type='button' value='&#10019;'>
+<section id="controls" class="controls border">
+<h1>Product Grids</h1>
+<div>
+<input type="button" value="New Grid" onclick="setUp()">
+<input type="button" value="Show Values" onclick="setState(0)">
+<input type="button" value="Hide Values" onclick="setState(1)">
+</div>
+<div>
+<label for='totalRowsSelect'>Rows:</label>
+<select onchange='setUp()' id='rowsSelect'>
+<option value=2>2</option><option selected value=3>3</option><option value=4>4</option><option value=5>5</option> </select>
+<label for='totalColumnsSelect'>Columns:</label>
+<select onchange='setUp()' id='columnsSelect'>
+<option value=2>2</option><option selected value=3>3</option><option value=4>4</option><option value=5>5</option> </select>
+</div>
+</section>
+<div id="content" class='questionBox border'>
+<div id="table"></div>
+</div>
+<footer id="footer">
+<div>
+<small>
+<a href="/">Home</a> |
+<a href="/doNowMenu">Do Nows</a> |
+<a href="/gcseMenu">GCSE Resources</a> |
+<a href="/manipulativeMenu">Manipulatives</a> |
+<a href="/printableMenu">Printables</a> |
+<a href="/generatorMenu">Question Generators</a> |
+<a href="/starterMenu">Starters</a> |
+<a href="/toolMenu">Tools</a> |
+<a href="/privacy">Privacy</a> |
+<a href="/about">Contact</a> |
+Copyright &copy;
+</small>
+</div>
+</footer> <script type="text/javascript">(function(){window['__CF$cv$params']={r:'6828d85c9f2de855',m:'92eeabdbcd353709745bbf9a6f7c515c93b1ce71-1629601167-1800-AXyWBD0YHrBY+UzrZWMSvdZ1DGJF9HNxJGrLtvtSuBxun/q6YrySsHNY0tMUxetKpU3uzdrsn2wQjFc7QbNkcw54rfMsQILLBq20vb8t5ibE3aUg9rNq7AZddJn/FdeCOHAvo9YCz6AvnFPgaWjvE1Y=',s:[0x2dcf25e6d4,0x4c5de9b860],u:'/cdn-cgi/challenge-platform/h/b'}})();</script></body>
+</html>

@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang='en'>
+<head>
+<meta charset='utf-8'>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="author" content="Jonathan Hall">
+<link rel="icon" type="image/png" href="/media/favicon192.png" sizes=192x192>
+<link rel="apple-touch-icon" href="/media/favicon192.png" sizes=192x192>
+<link rel="stylesheet" href="/styles/main.css">
+<script src='/scripts/utilities.js'></script>
+<meta name="description" content="Create instant templates designed to be used for rich tasks within the classroom.">
+<title>Rich Task Templates</title>
+<script>
+            var c = [], ctx = [];
+            var totalTasks;
+            function createTemplate(i) {
+                ctx[i].clearRect(0, 0, c[i].width, c[i].height);
+                switch (document.getElementById('task' + i).value) {
+                    case "0":
+                        pyramid(2, i);
+                        break;
+                    case "1":
+                        pyramid(3, i);
+                        break;
+                    case "2":
+                        pyramid(4, i);
+                        break;
+                    case "3":
+                        pyramid(5, i);
+                        break;
+                    case "4":
+                        venn(2, i);
+                        break;
+                    case "5":
+                        venn(3, i);
+                        break;
+                    case "6":
+                        arithmagon(3, i);
+                        break;
+                    case "7":
+                        arithmagon(4, i);
+                        break;
+                    case "8":
+                        functionMachine(1, i);
+                        break;
+                    case "9":
+                        functionMachine(2, i);
+                        break;
+                    case "10":
+                        functionMachine(3, i);
+                        break;
+                    case "11":
+                        venn(1, i);
+                        break;
+                }
+            }
+            function setUp() {
+                tasks.innerHTML = "";
+                totalTasks = splitSelect.value;
+                for (var i = 0; i < totalTasks; i++) {
+                    var temp = "";
+                    var width = (100 - 0.6 * totalTasks) / totalTasks;
+                    var height = 540;
+                    if (totalTasks % 4 === 0) {
+                        width *= 2;
+                        height /= 2;
+                    }
+                    temp += "<div id='richDiv" + i + "' style='width: " + width + "%; height: " + height + "px' class='questionBox border'>";
+                    temp += "<select onchange='createTemplate(" + i + ")' id='task" + i + "'>";
+                    temp += "<option value='6'>Arithmagon - 3 Vertices</option>";
+                    temp += "<option value='7'>Arithmagon - 4 Vertices</option>";
+                    temp += "<option value='8'>Function Machine - 1 Operation</option>";
+                    temp += "<option value='9'>Function Machine - 2 Operations</option>";
+                    temp += "<option value='10'>Function Machine - 3 Operations</option>";
+                    temp += "<option value='0'>Pyramid 2 Rows</option>";
+                    temp += "<option selected value='1'>Pyramid 3 Rows</option>";
+                    temp += "<option value='2'>Pyramid 4 Rows</option>";
+                    temp += "<option value='3'>Pyramid 5 Rows</option>";
+                    temp += "<option value='11'>Venn - Single</option>";
+                    temp += "<option value='4'>Venn - Double</option>";
+                    temp += "<option value='5'>Venn - Triple</option>";
+                    temp += "</select>";
+                    temp += "<canvas id='richTask" + i + "'></canvas>";
+                    temp += "</div>";
+                    tasks.innerHTML += temp;
+                }
+                changeBG(bgSelect.value);
+                refresh();
+            }
+            function refresh() {
+                for (var i = 0; i < totalTasks; i++) {
+                    c[i] = document.getElementById('richTask' + i);
+                    c[i].height = 0.90 * document.getElementById('richDiv' + i).offsetHeight;
+                    c[i].width = 0.98 * document.getElementById('richDiv' + i).offsetWidth;
+                    ctx[i] = c[i].getContext('2d');
+                    ctx[i].lineWidth = 2;
+                    ctx[i].fillStyle = "#fff";
+                    ctx[i].font = "26px Arial";
+                    createTemplate(i);
+                }
+            }
+            function drawCircle(x, y, radius, id) {
+                ctx[id].beginPath();
+                ctx[id].arc(x, y, radius, 0, 2 * Math.PI);
+            }
+            function functionMachine(ops, id) {
+                var drop = Math.min(c[id].height / 2, c[id].width / 2);
+                var size = Math.min(240, Math.max(100, drop * 2 / (ops * 1.2)) * Math.pow(0.93, ops));
+                var height = size / 1.5;
+                var arrow = 0.80;
+                var x = c[id].width / 2 - size / 2;
+                var y = Math.min(c[id].height / 2, c[id].width / 2) - drop / 1.5;
+                x -= (0.5 * size * (ops - 1));
+                for (var i = 0; i < ops; i++) {
+                    ctx[id].beginPath();
+                    ctx[id].moveTo(x + (size * i), y);
+                    ctx[id].lineTo(x + (size * i) + size * arrow, y);
+                    ctx[id].lineTo(x + (size * i) + size, y + height / 2);
+                    ctx[id].lineTo(x + (size * i) + size * arrow, y + height);
+                    ctx[id].lineTo(x + (size * i), y + height);
+                    ctx[id].closePath();
+                    ctx[id].stroke();
+                }
+            }
+
+            function venn(circles, id) {
+                var radius, offset;
+                var edge = 5;
+                ctx[id].beginPath();
+                ctx[id].rect(edge, edge, c[id].width - 2 * edge, c[id].height - 2 * edge);
+                ctx[id].fill();
+                ctx[id].stroke();
+                ctx[id].fillStyle = "#000";
+                ctx[id].fillText("\u03B5", 2 * edge, 5 * edge, 2 * edge);
+                ctx[id].fillStyle = "#fff";
+                switch (circles) {
+                    case 1:
+                        radius = Math.min(c[id].height / 2.4, c[id].width / 3.4);
+                        drawCircle(c[id].width / 2, Math.min(c[id].height / 2, c[id].width / 2), radius, id);
+                        ctx[id].fill();
+                        drawCircle(c[id].width / 2, Math.min(c[id].height / 2, c[id].width / 2), radius, id);
+                        ctx[id].stroke();
+                        ctx[id].fillStyle = "#000";
+                        ctx[id].fillText("A", c[id].width / 2 - 8, Math.min(c[id].height / 2, c[id].width / 2) - radius + 30);
+                        ctx[id].fillStyle = "#fff";
+                        break;
+                    case 2:
+                        radius = Math.min(c[id].height / 2.5, c[id].width / 3.5);
+                        offset = radius / 1.8;
+                        drawCircle(c[id].width / 2 - offset, Math.min(c[id].height / 2, c[id].width / 2), radius, id);
+                        ctx[id].fill();
+                        drawCircle(c[id].width / 2 + offset, Math.min(c[id].height / 2, c[id].width / 2), radius, id);
+                        ctx[id].fill();
+                        drawCircle(c[id].width / 2 - offset, Math.min(c[id].height / 2, c[id].width / 2), radius, id);
+                        ctx[id].stroke();
+                        drawCircle(c[id].width / 2 + offset, Math.min(c[id].height / 2, c[id].width / 2), radius, id);
+                        ctx[id].stroke();
+                        ctx[id].fillStyle = "#000";
+                        ctx[id].fillText("A", c[id].width / 2 - offset - 15, Math.min(c[id].height / 2, c[id].width / 2) - radius + 30);
+                        ctx[id].fillText("B", c[id].width / 2 + offset, Math.min(c[id].height / 2, c[id].width / 2) - radius + 30);
+                        ctx[id].fillStyle = "#fff";
+                        break;
+                    case 3:
+                        radius = Math.min(c[id].height / 3.3, c[id].width / 3.5);
+                        offset = radius / 1.5;
+                        drawCircle(c[id].width / 2 - offset, Math.min(c[id].height / 2, c[id].width / 2) - radius / 2, radius, id);
+                        ctx[id].fill();
+                        drawCircle(c[id].width / 2 + offset, Math.min(c[id].height / 2, c[id].width / 2) - radius / 2, radius, id);
+                        ctx[id].fill();
+                        drawCircle(c[id].width / 2, Math.min(c[id].height / 2, c[id].width / 2) + radius / 2, radius, id);
+                        ctx[id].fill();
+                        drawCircle(c[id].width / 2 - offset, Math.min(c[id].height / 2, c[id].width / 2) - radius / 2, radius, id);
+                        ctx[id].stroke();
+                        drawCircle(c[id].width / 2 + offset, Math.min(c[id].height / 2, c[id].width / 2) - radius / 2, radius, id);
+                        ctx[id].stroke();
+                        drawCircle(c[id].width / 2, Math.min(c[id].height / 2, c[id].width / 2) + radius / 2, radius, id);
+                        ctx[id].stroke();
+                        ctx[id].fillStyle = "#000";
+                        ctx[id].fillText("A", c[id].width / 2 - offset - 10, Math.min(c[id].height / 2, c[id].width / 2) - radius * 1.2);
+                        ctx[id].fillText("B", c[id].width / 2 + offset, Math.min(c[id].height / 2, c[id].width / 2) - radius * 1.2);
+                        ctx[id].fillText("C", c[id].width / 2 - 10, Math.min(c[id].height / 2, c[id].width / 2) + radius * 1.2);
+                        ctx[id].fillStyle = "#fff";
+                        break;
+                }
+            }
+            function arithmagon(vertices, id) {
+                var radius = Math.min(c[id].height / 12, c[id].width / 13);
+                var width = radius * 2;
+                var drop = Math.min(c[id].height / 2, c[id].width / 2);
+                switch (vertices) {
+                    case 3:
+                        ctx[id].beginPath();
+                        ctx[id].moveTo(c[id].width / 2 - radius * 5, drop + radius * 3);
+                        ctx[id].lineTo(c[id].width / 2 + radius * 5, drop + radius * 3);
+                        ctx[id].lineTo(c[id].width / 2, drop - radius * 3.2);
+                        ctx[id].closePath();
+                        ctx[id].stroke();
+                        drawCircle(c[id].width / 2 - radius * 5, drop + radius * 3, radius, id);
+                        ctx[id].fill();
+                        ctx[id].stroke();
+                        drawCircle(c[id].width / 2 + radius * 5, drop + radius * 3, radius, id);
+                        ctx[id].fill();
+                        ctx[id].stroke();
+                        drawCircle(c[id].width / 2, drop - radius * 3.2, radius, id);
+                        ctx[id].fill();
+                        ctx[id].stroke();
+                        ctx[id].rect(c[id].width / 2 - radius * 3.5, drop - width / 2, width, width);
+                        ctx[id].rect(c[id].width / 2 + radius * 3.5 - width, drop - width / 2, width, width);
+                        ctx[id].rect(c[id].width / 2 - width / 2, drop + radius * 3 - width / 2, width, width);
+                        ctx[id].fill();
+                        ctx[id].stroke();
+                        break;
+                    case 4:
+                        ctx[id].beginPath();
+                        ctx[id].moveTo(c[id].width / 2 - radius * 5, drop + radius * 3.5);
+                        ctx[id].lineTo(c[id].width / 2 - radius * 5, drop - radius * 3.5);
+                        ctx[id].lineTo(c[id].width / 2 + radius * 5, drop - radius * 3.5);
+                        ctx[id].lineTo(c[id].width / 2 + radius * 5, drop + radius * 3.5);
+                        ctx[id].closePath();
+                        ctx[id].stroke();
+                        drawCircle(c[id].width / 2 - radius * 5, drop + radius * 3.5, radius, id);
+                        ctx[id].fill();
+                        ctx[id].stroke();
+                        drawCircle(c[id].width / 2 + radius * 5, drop + radius * 3.5, radius, id);
+                        ctx[id].fill();
+                        ctx[id].stroke();
+                        drawCircle(c[id].width / 2 - radius * 5, drop - radius * 3.5, radius, id);
+                        ctx[id].fill();
+                        ctx[id].stroke();
+                        drawCircle(c[id].width / 2 + radius * 5, drop - radius * 3.5, radius, id);
+                        ctx[id].fill();
+                        ctx[id].stroke();
+                        ctx[id].rect(c[id].width / 2 - width / 2, drop + radius * 3.5 - width / 2, width, width);
+                        ctx[id].fill();
+                        ctx[id].stroke();
+                        ctx[id].rect(c[id].width / 2 - width / 2, drop - radius * 3.5 - width / 2, width, width);
+                        ctx[id].fill();
+                        ctx[id].stroke();
+                        ctx[id].rect(c[id].width / 2 - radius * 5 - width / 2, drop - width / 2, width, width);
+                        ctx[id].fill();
+                        ctx[id].stroke();
+                        ctx[id].rect(c[id].width / 2 + radius * 5 - width / 2, drop - width / 2, width, width);
+                        ctx[id].fill();
+                        ctx[id].stroke();
+                        break;
+                }
+            }
+            function pyramid(rows, id) {
+                ctx[id].beginPath();
+                ctx[id].fillStyle = "#fff";
+                var brickHeight = Math.min(0.55 * c[id].width / rows, 0.8 * c[id].height / rows);
+                var brickWidth = brickHeight * 1.7;
+                var totalBricks = 0.5 * rows * (rows + 1);
+                var currentRow = 1;
+                var rowBrick = 0;
+                for (var i = 1; i <= totalBricks; i++) {
+                    ctx[id].rect(c[id].width / 2 - (currentRow / 2 * brickWidth) + (rowBrick * brickWidth), 20 + (currentRow - 1) * brickHeight, brickWidth, brickHeight);
+                    ctx[id].fill();
+                    ctx[id].stroke();
+                    rowBrick++;
+                    if (i === 0.5 * currentRow * (currentRow + 1)) {
+                        currentRow++;
+                        rowBrick = 0;
+                    }
+                }
+            }
+        </script>
+<style>
+            div.questionBox {
+                display: inline-block;
+            }
+            @media print {
+                canvas {
+                    max-width: 100%;
+                }
+                select {
+                    display: none !important;
+                }
+            }
+            input.fullScreen {
+                position: absolute;
+                top: 1%;
+                right: 1%;
+                z-index: 1;
+            }
+        </style>
+<script async src='/cdn-cgi/challenge-platform/h/b/scripts/invisible.js'></script></head>
+<body onresize="refresh()" onload="setUp()">
+<input onclick='goFull()' class='fullScreen' type='button' value='&#10019;'>
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-44508399-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+<section id="controls" class="controls border">
+<h1>Rich Task Templates</h1>
+<label for="splitSelect">Total Tasks:</label>
+<select onchange="setUp()" id="splitSelect">
+<option value="1">1</option>
+<option selected value="2">2</option>
+<option value="3">3</option>
+<option value="4">4</option>
+</select>
+<input type="button" value="Print Template" onclick="window.print()">
+<label for='bgSelect'>Background:</label><input style='max-width: 4em' oninput='changeBG(this.value)' onchange='changeBG(this.value)' value='#ffffff' type='color' id='bgSelect'>
+</section>
+<div id="content">
+<section id="tasks">
+</div>
+</section>
+<footer id="footer">
+<div>
+<small>
+<a href="/">Home</a> |
+<a href="/doNowMenu">Do Nows</a> |
+<a href="/gcseMenu">GCSE Resources</a> |
+<a href="/manipulativeMenu">Manipulatives</a> |
+<a href="/printableMenu">Printables</a> |
+<a href="/generatorMenu">Question Generators</a> |
+<a href="/starterMenu">Starters</a> |
+<a href="/toolMenu">Tools</a> |
+<a href="/privacy">Privacy</a> |
+<a href="/about">Contact</a> |
+Copyright &copy;
+</small>
+</div>
+</footer><script type="text/javascript">(function(){window['__CF$cv$params']={r:'6828d8c58a0ae855',m:'2b732a926ffaa1323607fce669c6a063bd5d4537-1629601183-1800-AelUZxX1LWE1wRioTB++WNOXjHLPw0a1pdk2DBcnx5qW5xC/bbyuRMjmcD0o6iRnrZmGSniJkAlEQOBpPnooWd1cVYpMcEztpMpLM3NeS6ahk2xdec/W+yBuV6nHFJTCy80+JVh+vIGRgYrdDzDUbRo=',s:[0x4ba46d5b56,0x3e74056ac2],u:'/cdn-cgi/challenge-platform/h/b'}})();</script></body>
+</html>

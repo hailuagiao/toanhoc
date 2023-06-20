@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang='en'>
+<head>
+<meta charset='utf-8'>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="author" content="Jonathan Hall">
+<link rel="stylesheet" href="/styles/main.css">
+<link rel='stylesheet' href="https://fonts.googleapis.com/css?family=Arvo:400,700,400italic,700italic">
+<script src='/scripts/utilities.js'></script>
+<meta name="description" content="Interactive percentage spider activity for use in the classroom.">
+<title>Percentage Trails</title>
+<script type="text/javascript" charset="utf-8">
+            var tiles;
+            var rows;
+            var op, sign;
+            var size;
+            var showingTerms = true;
+            var percentage = new Array(100, 50, 25, 75, 10, 5, 20, 1, 2, 35, 90, 99, 2.5, 0.5, 200);
+            function createGrid() {
+                createValues();
+                updateGrid();
+                randomise();
+            }
+            function updateGrid() {
+                var data = "";
+                size = 3 * Math.pow(0.98, rows);
+                width = Math.min(4, 40 / rows);
+                //width = 80 / rows;
+                for (var i = 0; i < rows; i++) {
+                    data += "<div class='row'>";
+                    for (var j = 0; j < rows; j++) {
+                        var id = '(' + i + ',' + j + ')';
+                        data += "<div onclick='toggleTerm(" + i + "," + j + ")' class='box'>";
+                        data += "<div id='p" + id + "' class='percent'>" + tiles[i][j].percent + "%</div>";
+                        data += "<div id='" + id + "'";
+                        data += "style='font-size: " + size * (4 / rows) + "em; height: 1.2em; width: " + width + "em'></div>";
+                        data += "</div>";
+                    }
+                    data += "</div>";
+                }
+                grid.innerHTML = data;
+            }
+            function updateValues() {
+                for (var i = 0; i < rows; i++) {
+                    for (var j = 0; j < rows; j++) {
+                        var id = '(' + i + ',' + j + ')';
+                        if (document.getElementById(id).innerHTML !== "") {
+                            document.getElementById(id).innerHTML = tiles[i][j].value;
+                        }
+                        document.getElementById('p' + id).innerHTML = tiles[i][j].percent + "%";
+                    }
+                }
+            }
+            function mixPercentages() {
+                for (var i = 5; i < percentage.length; i++) {
+                    var temp = percentage[i];
+                    var rnd = getRandom(5, percentage.length - 1);
+                    percentage[i] = percentage[rnd];
+                    percentage[rnd] = temp;
+                }
+            }
+            function createValues() {
+                mixPercentages();
+                rows = rowSelect.value;
+                tiles = [];
+                var min = parseInt(minSelect.value);
+                var max = parseInt(maxSelect.value);
+                var value = getRandom(min, max);
+                var multiple = multipleSelect.value;
+                value = Math.round(value / multiple) * multiple;
+                var currentTile = 0;
+                for (var i = 0; i < rows; i++) {
+                    tiles[i] = [];
+                    for (var j = 0; j < rows; j++) {
+                        tiles[i][j] = {};
+                        if (currentTile < percentage.length) {
+                            tiles[i][j].percent = percentage[currentTile];
+                        } else {
+                            tiles[i][j].percent = getRandom(0, 100);
+                            if (currentTile > percentage.length * 1.1) {
+                                tiles[i][j].percent = getRandom(100, 200);
+                            }
+                            if (currentTile > percentage.length * 1.3) {
+                                tiles[i][j].percent = getRandom(200, 400);
+                            }
+                            if (currentTile > percentage.length * 1.4) {
+                                tiles[i][j].percent = (2 * getRandom(0, 100) + 1) / 2;
+                            }
+                            if (currentTile > percentage.length * 2) {
+                                tiles[i][j].percent = (2 * getRandom(100, 300) + 1) / 4;
+                            }
+                        }
+                        tiles[i][j].value = roundError(tiles[i][j].percent / 100 * value);
+                        currentTile++;
+                    }
+                }
+            }
+            function toggleAll() {
+                if (showingTerms) {
+                    for (var i = 0; i < rows; i++) {
+                        for (var j = 0; j < rows; j++) {
+                            var id = '(' + i + ',' + j + ')';
+                            document.getElementById(id).innerHTML = "";
+
+                        }
+                    }
+                    showingTerms = false;
+                    showHideButton.value = "Show Values";
+                } else {
+                    for (var i = 0; i < rows; i++) {
+                        for (var j = 0; j < rows; j++) {
+                            id = '(' + i + ',' + j + ')';
+                            document.getElementById(id).innerHTML = tiles[i][j].value;
+                        }
+                    }
+                    showingTerms = true;
+                    showHideButton.value = "Hide Values";
+                }
+            }
+            function toggleTerm(i, j) {
+                var id = '(' + i + ',' + j + ')';
+                if (document.getElementById(id).innerHTML === "") {
+                    document.getElementById(id).innerHTML = tiles[i][j].value;
+                } else {
+                    document.getElementById(id).innerHTML = "";
+                }
+            }
+            function randomise() {
+                for (var i = 0; i < rows; i++) {
+                    for (var j = 0; j < rows; j++) {
+                        var id = '(' + i + ',' + j + ')';
+                        document.getElementById(id).innerHTML = "";
+                        if (Math.random() < 0.3) {
+                            toggleTerm(i, j);
+                        }
+                    }
+                }
+                showHideButton.value = "Hide Values";
+                showingTerms = true;
+            }
+        </script>
+<style>
+            div.grid {
+                text-align: center;
+            }
+            div.box {
+                margin: 0.4%;
+                display: inline-block;
+                border: 2px solid black;
+                border-radius: 0.2em;
+                background: #ffb;
+                overflow: hidden;
+                font-weight: bold;
+                user-select: none;
+            }
+            div.percent {
+                color: #515;
+                margin-bottom: 0.5em;
+            }
+            div.box:hover {
+                border: 2px solid red;
+            }
+            div.checkBox {
+                margin: 0.2em;
+            }
+        </style>
+<script async src='/cdn-cgi/bm/cv/669835187/api.js'></script></head>
+<body onload="createGrid();
+            randomise()">
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-44508399-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+<section id="controls" class="controls border">
+<h1>Percentage Trails</h1>
+<div>
+<label for='minSelect'>100% is between</label>
+<select onchange='createValues();
+                        updateValues();' id='minSelect'>
+<option selected value=0>0</option><option value=10>10</option><option value=20>20</option><option value=30>30</option><option value=40>40</option><option value=50>50</option><option value=60>60</option><option value=70>70</option><option value=80>80</option><option value=90>90</option><option value=100>100</option><option value=200>200</option><option value=300>300</option><option value=400>400</option><option value=500>500</option><option value=600>600</option><option value=700>700</option><option value=800>800</option><option value=900>900</option><option value=1000>1000</option><option value=2000>2000</option><option value=3000>3000</option><option value=4000>4000</option><option value=5000>5000</option><option value=6000>6000</option><option value=7000>7000</option><option value=8000>8000</option><option value=9000>9000</option><option value=10000>10000</option> </select>
+<label for='maxSelect'>and</label>
+<select onchange='createValues();
+                        updateValues();' id='maxSelect'>
+<option value=10>10</option><option value=20>20</option><option value=30>30</option><option value=40>40</option><option value=50>50</option><option value=60>60</option><option value=70>70</option><option value=80>80</option><option value=90>90</option><option value=100>100</option><option selected value=200>200</option><option value=300>300</option><option value=400>400</option><option value=500>500</option><option value=600>600</option><option value=700>700</option><option value=800>800</option><option value=900>900</option><option value=1000>1000</option><option value=2000>2000</option><option value=3000>3000</option><option value=4000>4000</option><option value=5000>5000</option><option value=6000>6000</option><option value=7000>7000</option><option value=8000>8000</option><option value=9000>9000</option><option value=10000>10000</option> </select>
+<label for="multipleSelect">and a multiple of</label>
+<select id="multipleSelect" onchange="createValues();
+                        updateValues();" ">
+<option value=1>1</option>
+<option value=2>2</option>
+<option value=5>5</option>
+<option selected value=10>10</option>
+<option value=20>20</option>
+<option value=50>50</option>
+<option value=100>100</option>
+<option value=1000>1000</option>
+</select>
+</div>
+<div>
+<label for="rowSelect">Grid Size:</label>
+<select id="rowSelect" onchange="createGrid();">
+<option value='2'>2 &#215; 2</option><option value='3'>3 &#215; 3</option><option selected value='4'>4 &#215; 4</option><option value='5'>5 &#215; 5</option><option value='6'>6 &#215; 6</option><option value='7'>7 &#215; 7</option><option value='8'>8 &#215; 8</option> </select>
+<input type="button" value="New Values" onclick="createValues();
+                        updateValues()">
+<input type="button" id="showHideButton" value="Hide Values" onclick="toggleAll()">
+<input type="button" value="Random" onclick="randomise()">
+<input type="button" value="Print Grid" onclick="window.print()">
+</div>
+</section>
+<section>
+<div class='questionBox border'>
+<div class="grid" id="grid"></div>
+</div>
+</section>
+<footer id="footer">
+<div>
+<small>
+<a href="/">Home</a> |
+<a href="/doNowMenu">Do Nows</a> |
+<a href="/gcseMenu">GCSE Resources</a> |
+<a href="/manipulativeMenu">Manipulatives</a> |
+<a href="/printableMenu">Printables</a> |
+<a href="/generatorMenu">Question Generators</a> |
+<a href="/starterMenu">Starters</a> |
+<a href="/toolMenu">Tools</a> |
+<a href="/privacy">Privacy</a> |
+<a href="/about">Contact</a> |
+Copyright &copy;
+</small>
+</div>
+</footer> <script type="text/javascript">(function(){window['__CF$cv$params']={r:'6828d8b9492de855',m:'37c82c6a8b67900aeb6ea7119702fd97ca8e5a00-1629601181-1800-AT6RIiy+P9kvnq+MEtVD67WYGk2/SfRi6giwfwiQxIcE+rm94e1ObZQ7IaaZhPwYYTkL8Fc/plW+PO/59V76+4UCW7j9zapsPPZ1mfRF1v4T04gYxvAyu5U0TXSJUba3d6/xsElhwfi4pjruN3vezrc=',s:[0xd69e8efff9,0xe4f5200e9e],}})();</script></body>
+</html>

@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang='en'>
+<head>
+<meta charset='UTF-8'>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="author" content="Jonathan Hall">
+<link rel="icon" type="image/png" href="/media/favicon192.png" sizes=192x192>
+<link rel="stylesheet" href="/styles/main.css"> <meta name="description" content="Pull Up Nets of 3D Shapes">
+<title>Pull Up Nets of 3D Shapes</title>
+<script async src='/cdn-cgi/bm/cv/669835187/api.js'></script></head>
+<body>
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-44508399-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+<header>
+<h1>Pull-Up Nets</h1>
+</header>
+<div class="questionBox border">
+<h2>Cube</h2>
+<div>
+<img src="/media/pullUpCube.gif">
+</div>
+</div>
+<div class="questionBox border">
+<h2>Tetrahedron</h2>
+<div>
+<img src="/media/pullUpTetra.gif">
+</div>
+</div>
+<div class="questionBox border">
+<h2>Octahedron</h2>
+<div>
+<video controls muted src="/media/pullUpOctahedron.mp4"></video>
+</div>
+</div>
+<footer id="footer">
+<div>
+<small>
+<a href="/">Home</a> |
+<a href="/doNowMenu">Do Nows</a> |
+<a href="/gcseMenu">GCSE Resources</a> |
+<a href="/manipulativeMenu">Manipulatives</a> |
+<a href="/printableMenu">Printables</a> |
+<a href="/generatorMenu">Question Generators</a> |
+<a href="/starterMenu">Starters</a> |
+<a href="/toolMenu">Tools</a> |
+<a href="/privacy">Privacy</a> |
+<a href="/about">Contact</a> |
+Copyright &copy;
+</small>
+</div>
+</footer> <script type="text/javascript">(function(){window['__CF$cv$params']={r:'6828d8604b35e855',m:'a926b971db23db0b7a989091e0bf09f30a225598-1629601167-1800-AbGwZB64P1ac0xK4PBaiJOUn1xC8rhU+kE3xku7PNjgJlwPeYH0qQzNZ32I4GeOJ6AzWcalRNG0i6JFknpxApyr0BeSJMUwkFLCippF3WPbXh66wCxL2cXk91eFZZZKz8ZEUkYyriqrmjBZiiwzp/U0=',s:[0xe7e9d3bbc7,0x1ca89c02ae],}})();</script></body>
+</html>

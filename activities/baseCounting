@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang='en'>
+<head>
+<meta charset='UTF-8'>
+<meta name="viewport" content="width=device-width, initial-width=1">
+<meta name="author" content="Jonathan Hall">
+<link rel="icon" type="image/png" href="/media/favicon192.png" sizes=192x192>
+<link rel="stylesheet" href="/styles/main.css">
+<script src='/scripts/utilities.js'></script>
+<meta name="description" content="Same, Less, More.">
+<title>Multi-base Counting</title>
+<script>
+            var values;
+            var min, max, startN, endN;
+            function init() {
+                values = [];
+                createGrid();
+            }
+            function verify(n, min, max) {
+                if (n < min) {
+                    n = min;
+                }
+                if (n > max) {
+                    n = max;
+                }
+                return n;
+            }
+            function partition(n, base) {
+                var output = [], sNumber = n.toString(base);
+                for (var i = 0, len = sNumber.length; i < len; i += 1) {
+                    if (+sNumber.charAt(i) > 0) {
+                        var sup = "&#8729;<span class='pv'>" + base + "<sup>" + (sNumber.length - (i + 1)) + "</sup></span>";
+                        if (sNumber.length - (i + 1) === 1) {
+                            sup = "&#8729;<span class='pv'>" + base + "</span>";
+                        }
+                        if (sNumber.length - (i + 1) === 0) {
+                            sup = "";
+                        }
+                        output.push(+sNumber.charAt(i) + sup);
+                    }
+                }
+                return output.join(" + ");
+            }
+            function createGrid() {
+                min = verify(parseInt(minBase.value), 2, 36);
+                max = verify(parseInt(maxBase.value), 2, 36);
+
+                startN = verify(parseInt(nMin.value), -1000, 1000);
+                endN = verify(parseInt(nMax.value), -1000, 1000);
+
+
+                var data = "";
+                data += "<table>";
+                data += "<tr>";
+                if (min > max) {
+                    for (var j = min; j >= max; j--) {
+                        data += "<th title='Toggle column' onclick='toggleColumn(" + j + ")'>Base " + j + "</th>";
+                    }
+                } else {
+                    for (var j = min; j <= max; j++) {
+                        data += "<th title='Toggle column' onclick='toggleColumn(" + j + ")'>Base " + j + "</th>";
+                    }
+                }
+                data += "</tr>";
+
+                if (startN > endN) {
+                    for (var i = startN; i >= endN; i--) {
+                        values[i] = [];
+                        data += "<tr>";
+                        if (min > max) {
+                            for (var j = min; j >= max; j--) {
+                                var id = '(' + i + ',' + j + ')';
+                                values[i][j] = {};
+                                values[i][j].value = i.toString(j);
+                                values[i][j].partition = partition(i, j);
+                                values[i][j].state = 0;
+                                data += "<td title='Toggle cell' id='" + id + "' onclick='toggleTerm(" + i + "," + j + ")'></td>";
+                            }
+                        } else {
+                            for (var j = min; j <= max; j++) {
+                                id = '(' + i + ',' + j + ')';
+                                values[i][j] = {};
+                                values[i][j].value = i.toString(j);
+                                values[i][j].partition = partition(i, j);
+                                values[i][j].state = 0;
+                                data += "<td title='Toggle cell' id='" + id + "' onclick='toggleTerm(" + i + "," + j + ")'></td>";
+                            }
+                        }
+                    }
+                    data += "</tr>";
+                } else {
+                    for (var i = startN; i <= endN; i++) {
+                        values[i] = [];
+                        data += "<tr>";
+                        if (min > max) {
+                            for (var j = min; j >= max; j--) {
+                                id = '(' + i + ',' + j + ')';
+                                values[i][j] = {};
+                                values[i][j].value = i.toString(j);
+                                values[i][j].partition = partition(i, j);
+                                values[i][j].state = 0;
+                                data += "<td title='Toggle cell' id='" + id + "' onclick='toggleTerm(" + i + "," + j + ")'></td>";
+                            }
+                        } else {
+                            for (var j = min; j <= max; j++) {
+                                id = '(' + i + ',' + j + ')';
+                                values[i][j] = {};
+                                values[i][j].value = i.toString(j);
+                                values[i][j].partition = partition(i, j);
+                                values[i][j].state = 0;
+                                data += "<td title='Toggle cell' id='" + id + "' onclick='toggleTerm(" + i + "," + j + ")'></td>";
+                            }
+                        }
+                    }
+                    data += "</tr>";
+                }
+
+                data += "</table>";
+                grid.innerHTML = data;
+            }
+            function toggleColumn(j) {
+                if (startN > endN) {
+                    for (var i = startN; i >= endN; i--) {
+                        toggleTerm(i, j);
+                    }
+                } else {
+                    for (var i = startN; i <= endN; i++) {
+                        toggleTerm(i, j);
+                    }
+                }
+            }
+            function toggleTerm(i, j) {
+                var id = '(' + i + ',' + j + ')';
+                switch (values[i][j].state) {
+                    case 0:
+                        document.getElementById(id).innerHTML = values[i][j].value;
+                        break;
+                    case 1:
+                        document.getElementById(id).innerHTML = "";
+                        break;
+                    case 2:
+                        document.getElementById(id).innerHTML = values[i][j].partition;
+                        break;
+                }
+                values[i][j].state++;
+                values[i][j].state %= 2;
+            }
+            function showHide(x) {
+                if (startN > endN) {
+                    for (var i = startN; i >= endN; i--) {
+                        if (min > max) {
+                            for (var j = min; j >= max; j--) {
+                                values[i][j].state = x;
+                                toggleTerm(i, j);
+                            }
+                        } else {
+                            for (var j = min; j <= max; j++) {
+                                values[i][j].state = x;
+                                toggleTerm(i, j);
+                            }
+                        }
+                    }
+                } else {
+                    for (var i = startN; i <= endN; i++) {
+                        if (min > max) {
+                            for (var j = min; j >= max; j--) {
+                                values[i][j].state = x;
+                                toggleTerm(i, j);
+                            }
+                        } else {
+                            for (var j = min; j <= max; j++) {
+                                values[i][j].state = x;
+                                toggleTerm(i, j);
+                            }
+                        }
+                    }
+                }
+            }
+        </script>
+<style>
+            .pv {
+                color: #959;
+            }
+            table {
+                margin: 1% auto;
+                font-size: 1.2em;
+            }
+            th {
+                background-color: #959;
+                color: #fff;
+                font-weight: normal;
+            }
+            th, td {
+                padding: 0.2em;
+                min-width: 2.2em;
+                height: 1.1em;
+                cursor: pointer;
+            }
+            td:hover {
+                background: #ede;
+            }
+            div.copyButtons {
+                margin-left: 1em;
+                margin-right: 1em;
+            }
+            div.copyButtons input {
+                cursor: pointer;
+                background: none;
+                border: none;
+                color: #fff;
+                padding: 0;
+                margin: 0.3em;
+                outline: none;
+                width: 0.8em;
+                text-align: center;
+            }
+            div.copyButtons label {
+                margin: 0;
+                padding: 0;
+            }
+            div.copyButtons input:hover {
+                color: #fcf;
+            }
+            div.copyButtons input:active {
+                color: #dad;
+            }
+            div.copyButtons input.rangeValue {
+                background: #fff;
+                color: #000;
+                margin: 0;
+            }
+        </style>
+<script async src='/cdn-cgi/challenge-platform/h/b/scripts/invisible.js'></script></head>
+<body onload='init();'>
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-44508399-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+<section id="controls" class="controls border">
+<h1>Multi-base Counting</h1>
+<div>
+<div class='copyButtons'>
+<label>Count from</label>
+<input class="input" onclick='nMin.value--;
+                            init()' type="button" value="&#9668;">
+<input class='rangeValue' oninput='init()' id="nMin" value="1">
+<input class="input" onclick='nMin.value++;
+                            init()' type="button" value="&#9658;">
+<label>to</label>
+<input class="input" onclick='nMax.value--;
+                            init()' type="button" value="&#9668;">
+<input class='rangeValue' oninput='init()' id="nMax" value="16">
+<input class="input" onclick='nMax.value++;
+                            init()' type="button" value="&#9658;">
+</div>
+<div class='copyButtons'>
+<label>In bases</label>
+<input class="input" onclick='minBase.value--;
+                            init()' type="button" value="&#9668;">
+<input class='rangeValue' oninput='init()' id="minBase" value="10">
+<input class="input" onclick='minBase.value++;
+                            init()' type="button" value="&#9658;">
+<label>to</label>
+<input class="input" onclick='maxBase.value--;
+                            init()' type="button" value="&#9668;">
+<input class='rangeValue' oninput='init()' id="maxBase" value="2">
+<input class="input" onclick='maxBase.value++; init()' type="button" value="&#9658;">
+</div>
+</div>
+<div>
+<input type='button' onclick='showHide(0)' value='Show'>
+<input type='button' onclick='showHide(2)' value='Partition'>
+<input type='button' onclick='showHide(1)' value='Hide'>
+</div>
+</section>
+<section>
+<div id="content" class='questionBox border'>
+<div id="grid"></div>
+</section>
+<footer id="footer">
+<div>
+<small>
+<a href="/">Home</a> |
+<a href="/doNowMenu">Do Nows</a> |
+<a href="/gcseMenu">GCSE Resources</a> |
+<a href="/manipulativeMenu">Manipulatives</a> |
+<a href="/printableMenu">Printables</a> |
+<a href="/generatorMenu">Question Generators</a> |
+<a href="/starterMenu">Starters</a> |
+<a href="/toolMenu">Tools</a> |
+<a href="/privacy">Privacy</a> |
+<a href="/about">Contact</a> |
+Copyright &copy;
+</small>
+</div>
+</footer> <script type="text/javascript">(function(){window['__CF$cv$params']={r:'6828d8991998e855',m:'6cf5cb9817cd0d9c3e2cb455777f55e4b8b6cfa0-1629601176-1800-AWwza2ATIoRjbhgt7wpAj94q4nzqaP1a8jsQ7jSyvirRJXhyT86ksvGUpQa1GDU66uwKStleQthSNm8vfkLjDl3qdZrFJKw3BaIaSormzW6z8pu4iIvKjVCwZ72etE4Vz77zxC4JV9E+16XvXR9sZsk=',s:[0xe2eebf8fa1,0x17b57de782],u:'/cdn-cgi/challenge-platform/h/b'}})();</script></body>
+</html>

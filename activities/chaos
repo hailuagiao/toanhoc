@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang='en'>
+<head>
+<meta charset='UTF-8'>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="author" content="Jonathan Hall">
+<link rel="stylesheet" href="/styles/main.css">
+<script src='/scripts/utilities.js'></script>
+<meta name="description" content="Interactive version of the Chaos Game. Create the Sierpinski triangle by plotting each new point halfway between the previous point and a randomly chosen vertex of the triangle.">
+<link rel="icon" type="image/png" href="/media/favicon192.png" sizes=192x192>
+<link rel="apple-touch-icon" href="/media/favicon192.png" sizes=192x192>
+<title>Chaos Game</title>
+<script>
+            var points = [];
+            var totalPoints = 0;
+            var pointSize = 2;
+            function init() {
+                theCanvas = document.getElementById("chaosCanvas");
+                context = theCanvas.getContext("2d");
+                context.canvas.width = 0.95 * window.innerWidth;
+                context.canvas.height = 0.72 * window.innerHeight;
+                pointSize = sizeSelect.value;
+                points = [];
+                points[0] = {};
+                points[1] = {};
+                points[2] = {};
+                totalPoints = 3;
+                points[0].x = -1;
+                points[0].y = 0;
+                points[1].x = 1;
+                points[1].y = 0;
+                points[2].x = 0;
+                points[2].y = -Math.sqrt(3);
+                drawPoint(0);
+                drawPoint(1);
+                drawPoint(2);
+            }
+            function addPoints(p) {
+                for (var i = 0; i < p; i++) {
+                    points.push();
+                    totalPoints += 1;
+                    points[totalPoints - 1] = {};
+                    switch (getRandom(0, 2)) {
+                        case 0:
+                            points[totalPoints - 1].x = (points[totalPoints - 2].x + points[0].x) / 2;
+                            points[totalPoints - 1].y = (points[totalPoints - 2].y + points[0].y) / 2;
+                            break;
+                        case 1:
+                            points[totalPoints - 1].x = (points[totalPoints - 2].x + points[1].x) / 2;
+                            points[totalPoints - 1].y = (points[totalPoints - 2].y + points[1].y) / 2;
+                            break;
+                        case 2:
+                            points[totalPoints - 1].x = (points[totalPoints - 2].x + points[2].x) / 2;
+                            points[totalPoints - 1].y = (points[totalPoints - 2].y + points[2].y) / 2;
+                            break;
+                    }
+                    drawPoint(totalPoints - 1);
+                }
+            }
+            function drawPoint(p) {
+                var size = context.canvas.height / 2;
+                var xShift = context.canvas.width / 2;
+                var yShift = context.canvas.height / 1.05;
+                context.fillStyle = "black";
+                context.beginPath();
+                context.arc(xShift + size * points[p].x, yShift + size * points[p].y, pointSize, 0, 2 * Math.PI);
+                context.fill();
+                currentPoints.innerHTML = "Points plotted: " + (totalPoints - 3);
+            }
+        </script>
+<script async src='/cdn-cgi/bm/cv/669835187/api.js'></script></head>
+<body onload='init()'>
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-44508399-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+<input title='Toggle Full Screen.' onclick='goFull()' class='fullScreen' type='button' value='&#10019;'>
+<section id="controls" class="controls border">
+<h1>Chaos Game</h1>
+<p>Each new point is plotted halfway between the previous point and a randomly chosen vertex of the triangle.</p>
+<label for="sizeSelect">Dot Size:</label>
+<select id="sizeSelect" onchange="init()">
+<option value="0.5">Tiny</option>
+<option value="1">Small</option>
+<option selected value="2">Medium</option>
+<option value="4">Large</option>
+</select>
+<input type="button" value="+1 Point" onclick="addPoints(1)">
+<input type="button" value="+10 Points" onclick="addPoints(10)">
+<input type="button" value="+100 Points" onclick="addPoints(100)">
+<input type="button" value="+1000 Points" onclick="addPoints(1000)">
+<input type="button" value="Reset" onclick="init()">
+</section>
+<section>
+<div id="content" class='questionBox border'>
+<canvas id="chaosCanvas">
+Your browser does not support HTML5 canvas.
+</canvas>
+<h4 id="currentPoints"></h4>
+</div>
+</section>
+<footer id="footer">
+<div>
+<small>
+<a href="/">Home</a> |
+<a href="/doNowMenu">Do Nows</a> |
+<a href="/gcseMenu">GCSE Resources</a> |
+<a href="/manipulativeMenu">Manipulatives</a> |
+<a href="/printableMenu">Printables</a> |
+<a href="/generatorMenu">Question Generators</a> |
+<a href="/starterMenu">Starters</a> |
+<a href="/toolMenu">Tools</a> |
+<a href="/privacy">Privacy</a> |
+<a href="/about">Contact</a> |
+Copyright &copy;
+</small>
+</div>
+</footer> <script type="text/javascript">(function(){window['__CF$cv$params']={r:'6828d75aebf4e855',m:'2c07c1eccc8dd6f619fc1472a67eca909bba2bf5-1629601125-1800-AeVwVuvJQTX3W+OL4EFG4zs6BiadF8t/8I9lrgBU4i1QhSgF0Cg4Kzyv65MN6KbOEsSOcvsPYJl9y8AbHc8vta/s1HM3TzYYGbhZh2UCQA/KzFXWUxL/UO264waBIr8fm+kpMKdEXoYzACUNs/AJPnA=',s:[0x473e1c2f98,0x8991118156],}})();</script></body>
+</html>

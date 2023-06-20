@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang='en'>
+<head>
+<meta charset='utf-8'>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="author" content="Jonathan Hall">
+<link rel="stylesheet" href="/styles/main.css">
+<script src='/scripts/utilities.js'></script>
+<meta name="description" content="Interactive Sieve of Eratosthenes for use in the classroom.">
+<link rel="icon" type="image/png" href="/media/favicon192.png" sizes=192x192>
+<link rel="apple-touch-icon" href="/media/favicon192.png" sizes=192x192>
+<title>Sieve of Eratosthenes</title>
+<script type="text/javascript" charset="utf-8">
+            var terms;
+            var rows;
+            var columns;
+            var size;
+            var showingTerms = true;
+            function createSieve() {
+                var data = "<table>";
+                terms = [];
+                rows = rowSelect.value;
+                columns = columnSelect.value;
+
+                var value = 1;
+                for (var i = 0; i < rows; i++) {
+                    terms[i] = [];
+                    data += "<tr>";
+                    for (var j = 0; j < columns; j++) {
+                        var id = '(' + i + ',' + j + ')';
+                        terms[i][j] = value;
+                        value++;
+                        data += "<td id='" + id + "'";
+                        data += "class='box' ";
+                        data += "onclick='toggleTerm(" + i + "," + j + ")'>";
+                        data += terms[i][j] + "</td>";
+                    }
+                    data += "</tr>";
+                }
+                data += "</table>"
+                spiral.innerHTML = data;
+                if (!showingTerms) {
+                    showingTerms = true;
+                    toggleAll();
+                }
+                highlightAll();
+            }
+            function toggleAll() {
+                if (showingTerms) {
+                    for (var i = 0; i < rows; i++) {
+                        for (var j = 0; j < columns; j++) {
+                            var id = '(' + i + ',' + j + ')';
+                            document.getElementById(id).innerHTML = "";
+
+                        }
+                    }
+                    showingTerms = false;
+                    showHideButton.value = "Show Values";
+                } else {
+                    for (var i = 0; i < rows; i++) {
+                        for (var j = 0; j < columns; j++) {
+                            id = '(' + i + ',' + j + ')';
+                            document.getElementById(id).innerHTML = terms[i][j];
+                        }
+                    }
+                    showingTerms = true;
+                    showHideButton.value = "Hide Values";
+                }
+            }
+            function toggleTerm(i, j) {
+                var id = '(' + i + ',' + j + ')';
+                if (document.getElementById(id).innerHTML === "") {
+                    document.getElementById(id).innerHTML = terms[i][j];
+                } else {
+                    document.getElementById(id).innerHTML = "";
+                }
+            }
+            function highlightAll() {
+                for (var i = 0; i < rows; i++) {
+                    for (var j = 0; j < columns; j++) {
+                        highlight(i, j);
+                    }
+                }
+            }
+            function highlight(i, j) {
+                var x = terms[i][j];
+                var id = '(' + i + ',' + j + ')';
+                document.getElementById(id).style.background = "#fff";
+                if (even.checked) {
+                    if (x % 2 === 0) {
+                        changeBG();
+                    }
+                }
+                if (odd.checked) {
+                    if (x % 2 !== 0) {
+                        changeBG();
+                    }
+                }
+                if (triangular.checked) {
+                    if (Math.sqrt(8 * x + 1) === Math.round(Math.sqrt(8 * x + 1))) {
+                        changeBG();
+                    }
+                }
+                if (square.checked) {
+                    if (Math.sqrt(x) === Math.round(Math.sqrt(x))) {
+                        changeBG();
+                    }
+                }
+                if (cube.checked) {
+                    if (roundError(Math.pow(x, 1 / 3)) === roundError(Math.round(Math.pow(x, 1 / 3)))) {
+                        changeBG();
+                    }
+                }
+                if (prime.checked) {
+                    if (isPrime(x)) {
+                        changeBG();
+                    }
+                }
+                if (m2.checked) {
+                    if (x % 2 === 0) {
+                        if (x === 2) {
+                            changeBG(true);
+                        } else {
+                            changeBG();
+                        }
+                    }
+                }
+                if (m3.checked) {
+                    if (x % 3 === 0) {
+                        if (x === 3) {
+                            changeBG(true);
+                        } else {
+                            changeBG();
+                        }
+                    }
+                }
+                if (m5.checked) {
+                    if (x % 5 === 0) {
+                        if (x === 5) {
+                            changeBG(true);
+                        } else {
+                            changeBG();
+                        }
+                    }
+                }
+                if (m7.checked) {
+                    if (x % 7 === 0) {
+                        if (x === 7) {
+                            changeBG(true);
+                        } else {
+                            changeBG();
+                        }
+                    }
+                }
+                if (m11.checked) {
+                    if (x % 11 === 0) {
+                        if (x === 11) {
+                            changeBG(true);
+                        } else {
+                            changeBG();
+                        }
+                    }
+                }
+                if (m13.checked) {
+                    if (x % 13 === 0) {
+                        if (x === 13) {
+                            changeBG(true);
+                        } else {
+                            changeBG();
+                        }
+                    }
+                }
+                if (m17.checked) {
+                    if (x % 17 === 0) {
+                        if (x === 17) {
+                            changeBG(true);
+                        } else {
+                            changeBG();
+                        }
+                    }
+                }
+                if (m19.checked) {
+                    if (x % 19 === 0) {
+                        if (x === 19) {
+                            changeBG(true);
+                        } else {
+                            changeBG();
+                        }
+                    }
+                }
+                function changeBG(highlightInitial) {
+                    document.getElementById(id).style.background = "#9e9";
+                    if (highlightInitial && initial.checked) {
+                        document.getElementById(id).style.background = "#d9d";
+                    }
+                }
+            }
+        </script>
+<style>
+            .spiral {
+                text-align: center;
+            }
+            table {
+                margin: 1% auto;
+                font-size: 1.4em;
+            }
+            td.box {
+                min-width: 2em;
+                height: 1.8em;
+                cursor: pointer;
+            }
+            td.box:hover {
+                color: #e00;
+            }
+            div.checkBox {
+                margin: 0.2em;
+            }
+        </style>
+<script async src='/cdn-cgi/bm/cv/669835187/api.js'></script></head>
+<body onload="createSieve()">
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-44508399-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+<input title='Toggle Full Screen.' onclick='goFull()' class='fullScreen' type='button' value='&#10019;'>
+<section id="controls" class="controls border">
+<h1>Sieve of Eratosthenes</h1>
+<div>
+<label for="rowSelect">Rows</label>
+<select id="rowSelect" onchange="createSieve()">
+<option value='1'>1</option><option value='2'>2</option><option value='3'>3</option><option value='4'>4</option><option value='5'>5</option><option value='6'>6</option><option value='7'>7</option><option value='8'>8</option><option value='9'>9</option><option selected value='10'>10</option><option value='11'>11</option><option value='12'>12</option><option value='13'>13</option><option value='14'>14</option><option value='15'>15</option><option value='16'>16</option><option value='17'>17</option><option value='18'>18</option><option value='19'>19</option><option value='20'>20</option><option value='21'>21</option><option value='22'>22</option><option value='23'>23</option><option value='24'>24</option><option value='25'>25</option> </select>
+<label for="columnSelect">Columns</label>
+<select id="columnSelect" onchange="createSieve()">
+<option value='1'>1</option><option value='2'>2</option><option value='3'>3</option><option value='4'>4</option><option value='5'>5</option><option value='6'>6</option><option value='7'>7</option><option value='8'>8</option><option value='9'>9</option><option selected value='10'>10</option><option value='11'>11</option><option value='12'>12</option><option value='13'>13</option><option value='14'>14</option><option value='15'>15</option><option value='16'>16</option><option value='17'>17</option><option value='18'>18</option><option value='19'>19</option><option value='20'>20</option><option value='21'>21</option><option value='22'>22</option><option value='23'>23</option><option value='24'>24</option><option value='25'>25</option> </select>
+<input type="button" id="showHideButton" value="Hide Values" onclick="toggleAll()">
+</div>
+<div class="checkBox">
+<label>Multiples of:</label>
+<label for="m2">2</label><input id="m2" type="checkbox" onclick="highlightAll()">
+<label for="m3">3</label><input id="m3" type="checkbox" onclick="highlightAll()">
+<label for="m5">5</label><input id="m5" type="checkbox" onclick="highlightAll()">
+<label for="m7">7</label><input id="m7" type="checkbox" onclick="highlightAll()">
+<label for="m11">11</label><input id="m11" type="checkbox" onclick="highlightAll()">
+<label for="m13">13</label><input id="m13" type="checkbox" onclick="highlightAll()">
+<label for="m17">17</label><input id="m17" type="checkbox" onclick="highlightAll()">
+<label for="m19">19</label><input id="m19" type="checkbox" onclick="highlightAll()">
+<label for="initial">Show 1st multiple?</label><input id="initial" type="checkbox" onclick="highlightAll()">
+</div>
+<div class="checkBox">
+<label for="prime">Prime</label><input name="numberType" id="prime" type="checkbox" onclick="highlightAll()">
+<label for="even">Even</label><input name="numberType" id="even" type="checkbox" onclick="highlightAll()">
+<label for="odd">Odd</label><input name="numberType" id="odd" type="checkbox" onclick="highlightAll()">
+<label for="square">Square</label><input name="numberType" id="square" type="checkbox" onclick="highlightAll()">
+<label for="cube">Cube</label><input name="numberType" id="cube" type="checkbox" onclick="highlightAll()">
+<label for="triangular">Triangle</label><input name="numberType" id="triangular" type="checkbox" onclick="highlightAll()">
+</div>
+</section>
+<section>
+<div class='questionBox border'>
+<div class="spiral" id="spiral"></div>
+</div>
+</section>
+<footer id="footer">
+<div>
+<small>
+<a href="/">Home</a> |
+<a href="/doNowMenu">Do Nows</a> |
+<a href="/gcseMenu">GCSE Resources</a> |
+<a href="/manipulativeMenu">Manipulatives</a> |
+<a href="/printableMenu">Printables</a> |
+<a href="/generatorMenu">Question Generators</a> |
+<a href="/starterMenu">Starters</a> |
+<a href="/toolMenu">Tools</a> |
+<a href="/privacy">Privacy</a> |
+<a href="/about">Contact</a> |
+Copyright &copy;
+</small>
+</div>
+</footer> <script type="text/javascript">(function(){window['__CF$cv$params']={r:'6828d8d1897be855',m:'91c918081b1b1109ff477cb31a99825d7a09a1ef-1629601185-1800-ASyF6J97qA4X7Ts04SORQG7SWsFxSOU7pUqnLDd8b9KIrmae297/EzrHbGOleDesmgYVzkdhDsw4b2+Z+FM9yFDEeMjm5f1H79sVuQ++02l//CSSFcGDcU9m8nAI5oMkG1d1QPTIOvU7Edj4zT4RpRs=',s:[0xf13192eed9,0x514f4afbfc],}})();</script></body>
+</html>

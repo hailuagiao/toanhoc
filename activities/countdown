@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang='en'>
+<head>
+<meta charset='UTF-8'>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="author" content="Jonathan Hall">
+<link rel="stylesheet" href="/styles/main.css">
+<link rel='stylesheet' href="https://fonts.googleapis.com/css?family=Arvo:400,700,400italic,700italic">
+<link rel="icon" type="image/png" href="/media/favicon192.png" sizes=192x192>
+<link rel="apple-touch-icon" href="/media/favicon192.png" sizes=192x192>
+<script src='/scripts/utilities.js'></script>
+<meta name="description" content="An up-to-date countdown to the GCSE maths (and English) exams. Includes the key exams of all three GCSE maths papers.">
+<title>GCSE Maths/English Exam Countdown</title>
+<script>
+            var sheetTimer;
+            var exams = [];
+            function startTimer(type) {
+                exams = [];
+                var exam = parseInt(type);
+                switch (exam) {
+                    case 0:
+                        //exams.push({date: new Date("November 6, 2018 09:00:00"), exam: "GCSE Mathematics", type: "Paper 1"});
+                        //exams.push({date: new Date("November 8, 2018 09:00:00"), exam: "GCSE Mathematics", type: "Paper 2"});
+                        //exams.push({date: new Date("November 12, 2018 09:00:00"), exam: "GCSE Mathematics", type: "Paper 3"});
+                        //exams.push({date: new Date("May 21, 2019 09:00:00"), exam: "GCSE Mathematics", type: "Paper 1"});
+                        //exams.push({date: new Date("June 06, 2019 09:00:00"), exam: "GCSE Mathematics", type: "Paper 2"});
+                        //exams.push({date: new Date("June 11, 2019 09:00:00"), exam: "GCSE Mathematics", type: "Paper 3"});
+                        //exams.push({date: new Date("November 5, 2019 09:00:00"), exam: "GCSE Mathematics", type: "Paper 1"});
+                        //exams.push({date: new Date("November 7, 2019 09:00:00"), exam: "GCSE Mathematics", type: "Paper 2"});
+                        //exams.push({date: new Date("November 11, 2019 09:00:00"), exam: "GCSE Mathematics", type: "Paper 3"});
+                        //exams.push({date: new Date("May 19, 2020 09:00:00"), exam: "GCSE Mathematics", type: "Paper 1"});
+                        //exams.push({date: new Date("June 4, 2020 09:00:00"), exam: "GCSE Mathematics", type: "Paper 2"});
+                        //exams.push({date: new Date("June 8, 2020 09:00:00"), exam: "GCSE Mathematics", type: "Paper 3"});
+                        //exams.push({date: new Date("November 3, 2020 09:00:00"), exam: "GCSE Mathematics", type: "Paper 1"});
+                        //exams.push({date: new Date("November 5, 2020 09:00:00"), exam: "GCSE Mathematics", type: "Paper 2"});
+                        //exams.push({date: new Date("November 9, 2020 09:00:00"), exam: "GCSE Mathematics", type: "Paper 3"});
+                        exams.push({date: new Date("May 27, 2021 09:00:00"), exam: "GCSE Mathematics", type: "Paper 1"});
+                        exams.push({date: new Date("June 11, 2021 09:00:00"), exam: "GCSE Mathematics", type: "Paper 2"});
+                        exams.push({date: new Date("June 18, 2021 09:00:00"), exam: "GCSE Mathematics", type: "Paper 3"});
+                        break;
+                    case 1:
+                        //exams.push({date: new Date("November 5, 2018 09:00:00"), exam: "GCSE English Language", type: "Paper 1"});
+                        //exams.push({date: new Date("November 7, 2018 09:00:00"), exam: "GCSE English Language", type: "Paper 2"});
+                        //exams.push({date: new Date("June 4, 2019 09:00:00"), exam: "GCSE English Language", type: "Paper 1"});
+                        //exams.push({date: new Date("June 7, 2019 09:00:00"), exam: "GCSE English Language", type: "Paper 2"});
+                        //exams.push({date: new Date("November 4, 2019 09:00:00"), exam: "GCSE English Language", type: "Paper 1"});
+                        //exams.push({date: new Date("November 6, 2019 09:00:00"), exam: "GCSE English Language", type: "Paper 2"});
+                        //exams.push({date: new Date("June 2, 2020 09:00:00"), exam: "GCSE English Language", type: "Paper 1"});
+                        //exams.push({date: new Date("June 5, 2020 09:00:00"), exam: "GCSE English Language", type: "Paper 2"});
+                        //exams.push({date: new Date("November 2, 2020 09:00:00"), exam: "GCSE English Language", type: "Paper 1"});
+                        //exams.push({date: new Date("November 4, 2020 09:00:00"), exam: "GCSE English Language", type: "Paper 2"});
+                        exams.push({date: new Date("May 26, 2021 09:00:00"), exam: "GCSE English Language", type: "Paper 1"});
+                        exams.push({date: new Date("June 10, 2021 09:00:00"), exam: "GCSE English Language", type: "Paper 2"});
+                        break;
+                }
+                timedCount();
+                sheetTimer = setInterval(timedCount, 1000);
+            }
+            function timedCount() {
+                var weekDays = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+                var months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+
+                var now = new Date().getTime();
+                var data = "";
+                for (var i = 0; i < exams.length; i++) {
+                    var distance = exams[i].date.getTime() - now;
+                    var days = Math.floor(distance / (1000 * 60 * 60 * 24));
+                    var hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                    var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+                    var seconds = Math.floor((distance % (1000 * 60)) / 1000);
+                    var timeLeft = days + " days, " + hours + " hours, " + minutes + " minutes and " + seconds + " seconds.";
+                    var date = "";
+                    date = weekDays[exams[i].date.getDay()]
+                    date += " " + exams[i].date.getDate() + ordinal(exams[i].date.getDate()) + " " + months[exams[i].date.getMonth()];
+                    if (distance < 0) {
+                        timeLeft = "Good Luck!";
+                    }
+                    var width = (100) / exams.length - 2;
+                    data += "<div class='border date' style='width: " + width + "%'>";
+                    data += "<h2>" + exams[i].exam + "</h2>";
+                    data += "<h3>" + exams[i].type + "</h3>";
+                    data += "<h4>Would have been on...</h4>";
+                    data += "<h4>" + date + "</h4>";
+                    data += "<p>" + timeLeft + "</p>";
+                    data += "</div>";
+                }
+                countdown.innerHTML = data;
+            }
+        </script>
+<style>
+            div.date {
+                font-size: 1.8vw;
+                float: left;
+                margin: 1%;
+                box-sizing: border-box;
+                padding: 1%;
+            }
+            div.date h2{
+                font-size: 1.6em;
+            }
+            div.date p {
+                font-size: 0.8em;
+                color: #e00;
+            }
+            @media (max-width: 800px){
+                div.date {
+                    width: 97.4%;
+                }
+            }
+            .questionBox {
+                overflow: auto;
+                padding: 1%;
+            }
+        </style>
+<script async src='/cdn-cgi/bm/cv/669835187/api.js'></script></head>
+<body onload='startTimer(0)'>
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-44508399-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+<section id="controls" class="controls border">
+<h1>GCSE Countdown Timer</h1>
+<p>A countdown to the GCSE Maths and English exams.</p>
+<input onclick="startTimer(0)" value="Mathematics" type="button">
+<input onclick="startTimer(1)" value="English" type="button">
+</section>
+<section>
+<div class='questionBox border'>
+<div id="countdown"></div>
+</div>
+<div class="questionBox border">
+<script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+
+<ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-4338550553309231" data-ad-slot="8324391446" data-ad-format="auto"></ins>
+<script>
+    (adsbygoogle = window.adsbygoogle || []).push({});
+</script>
+</div>
+</section>
+<footer id="footer">
+<div>
+<small>
+<a href="/">Home</a> |
+<a href="/doNowMenu">Do Nows</a> |
+<a href="/gcseMenu">GCSE Resources</a> |
+<a href="/manipulativeMenu">Manipulatives</a> |
+<a href="/printableMenu">Printables</a> |
+<a href="/generatorMenu">Question Generators</a> |
+<a href="/starterMenu">Starters</a> |
+<a href="/toolMenu">Tools</a> |
+<a href="/privacy">Privacy</a> |
+<a href="/about">Contact</a> |
+Copyright &copy;
+</small>
+</div>
+</footer> <script type="text/javascript">(function(){window['__CF$cv$params']={r:'6828d718df3de855',m:'22672d2fdb2c46aec872530e5cc280d3f4572893-1629601115-1800-AawWQqvHDBYkGipG57TiF9fl19nAi7rV2MMfCFNQEPHxRgMN2y/0wtxlpRrqtic1DWZ2+7UFDxiEn0ybqrc94CUEb24RVpSvDiFhR9yNKwfCqBg7p7jN8vLr/oLZxEfaNA==',s:[0xb14a99067a,0xbac3145de9],}})();</script></body>
+</html>

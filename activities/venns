@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang='en'>
+<head>
+<meta charset='utf-8'>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="author" content="Jonathan Hall">
+<link rel="stylesheet" href="/styles/main.css">
+<link rel='stylesheet' href="https://fonts.googleapis.com/css?family=Arvo:400,700,400italic,700italic">
+<script src='/scripts/utilities.js'></script>
+<meta name="description" content="These Venn Diagram activites are great 'low floor high ceiling' tasks to help promote deep mathematical discussions and thinking.">
+<title>Venn Diagrams</title>
+<script>
+            var theCanvas;
+            var context;
+            var circles;
+            var types;
+            var topic;
+
+            function createSheet() {
+                theCanvas = document.getElementById("venn");
+                context = theCanvas.getContext("2d");
+                context.canvas.width = 0.95 * window.innerWidth;
+                context.canvas.height = 0.75 * window.innerHeight;
+                context.lineWidth = 2;
+                circles = parseInt(circleSelect.value);
+                topic = parseInt(topicSelect.value);
+                var data = "";
+                var headers = new Array("A", "B", "C");
+                types = [];
+                types[0] = new Array("Odd", "Even", "1 Digit", "2 Digits",
+                        "3 Digits", "Square", "Cube", "Triangular",
+                        "Prime", "Decimal", "Integer", "Rational",
+                        "Irrational", "Factor of", "Multiple of", "Greater than",
+                        "Less than", "Power of");
+                types[1] = new Array("Mean", "Median of", "Mode of", "Range of");
+                types[2] = new Array("1st quadrant", "2nd quadrant", "3rd quadrant", "4th quadrant", "x = y", "x > y", "y > x", "x =", "y =");
+                types[3] = new Array("Can be simplified", "Can't be simplified", "Is recurring decimal", "Is a terminating decimal",
+                        "Numerator of", "Denominator of", "Improper", "Is greater than", "Is smaller than");
+
+                types[4] = new Array("Equable",
+                        "Perimeter of", "Perimeter >", "Perimeter <",
+                        "Length of", "Length >", "Length <",
+                        "Area of", "Area >", "Area <");
+                for (var i = 0; i < circles; i++) {
+                    data += "<label for='opt" + i + "'>" + headers[i] + ":</label>";
+                    data += "<select onchange='drawVenn(" + circles + ")' id='opt" + i + "'>";
+                    for (var j = 0; j < types[topic].length; j++) {
+                        data += "<option value='" + j + "'>" + types[topic][j] + "</option>";
+                    }
+                    data += "</select>";
+                }
+                data += "<input type='button' onclick='randomise()' value='Random'>";
+                options.innerHTML = data;
+                var instruction = "Can you find ";
+                switch (topic) {
+                    case 0:
+                        instruction += "a number ";
+                        break;
+                    case 1:
+                        instruction += "a set of 5 numbers";
+                        break;
+                    case 2:
+                        instruction += "a pair of coordinates (x, y)";
+                        break;
+                    case 3:
+                        instruction += "a fraction";
+                        break;
+                    case 4:
+                        instruction += "the dimensions of a rectangle";
+                        break;
+                }
+                instruction += " to satisfy each of the regions?";
+                info.innerHTML = instruction;
+                randomise();
+            }
+            function randomise() {
+                var choice = [];
+                do {
+                    choice[0] = getRandom(0, types[topic].length - 1);
+                    choice[1] = getRandom(0, types[topic].length - 1);
+                    choice[2] = getRandom(0, types[topic].length - 1);
+                } while (choice[0] === choice[1] || choice[0] === choice[2] || choice[1] === choice[2]);
+                for (var i = 0; i < circles; i++) {
+                    document.getElementById("opt" + i).selectedIndex = choice[i];
+                }
+                drawVenn(circles);
+            }
+            function drawCircle(x, y, radius) {
+                context.beginPath();
+                context.arc(x, y, radius, 0, 2 * Math.PI);
+            }
+            function drawVenn(circles) {
+                var radius, offset, shift;
+                shift = 50;
+                var edge = 5;
+                context.font = "24px Arial";
+                context.beginPath();
+                context.rect(edge, edge, theCanvas.width - 2 * edge, theCanvas.height - 2 * edge);
+                context.fillStyle = "#fff";
+                context.fill();
+                context.stroke();
+                context.fillStyle = "#000";
+                context.fillText("\u03B5", 2 * edge, 5 * edge, 2 * edge);
+                context.fillStyle = "#fff";
+                var txt = new Array();
+                for (var i = 0; i < circles; i++) {
+                    var id = parseInt(document.getElementById("opt" + i).value);
+                    txt[i] = types[topic][id];
+                    switch (topic) {
+                        case 0:
+                            switch (id) {
+                                case 13:
+                                    txt[i] += " " + getRandom(1, 30);
+                                    break;
+                                case 14:
+                                    txt[i] += " " + getRandom(1, 12);
+                                    break;
+                                case 15:
+                                    txt[i] += " " + getRandom(1, 25);
+                                    break;
+                                case 16:
+                                    txt[i] += " " + getRandom(1, 25);
+                                    break;
+                                case 17:
+                                    txt[i] += " " + getRandom(1, 10);
+                                    break;
+                            }
+                            break;
+                        case 1:
+                            txt[i] += " " + getRandom(1, 12);
+                            break;
+                        case 2:
+                            if (id > 6) {
+                                txt[i] += " " + getRandom(-10, 10);
+                            }
+                            break;
+                        case 3:
+                            if (id === 4 || id === 5) {
+                                txt[i] += " " + getRandom(1, 15);
+                            }
+                            if (id === 7 || id === 8) {
+                                var num = getRandom(1, 10);
+                                txt[i] += " " + getRandom(1, 6) + "/" + (num + getRandom(1, 6));
+                            }
+                            break;
+                        case 4:
+                            if (id >= 1 && id <= 6) {
+                                txt[i] += " " + 2 * getRandom(1, 20) + " cm";
+                                break;
+                            }
+                            if (id >= 7 && id <= 9) {
+                                txt[i] += " " + 2 * getRandom(1, 20) + " cm\u00B2";
+                                break;
+                            }
+                    }
+                }
+                switch (circles) {
+                    case 1:
+                        radius = Math.min(theCanvas.height / 2.4, theCanvas.width / 3.4);
+                        drawCircle(theCanvas.width / 2, Math.min(theCanvas.height / 2, theCanvas.width / 2), radius);
+                        context.fill();
+                        drawCircle(theCanvas.width / 2, Math.min(theCanvas.height / 2, theCanvas.width / 2), radius);
+                        context.stroke();
+                        context.fillStyle = "#000";
+                        context.fillText(txt[0], theCanvas.width / 2 - shift * 1.2, Math.min(theCanvas.height / 2, theCanvas.width / 2) - radius + 50);
+                        context.fillStyle = "#fff";
+                        break;
+                    case 2:
+                        context.font = "22px Arial";
+                        radius = Math.min(theCanvas.height / 2.5, theCanvas.width / 3.5);
+                        offset = radius / 1.8;
+                        drawCircle(theCanvas.width / 2 - offset, Math.min(theCanvas.height / 2, theCanvas.width / 2), radius);
+                        context.fill();
+                        drawCircle(theCanvas.width / 2 + offset, Math.min(theCanvas.height / 2, theCanvas.width / 2), radius);
+                        context.fill();
+                        drawCircle(theCanvas.width / 2 - offset, Math.min(theCanvas.height / 2, theCanvas.width / 2), radius);
+                        context.stroke();
+                        drawCircle(theCanvas.width / 2 + offset, Math.min(theCanvas.height / 2, theCanvas.width / 2), radius);
+                        context.stroke();
+                        context.fillStyle = "#000";
+                        context.fillText(txt[0], theCanvas.width / 2 - offset - shift * 1.5, Math.min(theCanvas.height / 2, theCanvas.width / 2) - radius + 50);
+                        context.fillText(txt[1], theCanvas.width / 2 + offset - shift, Math.min(theCanvas.height / 2, theCanvas.width / 2) - radius + 50);
+                        context.fillStyle = "#fff";
+                        break;
+                    case 3:
+                        context.font = "18px Arial";
+                        radius = Math.min(theCanvas.height / 3.3, theCanvas.width / 3.5);
+                        offset = radius / 1.5;
+                        drawCircle(theCanvas.width / 2 - offset, Math.min(theCanvas.height / 2, theCanvas.width / 2) - radius / 2, radius);
+                        context.fill();
+                        drawCircle(theCanvas.width / 2 + offset, Math.min(theCanvas.height / 2, theCanvas.width / 2) - radius / 2, radius);
+                        context.fill();
+                        drawCircle(theCanvas.width / 2, Math.min(theCanvas.height / 2, theCanvas.width / 2) + radius / 2, radius);
+                        context.fill();
+                        drawCircle(theCanvas.width / 2 - offset, Math.min(theCanvas.height / 2, theCanvas.width / 2) - radius / 2, radius);
+                        context.stroke();
+                        drawCircle(theCanvas.width / 2 + offset, Math.min(theCanvas.height / 2, theCanvas.width / 2) - radius / 2, radius);
+                        context.stroke();
+                        drawCircle(theCanvas.width / 2, Math.min(theCanvas.height / 2, theCanvas.width / 2) + radius / 2, radius);
+                        context.stroke();
+                        context.fillStyle = "#000";
+                        context.fillText(txt[0], theCanvas.width / 2 - offset - shift * 1.3, Math.min(theCanvas.height / 2, theCanvas.width / 2) - radius * 1.2);
+                        context.fillText(txt[1], theCanvas.width / 2 + offset - shift * 1.2, Math.min(theCanvas.height / 2, theCanvas.width / 2) - radius * 1.2);
+                        context.fillText(txt[2], theCanvas.width / 2 - shift, Math.min(theCanvas.height / 2 - shift, theCanvas.width / 2) + radius * 1.2);
+                        context.fillStyle = "#fff";
+                        break;
+                }
+            }
+        </script>
+<style>
+            #info {
+                margin: 0.2em;
+                font-weight: normal;
+            }
+        </style>
+<script async src='/cdn-cgi/bm/cv/669835187/api.js'></script></head>
+<body onLoad="createSheet();">
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-44508399-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+<section class="controls border">
+<h1 id="title">Venn Diagrams</h1>
+<label for='circleSelect'>Sets:</label>
+<select onchange='createSheet()' id='circleSelect'>
+<option value='1'>1</option>
+<option value='2'>2</option>
+<option selected value='3'>3</option>
+</select>
+<label for='topicSelect'>Topic:</label>
+<select onchange='createSheet()' id='topicSelect'>
+<option value='1'>Averages and Range</option>
+<option value='2'>Coordinates</option>
+<option value='3'>Fractions</option>
+<option selected value='0'>Properties of Numbers</option>
+<option value='4'>Rectangles</option>
+</select>
+<div id='options'></div>
+</section>
+<div class='questionBox border'>
+<h3 id='info'></h3>
+<canvas id='venn'></canvas>
+</div>
+<footer id="footer">
+<div>
+<small>
+<a href="/">Home</a> |
+<a href="/doNowMenu">Do Nows</a> |
+<a href="/gcseMenu">GCSE Resources</a> |
+<a href="/manipulativeMenu">Manipulatives</a> |
+<a href="/printableMenu">Printables</a> |
+<a href="/generatorMenu">Question Generators</a> |
+<a href="/starterMenu">Starters</a> |
+<a href="/toolMenu">Tools</a> |
+<a href="/privacy">Privacy</a> |
+<a href="/about">Contact</a> |
+Copyright &copy;
+</small>
+</div>
+</footer> <script type="text/javascript">(function(){window['__CF$cv$params']={r:'6828d8dd5d99e855',m:'b17614ea729abba53edec6af5f2add1e1941882a-1629601187-1800-AYOQKfyN8cX/TQauteId7pUGXoQrl7ti+3M/HBZglsYOReP3hk6uDe6UsP8GcugPOTd9ahfK/6TbCv4Nl8z8XV84LBKkbyt8F5ge+pj3ZBrvtiJDf9KL29QzbdgjIVBrGX+yccE9SW7c3XvgOih5ido=',s:[0x8e438879a2,0xa33a8edf89],}})();</script></body>
+</html>
