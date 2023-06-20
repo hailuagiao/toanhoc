@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang='en'>
+<head>
+<meta charset='UTF-8'>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="author" content="Jonathan Hall">
+<link rel="icon" type="image/png" href="/media/favicon192.png" sizes=192x192>
+<link rel="stylesheet" href="/styles/main.css">
+<script src='/scripts/questionBank.js'></script>
+<script src='/scripts/differentiator.js'></script>
+<script src='/scripts/utilities.js'></script> <meta name="description" content="A growing bank of randomly generated GCSE exam style questions with full worked solutions. Perfect for projecting in the classroom. Choose between single or split screen mode for 'my turn, your turn' worked examples.">
+<title>GCSE Questions</title>
+<script>
+            var currentQuestion;
+            var currentTopic;
+            var showingAnswer = false;
+            function createQuestion() {
+                if (splitScreen.checked) {
+                    answerButton.value = "Show Solutions";
+                } else {
+                    answerButton.value = "Show Solution";
+                }
+                showingAnswer = false;
+                currentQuestion = [];
+                currentTopic = chooseTopic();
+                currentQuestion.push(getGcseQuestion(currentTopic));
+                currentQuestion.push(getGcseQuestion(currentTopic));
+                currentQuestion[0].showing = false;
+                currentQuestion[1].showing = false;
+                currentQuestion[0].displayed = true;
+                currentQuestion[1].displayed = true;
+                var questionInfo = "";
+                questionInfo += "<p><em>" + currentQuestion[0].tier + " - ";
+                if (currentQuestion[0].calc) {
+                    questionInfo += "Calculator - ";
+                } else {
+                    questionInfo += "Non Calculator - ";
+                }
+                questionInfo += currentQuestion[0].marks + " Marks</em></p>";
+                info.innerHTML = questionInfo;
+                updateScreen();
+            }
+            function filter(keyword) {
+                for (var i = 0; i < topicSelect.length; i++) {
+                    var txt = topicSelect.options[i].text;
+                    var include = txt.toLowerCase().search(keyword.toLowerCase());
+                    if (include > -1) {
+                        topicSelect.options[i].style.display = 'list-item';
+                        topicSelect.options[i].disabled = false;
+                    } else {
+                        topicSelect.options[i].style.display = 'none';
+                        topicSelect.options[i].disabled = true;
+                    }
+                }
+                for (var i = 1; i < topicSelect.length; i++) {
+                    var random = true;
+                    if (topicSelect.options[i].disabled !== true) {
+                        topicSelect.selectedIndex = i;
+                        random = false;
+                        i = topicSelect.length;
+                    }
+                }
+                if (random) {
+                    topicSelect.selectedIndex = 0;
+                }
+            }
+            function chooseTopic() {
+                var topic = parseInt(topicSelect.value);
+                if (topic === 0) {
+                    topicSelect.selectedIndex = getRandom(1, topicSelect.length - 1);
+                    topic = parseInt(topicSelect.value);
+                    topicSelect.selectedIndex = 0;
+                }
+                return topic;
+            }
+            function refreshQuestion(i) {
+                if (parseInt(topicSelect.value) !== 0) {
+                    currentTopic = chooseTopic();
+                }
+                currentQuestion[i] = getGcseQuestion(currentTopic);
+                currentQuestion[i].showing = false;
+                currentQuestion[i].displayed = true;
+                document.getElementById('q' + i).innerHTML = currentQuestion[i].question;
+                document.getElementById('answer' + i).innerHTML = "";
+                updateScreen();
+            }
+            function updateScreen() {
+                var data = "";
+                if (splitScreen.checked) {
+                    data += "<div class='split' style='height: " + 0.9 * document.getElementById('content').offsetHeight + "px; border-right: 2px solid #000;'>";
+                    data += "<div class='questionControls'>";
+                    data += "<div onclick='refreshQuestion(0)' class='refreshQ'>&#8635</div>";
+                    data += "<div onclick='hideQuestion(0)' class='hideQ'>&#128065;</div>";
+                    data += "</div>";
+                    data += "<div id='q0' onclick='toggleAnswer(0)'>";
+                    if (currentQuestion[0].displayed) {
+                        data += currentQuestion[0].question;
+                    }
+                    data += "</div>";
+                    data += "<div onclick='toggleAnswer(0)' class='answer' id='answer0'>";
+                    if (currentQuestion[0].showing && currentQuestion[0].displayed) {
+                        data += currentQuestion[0].answer;
+                    }
+                    data += "</div>";
+                    data += "</div>";
+                    data += "<div class='split'>";
+                    data += "<div class='questionControls'>";
+                    data += "<div onclick='refreshQuestion(1)' class='refreshQ'>&#8635</div>";
+                    data += "<div onclick='hideQuestion(1)' class='hideQ'>&#128065;</div>";
+                    data += "</div>";
+                    data += "<div id='q1' onclick='toggleAnswer(1)'>";
+                    if (currentQuestion[1].displayed) {
+                        data += currentQuestion[1].question;
+                    }
+                    data += "</div>";
+                    data += "<div onclick='toggleAnswer(1)' class='answer' id='answer1'>";
+                    if (currentQuestion[1].showing) {
+                        data += currentQuestion[1].answer;
+                    }
+                    data += " </div>";
+                    data += "</div>";
+                } else {
+                    data += "<div class='single'><div class='questionControls'>";
+                    data += "<div onclick='refreshQuestion(0)' class='refreshQ'>&#8635</div>";
+                    data += "<div onclick='hideQuestion(0)' class='hideQ'>&#128065;</div>";
+                    data += "</div>";
+                    data += "<div id='q0' onclick='toggleAnswer(0)'>";
+                    if (currentQuestion[0].displayed) {
+                        data += currentQuestion[0].question;
+                    }
+                    data += "</div>";
+                    data += "<div onclick='toggleAnswer(0)' class='answer' id='answer0'>";
+                    if (currentQuestion[0].showing) {
+                        data += currentQuestion[0].answer;
+                    }
+                    data += "</div></div>";
+                }
+                question.innerHTML = data;
+            }
+            function hideQuestion(i) {
+                if (currentQuestion[i].displayed) {
+                    currentQuestion[i].showing = false;
+                    currentQuestion[i].displayed = false;
+                } else {
+                    currentQuestion[i].displayed = true;
+                }
+                updateScreen();
+            }
+            function toggleSplit() {
+                if (splitScreen.checked) {
+                    newButton.value = "New Questions";
+                    answerButton.value = "Show Solutions";
+                } else {
+                    newButton.value = "New Question";
+                    answerButton.value = "Show Solution";
+                }
+            }
+            function toggleAnswer(i) {
+                if (currentQuestion[i].showing) {
+                    document.getElementById('answer' + i).innerHTML = "";
+                    currentQuestion[i].showing = false;
+                } else {
+                    document.getElementById('answer' + i).innerHTML = currentQuestion[i].answer;
+                    currentQuestion[i].showing = true;
+                }
+            }
+            function toggleAnswers() {
+                if (showingAnswer) {
+                    document.getElementById('answer0').innerHTML = "";
+                    currentQuestion[0].showing = false;
+                    if (splitScreen.checked) {
+                        document.getElementById('answer1').innerHTML = "";
+                        currentQuestion[1].showing = false;
+                    }
+                    if (splitScreen.checked) {
+                        answerButton.value = "Show Solutions";
+                    } else {
+                        answerButton.value = "Show Solution";
+                    }
+                    showingAnswer = false;
+                } else {
+                    document.getElementById('answer0').innerHTML = currentQuestion[0].answer;
+                    currentQuestion[0].showing = true;
+                    if (splitScreen.checked) {
+                        document.getElementById('answer1').innerHTML = currentQuestion[1].answer;
+                        currentQuestion[1].showing = true;
+                    }
+                    if (splitScreen.checked) {
+                        answerButton.value = "Hide Solutions";
+                    } else {
+                        answerButton.value = "Hide Solution";
+                    }
+                    showingAnswer = true;
+                }
+            }
+            function updateFilter() {
+                var ajaxRequest; // The variable that makes Ajax possible!
+                try {
+                    // Opera 8.0+, Firefox, Safari
+                    ajaxRequest = new XMLHttpRequest();
+                } catch (e) {
+                    // Internet Explorer Browsers
+                    try {
+                        ajaxRequest = new ActiveXObject("Msxml2.XMLHTTP");
+                    } catch (e) {
+                        try {
+                            ajaxRequest = new ActiveXObject("Microsoft.XMLHTTP");
+                        } catch (e) {
+                            // Something went wrong
+                            alert("Your browser broke!");
+                            return false;
+                        }
+                    }
+                }
+                // Create a function that will receive data sent from the server
+                ajaxRequest.onreadystatechange = function () {
+                    if (ajaxRequest.readyState === 4) {
+                        document.getElementById('topicSelect').innerHTML = ajaxRequest.responseText;
+                    }
+                }
+                var url = "";
+
+                var calculator = calcSelect.value;
+                var tier = tierSelect.value;
+                var topic = strandSelect.value;
+                var ao = aoSelect.value;
+
+                url += "calculator=" + calculator;
+                url += "&tier=" + tier;
+                url += "&topic=" + topic;
+                url += "&ao=" + ao;
+                url += "&rnd=" + Math.random();
+                ajaxRequest.open("GET", "scripts/database/filterGCSE.php?" + url, true);
+                ajaxRequest.send(null);
+            }
+        </script>
+<script src="/scripts/examBank.js"></script>
+<style>
+            div.questionBox {
+                min-height: 70vh;
+                width: 99.2%;
+                margin: auto;
+                overflow: auto;
+            }
+            div.question {
+                margin-top: 0.4em;
+                margin: auto;
+            }
+            div.info p, div.question p, div.answer p {
+                margin: 0.3em;
+            }
+            div.answer {
+                margin-top: 0.4em;
+                color: #e00;
+            }
+            div.split {
+                width: 50%;
+                float: left;
+                box-sizing: border-box;
+                font-size: 1.5em;
+                min-height: 50vh;
+            }
+            div.split:hover {
+                color: #515;
+            }
+            div.info {
+                margin-top: 0.4em;
+                color: #515;
+            }
+            div.questionControls {
+                overflow: auto;
+            }
+            div.single {
+                font-size: 1.6em;
+            }
+            div.refreshQ {
+                font-size: 0.8em;
+                text-align: left;
+                float: left;
+                width: 3em;
+                margin: 1%;
+            }
+            div.hideQ {
+                font-size: 0.8em;
+                text-align: right;
+                float: right;
+                width: 3em;
+                margin: 1%;
+            }
+            div.refreshQ:hover, div.hideQ:hover {
+                color: #e00;
+            }
+            table {
+                margin: 0.8em auto;
+            }
+            td, th {
+                padding: 0.2em;
+                font-size: 0.8em;
+                min-width: 2em;
+            }
+            div.middleMenu div {
+                margin: 0.2em;
+            }
+            .ad {
+                padding: 1.6em;
+            }
+            #search {
+                width: 8em;
+                border-radius: 0;
+            }
+            #q0:hover, #q1:hover {
+                cursor: pointer;
+            }
+            section.controls div {
+                margin-bottom: 0.3em;
+                margin-top: 0.3em;
+            }
+            @media (max-width: 800px){ 
+                div.adBox {
+                    width: 96%;
+                }
+            }
+        </style>
+<script async src='/cdn-cgi/bm/cv/669835187/api.js'></script></head>
+<body>
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-44508399-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+<input title='Toggle Full Screen.' onclick='goFull()' class='fullScreen' type='button' value='&#10019;'>
+<section id="controls" class="controls border">
+<h1>GCSE Exam Style Questions</h1>
+<div class="leftMenu">
+<div>
+<label for="tierSelect">Tier:</label>
+<select onchange='updateFilter()' id="tierSelect">
+<option value="3">All</option>
+<option value="5">Foundation Only</option>
+<option value="1">Foundation & Crossover</option>
+<option value="4">Crossover Only</option>
+<option value="2">Crossover & Higher</option>
+<option value="6">Higher Only</option>
+</select>
+</div>
+<div>
+<label for="strandSelect">Topic:</label>
+<select onchange='updateFilter()' id="strandSelect">
+<option value="6">All</option>
+<option value="3">Number</option>
+<option value="1">Algebra</option>
+<option value="2">Geometry and Measures</option>
+<option value="5">Ratio and Proportion</option>
+<option value="4">Probability and Statistics</option>
+</select>
+</div>
+<div>
+<label for='nonCalcSelect'>Type:</label>
+<select onchange='updateFilter()' id="calcSelect">
+<option value="3">All</option>
+<option value="1">Non Calculator</option>
+<option value="2">Calculator</option>
+</select>
+</div>
+</div>
+<div class="rightMenu">
+<div>
+<label for='aoSelect'>AO:</label>
+<select onchange='updateFilter()' id="aoSelect">
+<option value="4">All</option>
+<option value="1">AO1</option>
+ <option value="2">AO2</option>
+<option value="2.5">AO2 & AO3</option>
+<option value="3">AO3</option>
+</select>
+</div>
+<div>
+<label for='bgSelect'>Background:</label><input style='max-width: 4em' oninput='changeBG(this.value)' onchange='changeBG(this.value)' value='#ffffff' type='color' id='bgSelect'> </div>
+<div>
+<label for="splitScreen">Split Screen</label>
+<input id="splitScreen" onclick='updateScreen()' checked type="checkbox" onclick="toggleSplit()">
+</div>
+</div>
+<div class="middleMenu">
+<div>
+<label for="topicSelect">Question:</label><select id="topicSelect"><option selected value=0>Random</option><option value=33>1. Algebraic proof (H, 3 marks)</option><option value=21>2. Area of a circle within a semicircle (FH, 5 marks)</option><option value=4>3. Best value problem (FH, 3 marks)</option><option value=1>4. Calculating missing values using the mean (FH, 3 marks)</option><option value=77>5. Changing ratios (FH, 4 marks)</option><option value=45>6. Combinations of boys and girls (H, 3 marks)</option><option value=90>7. Combined average speed (FH, 4 marks)</option><option value=36>8. Combining ratios (FH, 2 marks)</option><option value=109>9. Comparing bonuses using percentages (FH, 5 marks)</option><option value=98>10. Comparing speeds over the same distance (FH, 5 marks)</option><option value=38>11. Comparing times (F, 4 marks)</option><option value=69>12. Composite functions (H, 5 marks)</option><option value=15>13. Conditional probability (FH, 4 marks)</option><option value=37>14. Converting speeds (F, 2 marks)</option><option value=27>15. Cosine rule and area of triangles (H, 5 marks)</option><option value=105>16. Counters in a bag (F, 3 marks)</option><option value=43>17. Counting combinations of cards (H, 2 marks)</option><option value=66>18. Creating largest/smallest and odd/even numbers. (F, 2 marks)</option><option value=103>19. Cutting lengths of wire (F, 3 marks)</option><option value=75>20. Delivery costs (F, 3 marks)</option><option value=16>21. Direct and inverse proportion (H, 4 marks)</option><option value=67>22. Donating shares in a ratio (FH, 3 marks)</option><option value=3>23. Equation of a tangent to a circle at a point (H, 4 marks)</option><option value=25>24. Equations of perpendicular lines (H, 4 marks)</option><option value=72>25. Equations of perpendiculars with ratio. (H, 5 marks)</option><option value=34>26. Error intervals (FH, 2 marks)</option><option value=51>27. Estimated frequency (FH, 2 marks)</option><option value=78>28. Estimated profit or loss (FH, 5 marks)</option><option value=30>29. Estimating populations (H, 4 marks)</option><option value=110>30. Estimating with speed, distance and time (FH, 3 marks)</option><option value=104>31. Even and odd multiples (F, 1 marks)</option><option value=50>32. Exchange rates (FH, 3 marks)</option><option value=31>33. Expanding cubics (H, 3 marks)</option><option value=61>34. Expressing perimeters of regular polygons (F, 2 marks)</option><option value=6>35. Factor sum problem (F, 2 marks)</option><option value=59>36. Factorising difference of two squares (H, 2 marks)</option><option value=52>37. Fibonacci and algebra (H, 6 marks)</option><option value=108>38. Finding polygon sides with interior and exterior angles (FH, 3 marks)</option><option value=11>39. Finding the original numbers given the HCF and LCM (H, 2 marks)</option><option value=84>40. Forming an expression with the area of a square (FH, 3 marks)</option><option value=94>41. Forming and solving simple linear equations (F, 2 marks)</option><option value=64>42. Forming equations with an isosceles triangle (FH, 4 marks)</option><option value=100>43. Forming equations with ratio (FH, 4 marks)</option><option value=13>44. Functional multiplication and division (FH, 4 marks)</option><option value=60>45. Functional shopping arithmetic (F, 3 marks)</option><option value=46>46. Growth problems using iterative processes (H, 3 marks)</option><option value=70>47. Inverse functions (H, 4 marks)</option><option value=101>48. Inverse functions and missing constants (H, 5 marks)</option><option value=19>49. Linear inequalities (H, 3 marks)</option><option value=63>50. Linear sequences and nth term (FH, 4 marks)</option><option value=8>51. Metric units and proportion (F, 3 marks)</option><option value=73>52. Midpoints and ratio (FH, 3 marks)</option><option value=91>53. Missing lengths in similar triangles (FH, 4 marks)</option><option value=9>54. Missing lengths on a stick (F, 2 marks)</option><option value=29>55. Mixing densities (H, 4 marks)</option><option value=24>56. Monthly cost of a holiday loan (F, 4 marks)</option><option value=80>57. Multiple ratios and percentages (FH, 3 marks)</option><option value=95>58. Multiple ratios on a line (H, 3 marks)</option><option value=83>59. Multiplying decimals (FH, 3 marks)</option><option value=32>60. nth term of a quadratic (H, 3 marks)</option><option value=62>61. Odd and even algebra (F, 3 marks)</option><option value=49>62. Ordering fractions, decimals and percentages (F, 2 marks)</option><option value=22>63. Ordering from a menu (F, 3 marks)</option><option value=7>64. Percentage of an amount (F, 2 marks)</option><option value=97>65. Percentage profit (FH, 3 marks)</option><option value=93>66. Percentages, finding the original (FH, 2 marks)</option><option value=76>67. Percentages, profit and problem solving (H, 3 marks)</option><option value=10>68. Perimeters of rectangles and squares (F, 4 marks)</option><option value=35>69. Pressure, force and area (FH, 3 marks)</option><option value=88>70. Probability and expected frequency (FH, 3 marks)</option><option value=53>71. Probability and percentages (H, 4 marks)</option><option value=82>72. Product of prime factors (FH, 2 marks)</option><option value=99>73. Proportion and wages (H, 3 marks)</option><option value=41>74. Proportional division (F, 2 marks)</option><option value=40>75. Proportional fruit problem (F, 3 marks)</option><option value=56>76. Proportional relationships (H, 3 marks)</option><option value=26>77. Pythagoras and cosine rule in a tetrahedron (H, 6 marks)</option><option value=85>78. Pythagoras and perimeter in context (FH, 5 marks)</option><option value=14>79. Pythagoras Theorem (FH, 3 marks)</option><option value=44>80. Quadratic graphs and turning points. (H, 4 marks)</option><option value=42>81. Quadratic inequalities (H, 4 marks)</option><option value=48>82. Railcard discounts (F, 4 marks)</option><option value=54>83. Ratio recipes. (FH, 4 marks)</option><option value=89>84. Ratio, fractions and percentages in context (FH, 5 marks)</option><option value=12>85. Reading fuel gauges (F, 2 marks)</option><option value=86>86. Rearranging to show if two lines are parallel (FH, 2 marks)</option><option value=74>87. Repeated percentage change in reverse (H, 3 marks)</option><option value=2>88. Repeated percentage decrease (FH, 3 marks)</option><option value=81>89. Reverse percentages (FH, 2 marks)</option><option value=47>90. Reverse probability involving ratio (H, 4 marks)</option><option value=20>91. Saving up a percentage of weekly wage (F, 4 marks)</option><option value=58>92. Scale factors in multiple dimensions (H, 3 marks)</option><option value=18>93. Sharing in a ratio with fractions and percentages (FH, 4 marks)</option><option value=55>94. Sharing in a ratio with percentages (FH, 4 marks)</option><option value=28>95. Side length of a equilateral triangle given the area (H, 3 marks)</option><option value=17>96. Speed, distance, time (FH, 3 marks)</option><option value=92>97. Square inscribed in a circle (H, 4 marks)</option><option value=107>98. Square patterns on an axes. (FH, 5 marks)</option><option value=68>99. Substituting and solving with functions (H, 4 marks)</option><option value=65>100. Substitution into real life formulae (FH, 3 marks)</option><option value=5>101. Sum, products and difference (F, 3 marks)</option><option value=96>102. Surface area and volume of a cube (FH, 3 marks)</option><option value=23>103. Think of a number (F, 3 marks)</option><option value=102>104. Transforming trigonometric equations (H, 3 marks)</option><option value=39>105. Using exact trigonometric values (FH, 3 marks)</option><option value=79>106. Using Pythagoras to check for right angles. (FH, 3 marks)</option><option value=71>107. Using the mean to find missing values (FH, 4 marks)</option><option value=87>108. Vectors in parallelograms (FH, 3 marks)</option><option value=106>109. Worded probability scale (F, 2 marks)</option><option value=57>110. Writing multiple ratios as a single ratio (FH, 3 marks)</option></select> </div>
+<div>
+<label for="search">Search:</label>
+<input type="search" placeholder="Keyword" id="search" onclick="filter(this.value)" onkeyup="filter(this.value)">
+</div>
+<div>
+<input id="newButton" type="button" value="New Questions" onclick="createQuestion()">
+<input id="answerButton" type="button" value="Show Solutions" onclick="toggleAnswers()">
+</div>
+</div>
+</section>
+<section>
+<div id="content" class="questionBox border">
+<div class="info" id="info"></div>
+<div class="question" id="question">
+<div id="grid">
+<div class='ad'>
+<script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+
+<ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-4338550553309231" data-ad-slot="8324391446" data-ad-format="auto"></ins>
+<script>
+    (adsbygoogle = window.adsbygoogle || []).push({});
+</script>
+</div>
+<h2>Customise using the options above then click 'New Questions' to generate a random GCSE question on your chosen topic.</h2>
+</div>
+</div>
+</div>
+</section>
+<footer id="footer">
+<div>
+<small>
+<a href="/">Home</a> |
+<a href="/doNowMenu">Do Nows</a> |
+<a href="/gcseMenu">GCSE Resources</a> |
+<a href="/manipulativeMenu">Manipulatives</a> |
+<a href="/printableMenu">Printables</a> |
+<a href="/generatorMenu">Question Generators</a> |
+<a href="/starterMenu">Starters</a> |
+<a href="/toolMenu">Tools</a> |
+<a href="/privacy">Privacy</a> |
+<a href="/about">Contact</a> |
+Copyright &copy;
+</small>
+</div>
+</footer> <script type="text/javascript">(function(){window['__CF$cv$params']={r:'6828d7206f54e855',m:'af5fe947f6704fb345538b9d79f4b14afaa97677-1629601116-1800-AcHM5KbztWn7zsBDMNfxmmcx+2fAMNokKWXyhTrckiyag8VDL2vTufj5C1H/H1omOoPZp+DqKyI0+3WjVJlT2vWNixRRKA/7qNZwW1/dRpVtmsO7I0h1IuE0oZDqqSu26Q==',s:[0xdcd304eb58,0xe78325864b],}})();</script></body>
+</html>

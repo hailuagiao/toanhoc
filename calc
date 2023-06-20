@@ -1,0 +1,350 @@
+
+<!DOCTYPE html>
+<html lang='en'>
+<head>
+<meta charset='UTF-8'>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="author" content="Jonathan Hall">
+<link rel="icon" type="image/png" href="/media/favicon192.png" sizes=192x192>
+<link rel="stylesheet" href="/styles/main.css">
+<script src='/scripts/questionBank.js'></script>
+<script src='/scripts/differentiator.js'></script>
+<script src='/scripts/utilities.js'></script> <meta name="description" content="A simple to use calculator. Ideal for use in the classroom.">
+<title>Calculator</title>
+<script>
+            var calc = new Calc();
+
+            document.addEventListener("keydown", function (event) {
+                if (document.activeElement !== document.getElementById("qText")) {
+                    switch (event.key) {
+                        case "+":
+                            calc.append("+", true);
+                            break;
+                        case "-":
+                            calc.append("-", true);
+                            break;
+                        case "*":
+                            calc.append("*", true);
+                            break;
+                        case "/":
+                            calc.append("/", true);
+                            break;
+                        case ".":
+                            calc.append(".");
+                            break;
+                        case "(":
+                            calc.append("(");
+                            break;
+                        case ")":
+                            calc.append(")");
+                            break;
+                    }
+                    if (event.keyCode === 13) {
+                        calc.getAnswer();
+                    }
+                    if (!isNaN(event.key)) {
+                        calc.append(event.key);
+                    }
+                }
+            });
+            function Calc() {
+                this.display = "";
+                this.calculation = "";
+                this.ans = "";
+                this.degrees = true;
+                this.append = function (x, op) {
+                    var disp = x;
+                    if (x === "-" && op) {
+                        disp = "&minus;";
+                    }
+                    if (op && this.display === "" && this.ans !== "") {
+                        this.display = "Ans" + disp;
+                        this.calculation = this.ans + x;
+                    } else {
+                        this.display += "" + disp;
+                        this.calculation += "" + x;
+                    }
+                    this.update();
+                };
+                this.answer = function () {
+                    this.display += "Ans";
+                    this.calculation += this.ans;
+                    this.update();
+                };
+                this.power = function () {
+                    if (this.display === "" && this.ans !== "") {
+                        this.display = "Ans" + "^";
+                        this.calculation = this.ans + "**";
+                    } else {
+                        this.display += "^";
+                        this.calculation += "**";
+                    }
+                    this.update();
+                };
+                this.toggleUnit = function () {
+                    this.degrees = !this.degrees;
+                    if (this.degrees) {
+                        unitButton.innerHTML = "DEG";
+                    } else {
+                        unitButton.innerHTML = "RAD";
+                    }
+                };
+                this.pi = function () {
+                    this.display += "&pi;";
+                    this.calculation += "Math.PI";
+                    this.update();
+                };
+                this.root = function () {
+                    this.display += "&#8730;(";
+                    this.calculation += "Math.sqrt(";
+                    this.update();
+                };
+                this.square = function () {
+                    if (this.display === "" && this.ans !== "") {
+                        this.display = "Ans" + "&sup2;";
+                        this.calculation = this.ans + "**2";
+                    } else {
+                        this.display += "&sup2;";
+                        this.calculation += "**2";
+                    }
+                    this.update();
+                };
+                this.trig = function (ratio) {
+                    switch (ratio) {
+                        case "sin":
+                            this.display += "sin(";
+                            this.calculation += "Math.sin(";
+                            if (this.degrees) {
+                                this.calculation += "toRadians(";
+                            }
+                            break;
+                        case "cos":
+                            this.display += "cos(";
+                            this.calculation += "Math.cos(";
+                            if (this.degrees) {
+                                this.calculation += "toRadians(";
+                            }
+                            break;
+                        case "tan":
+                            this.display += "tan(";
+                            this.calculation += "Math.tan(";
+                            if (this.degrees) {
+                                this.calculation += "toRadians(";
+                            }
+                            break;
+                        case "asin":
+                            this.display += "sin&#8315;&sup1;(";
+                            if (this.degrees) {
+                                this.calculation += "toDegrees(";
+                            }
+                            this.calculation += "Math.asin(";
+                            break;
+                        case "acos":
+                            this.display += "cos&#8315;&sup1;(";
+                            if (this.degrees) {
+                                this.calculation += "toDegrees(";
+                            }
+                            this.calculation += "Math.acos(";
+                            break;
+                        case "atan":
+                            this.display += "tan&#8315;&sup1;(";
+                            if (this.degrees) {
+                                this.calculation += "toDegrees(";
+                            }
+                            this.calculation += "Math.atan(";
+                            break;
+                    }
+                    this.update();
+                };
+                this.clear = function () {
+                    this.display = "";
+                    this.calculation = "";
+                    this.ans = "";
+                    this.update();
+                };
+                this.update = function (displayCalc) {
+                    var answer = "" + this.ans;
+                    answer = roundError(answer);
+                    if (answer > 1000000000) {
+                        answer = answer.toPrecision(6);
+                    }
+                    this.display = this.display.replaceAll("*", "&times;");
+                    this.display = this.display.replaceAll("/", "&divide;");
+                    if (displayCalc) {
+                        calcDisplay.innerHTML = displayCalc;
+                    } else {
+                        calcDisplay.innerHTML = this.display;
+                    }
+                    ansDisplay.innerHTML = answer;
+                };
+                this.getAnswer = function () {
+                    var calc = this.calculation;
+                    calc = calc.replaceAll(")(", ")*(");
+                    do {
+                        calc = calc.replaceAll("++", "+");
+                        calc = calc.replaceAll("--", "+");
+                    } while (calc.includes("++") || calc.includes("--"));
+                    for (var i = 0; i <= 9; i++) {
+                        calc = calc.replaceAll(i + "M", i + "*M");
+                    }
+                    for (var i = 0; i <= 9; i++) {
+                        calc = calc.replaceAll(i + "(", i + "*(");
+                    }
+                    for (var i = 0; i <= 9; i++) {
+                        calc = calc.replaceAll(")" + i, ")*" + i);
+                    }
+                    while (calc.split('(').length > calc.split(')').length) {
+                        calc += ")";
+                    }
+                    while (calc.split('(').length < calc.split(')').length) {
+                        calc = "(" + calc;
+                    }
+                    console.log(calc);
+                    var displayCalc = this.display;
+                    this.calculation = calc;
+                    try {
+                        if (calc !== "") {
+                            this.ans = eval(this.calculation);
+                        }
+                    } catch (e) {
+                        this.ans = "Syntax Error";
+                    }
+                    this.display = "";
+                    this.calculation = "";
+                    this.update(displayCalc);
+                };
+            }
+        </script>
+<style>
+            table {
+                border: 4px solid #959;
+                background: #959;
+                width: 96%;
+                max-width: 600px;
+                margin: 1vmin auto;
+            }
+            td, th {
+                border: none;
+                width: 25%;
+                height: 9.4vh;
+                padding: 0.4vh;
+            }
+            button {
+                width: 100%;
+                height: 9.4vh;
+                font-size: 6vh;
+                cursor: pointer;
+                border-radius: 0.2em;
+            }
+            button:focus {
+                outline: none;
+            }
+            #calcDisplay {
+                border: 4px solid #959;
+                font-size: 5vh;
+                height: 7vh;
+                text-align: left;
+                color: #515;
+                background: #eef;
+                border-radius: 0.2em;
+            }
+            #ansDisplay {
+                border: 4px solid #959;
+                font-size: 9vh;
+                height: 12vh;
+                text-align: right;
+                color: #515;
+                background: #fff;
+                border-radius: 0.2em;
+            }
+            tr.smallButtons td {
+                height: 6vh;
+            }
+            .smallButtons td button{
+                height: 6vh;
+                font-size: 3.5vh;
+            }
+        </style>
+</head>
+<body>
+
+<section>
+<div id="content" class="questionBox border">
+<div id='calc'>
+<table>
+<tr>
+<td id='calcDisplay' colspan="4"></td>
+</tr>
+<tr>
+<td id='ansDisplay' colspan="4">0</td>
+</tr>
+<tr class="smallButtons">
+<td><button id='unitButton' onclick='calc.toggleUnit(); this.blur()'>DEG</button></td>
+<td><button onclick='calc.trig("sin"); this.blur()'>sin</button></td>
+<td><button onclick='calc.trig("cos"); this.blur()'>cos</button></td>
+<td><button onclick='calc.trig("tan"); this.blur()'>tan</button></td>
+</tr>
+<tr class="smallButtons">
+<td><button onclick='calc.pi(); this.blur()'>&pi;</button></td>
+<td><button onclick='calc.trig("asin"); this.blur()'>sin&#8315;&sup1;</button></td>
+  <td><button onclick='calc.trig("acos"); this.blur()'>cos&#8315;&sup1;</button></td>
+<td><button onclick='calc.trig("atan"); this.blur()'>tan&#8315;&sup1;</button></td>
+</tr>
+<tr>
+<td><button onclick='calc.append("-"); this.blur()'>-</button></td>
+<td><button onclick='calc.append("("); this.blur()'>(</button></td>
+<td><button onclick='calc.append(")"); this.blur()'>)</button></td>
+<td><button onclick='calc.clear(); this.blur()'>C</button></td>
+</tr>
+<tr>
+<td><button onclick='calc.root("");
+                                    this.blur()'>&#8730;</button></td>
+<td><button onclick='calc.square();
+                                    this.blur()'>&sup2;</button></td>
+<td><button onclick='calc.power();
+                                    this.blur()'>^</button></td>
+<td><button onclick='calc.append("*", true); this.blur()'>&times;</button></td>
+</tr>
+<tr>
+<td><button onclick="calc.append(7);
+                                    this.blur()">7</button></td>
+<td><button onclick="calc.append(8); this.blur()">8</button></td>
+<td><button onclick="calc.append(9);
+                                    this.blur()">9</button></td>
+<td><button onclick='calc.append("/", true);
+                                    this.blur()'>&divide;</button></td>
+</tr>
+<tr>
+<td><button onclick="calc.append(4); this.blur()">4</button></td>
+<td><button onclick="calc.append(5);
+                                    this.blur()">5</button></td>
+<td><button onclick="calc.append(6);
+                                    this.blur()">6</button></td>
+<td><button onclick='calc.append("+", true);
+                                    this.blur()'>+</button></td>
+</tr>
+<tr>
+<td><button onclick="calc.append(1);
+                                    this.blur()">1</button></td>
+<td><button onclick="calc.append(2);
+                                    this.blur()">2</button></td>
+<td><button onclick="calc.append(3);
+                                    this.blur()">3</button></td>
+<td><button onclick='calc.append("-", true); this.blur()'>&minus;</button></td>
+</tr>
+<tr>
+<td><button onclick='calc.append("0");
+                                    this.blur()'>0</button></td>
+<td><button onclick='calc.append(".");
+                                    this.blur()'>.</button></td>
+<td><button style="font-size: 5vh" onclick='calc.answer();
+                                    this.blur()'>Ans</button></td>
+<td><button onclick='calc.getAnswer();
+                                    this.blur()'>=</button></td>
+</tr>
+</table>
+</div>
+</div>
+</section>
+</body>
+</html>

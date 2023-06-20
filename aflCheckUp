@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang='en'>
+<head>
+<meta charset='UTF-8'>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="author" content="Jonathan Hall">
+<link rel="icon" type="image/png" href="/media/favicon192.png" sizes=192x192>
+<link rel="stylesheet" href="/styles/main.css">
+<script src='/scripts/questionBank.js'></script>
+<script src='/scripts/differentiator.js'></script>
+<script src='/scripts/utilities.js'></script> <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+<meta name="description" content="A handy assessment for learning tool to quickly check the understanding of pupils on a wide range of topics.">
+<title>AfL Check Up - A simple tool to check the understanding of pupils</title>
+<script>
+            var time = 0;
+            var question = [];
+            var currentTopic;
+            var sheetTimer;
+            var timerStarted = false;
+            var showingAnswer = false;
+            var anchorLink = false;
+            var level;
+
+            function createSheet() {
+                if (splitScreen.checked) {
+                    answerButton.value = "Show Solutions";
+                } else {
+                    answerButton.value = "Show Solution";
+                }
+                showingAnswer = false;
+                clearTimeout(sheetTimer);
+                sheetTimer = setInterval(timedCount, 1000);
+                timerStarted = true;
+                time = timeSelect.value;
+                timedCount();
+
+                currentTopic = chooseTopic();
+                level = levelSelect.value / 10;
+                question = [];
+                getQuestion(currentTopic, level);
+                getQuestion(currentTopic, level);
+                question[0].showing = false;
+                question[1].showing = false;
+                question[0].displayed = true;
+                question[1].displayed = true;
+
+                updateScreen();
+                changeBG(bgSelect.value);
+            }
+            function updateScreen() {
+                var data = "";
+                if (splitScreen.checked) {
+                    data += "<div class='split' style='border-right: 2px solid #000;'>";
+                    data += "<div title='Refresh Question' onclick='refreshQuestion(0)' class='refreshQ'>&#8635</div>";
+                    data += "<div title='Show/Hide Question' onclick='hideQuestion(0)' class='hideQ'>&#128065;</div>";
+                    data += "<div id='q0' onclick='toggleAnswer(" + 0 + ")'>";
+                    if (question[0].displayed) {
+                        data += question[0].question;
+                    }
+                    data += "</div>";
+                    data += "<div class='answer' id='answer" + 0 + "'>";
+                    if (question[0].showing) {
+                        data += question[0].answer;
+                    }
+                    data += "</div>";
+                    data += "</div>";
+                    data += "<div class='split'>";
+                    data += "<div title='Refresh Question' onclick='refreshQuestion(1)' class='refreshQ'>&#8635</div>";
+                    data += "<div title='Show/Hide Question' onclick='hideQuestion(1)' class='hideQ'>&#128065;</div>";
+                    data += "<div id='q1' onclick='toggleAnswer(" + 1 + ")'>";
+                    if (question[1].displayed) {
+                        data += question[1].question;
+                    }
+                    data += "</div>";
+                    data += "<div class='answer' id='answer" + 1 + "'>";
+                    if (question[1].showing) {
+                        data += question[1].answer;
+                    }
+                    data += " </div>";
+                    data += "</div>";
+                } else {
+                    data += "<div style='overflow: auto'>";
+                    data += "<div title='Refresh Question' onclick='refreshQuestion(0)' class='refreshQ'>&#8635</div>";
+                    data += "<div title='Show/Hide Question' onclick='hideQuestion(0)' class='hideQ'>&#128065;</div>";
+                    data += "</div>";
+                    data += "<div onclick='toggleAnswer(" + 0 + ")'>";
+                    data += "<div id='q0'>";
+                    if (question[0].displayed) {
+                        data += question[0].question;
+                    }
+                    data += "</div>";
+                    data += "<div class='answer' id='answer" + 0 + "'>";
+                    if (question[0].showing) {
+                        data += question[0].answer;
+                    }
+                    data += "</div>";
+                    data += "</div>";
+                }
+                aflQuestion.innerHTML = data;
+                MathJax.typesetPromise();
+            }
+            function setUp() {
+                if (!anchorLink) {
+                    var url = window.location.href;
+                    var anchor = url.substring(url.indexOf("#") + 1, url.length);
+                    document.getElementById("topicSelect").selectedIndex = anchor;
+                    anchorLink = true;
+                }
+                changeBG(bgSelect.value);
+            }
+            function refreshQuestion(i) {
+                if (topicSelect.value != 0) {
+                    currentTopic = chooseTopic();
+                }
+                level = levelSelect.value / 10;
+                getQuestion(currentTopic, level);
+                question[i] = question.pop();
+                question[i].showing = false;
+                question[i].displayed = true;
+
+                var q = question[i].question;
+                document.getElementById('q' + i).innerHTML = q;
+                document.getElementById('answer' + i).innerHTML = "";
+                updateScreen();
+            }
+            function timedCount() {
+                if (!timerStarted) {
+                    sheetTimer = setInterval(timedCount, 1000);
+                    timerStarted = true;
+                }
+                var minutes = Math.floor(time / 60);
+                var seconds = time % 60;
+                if (seconds < 10) {
+                    seconds = "0" + seconds;
+                }
+                time--;
+                timeDisplay.innerHTML = "Time Left: " + minutes + ":" + seconds;
+                if (time < 0) {
+                    clearTimeout(sheetTimer);
+                    timerStarted = false;
+                    timeDisplay.innerHTML = "Time's up!";
+                    time = -1;
+                }
+            }
+            function changeTime(x) {
+                time = parseInt(time) + x;
+            }
+            function toggleAnswer(i) {
+                if (question[i].showing) {
+                    document.getElementById('answer' + i).innerHTML = "";
+                    question[i].showing = false;
+                } else {
+                    document.getElementById('answer' + i).innerHTML = question[i].answer;
+                    question[i].showing = true;
+                }
+                MathJax.typesetPromise();
+            }
+            function toggleAnswers() {
+                if (showingAnswer) {
+                    document.getElementById('answer0').innerHTML = "";
+                    if (splitScreen.checked) {
+                        document.getElementById('answer1').innerHTML = "";
+                    }
+                    if (splitScreen.checked) {
+                        answerButton.value = "Show Solutions";
+                    } else {
+                        answerButton.value = "Show Solution";
+                    }
+                    showingAnswer = false;
+                } else {
+                    document.getElementById('answer0').innerHTML = question[0].answer;
+                    if (splitScreen.checked) {
+                        document.getElementById('answer1').innerHTML = question[1].answer;
+                    }
+                    if (splitScreen.checked) {
+                        answerButton.value = "Hide Solutions";
+                    } else {
+                        answerButton.value = "Hide Solution";
+                    }
+                    showingAnswer = true;
+                }
+                MathJax.typesetPromise();
+            }
+            function chooseTopic() {
+                var topic = topicSelect.value;
+                if (topic === "0") {
+                    topicSelect.selectedIndex = getRandom(1, topicSelect.length - 1);
+                    topic = topicSelect.value;
+                    topicSelect.selectedIndex = 0;
+                }
+                return topic;
+            }
+            function hideQuestion(i) {
+                if (question[i].displayed) {
+                    question[i].showing = false;
+                    question[i].displayed = false;
+                } else {
+                    question[i].displayed = true;
+                }
+                updateScreen();
+            }
+            function toggleSplit() {
+                if (splitScreen.checked) {
+                    newButton.value = "New Questions";
+                    answerButton.value = "Show Solutions";
+                } else {
+                    newButton.value = "New Question";
+                    answerButton.value = "Show Solution";
+                }
+            }
+            function filter(keyword) {
+                for (var i = 0; i < topicSelect.length; i++) {
+                    var txt = topicSelect.options[i].text;
+                    var include = txt.toLowerCase().search(keyword.toLowerCase());
+                    if (include > -1) {
+                        topicSelect.options[i].style.display = 'list-item';
+                        topicSelect.options[i].disabled = false;
+                    } else {
+                        topicSelect.options[i].style.display = 'none';
+                        topicSelect.options[i].disabled = true;
+                    }
+                }
+                for (var i = 1; i < topicSelect.length; i++) {
+                    var random = true;
+                    if (topicSelect.options[i].disabled !== true) {
+                        topicSelect.selectedIndex = i;
+                        random = false;
+                        i = topicSelect.length;
+                    }
+                }
+                if (random) {
+                    topicSelect.selectedIndex = 0;
+                }
+            }
+        </script>
+<style>
+            div.questionBox {
+                min-height: 70vh;
+                width: 99.2%;
+                margin: auto;
+                overflow: auto;
+            }
+            div.question {
+                font-size: 3em;
+                margin: auto;
+                cursor: pointer;
+            }
+            div.question p, div.answer p {
+                margin: 0.5em;
+                min-height: 50vh;
+            }
+            div.answer {
+                margin-top: 2em;
+                color: #e00;
+            }
+            div.split {
+                width: 50%;
+                float: left;
+                box-sizing: border-box;
+                font-size: 0.8em;
+                min-height: 50vh;
+                margin-top: 0.4em;
+            }
+            div.split:hover {
+                color: #515;
+            }
+            div.info {
+                margin-top: 0.4em;
+                color: #515;
+            }
+            div.refreshQ {
+                font-size: 0.5em;
+                margin: 0.5em;
+                float: left;
+            }
+            div.refreshQ:hover, div.hideQ:hover  {
+                color: #e00;
+            }
+            div.hideQ {
+                font-size: 0.5em;
+                float: right;
+                margin: 0.5em;
+            }
+            #timeDisplay {
+                margin: 0.4em;
+                font-size: 1.2em;
+            }
+            #search {
+                width: 8em;
+                border-radius: 0;
+            }
+            #splitScreen {
+                margin: 0.4em;
+            }
+            div.ad {
+                background: #fff;
+                min-height: 50vh;
+                overflow: auto;
+                padding: 2em;
+                font-size: 0.4em;
+            }
+            div.leftMenu {
+                text-align: center;
+            }
+            div.rightMenu {
+                text-align: center;
+            }
+            @media (max-width: 800px){ 
+                div.adBox {
+                    width: 96%;
+                }
+            }
+        </style>
+<script async src='/cdn-cgi/bm/cv/669835187/api.js'></script></head>
+<body onload="setUp();">
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-44508399-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+<input title='Toggle Full Screen.' onclick='goFull()' class='fullScreen' type='button' value='&#10019;'>
+<section id="controls" class="controls border">
+<h1>AfL Check Up</h1>
+<div class="middleMenu">
+<div>
+<label for="topicSelect">Topic:</label><select id="topicSelect"><option selected value = 0>Random</option><option value=1>1. Arithmetic: Addition</option><option value=4>2. Arithmetic: Division</option><option value=23>3. Arithmetic: Four operations</option><option value=3>4. Arithmetic: Multiplication</option><option value=2>5. Arithmetic: Subtraction</option><option value=103>6. Circles: Stating the equation</option><option value=14>7. Collecting like terms</option><option value=74>8. Converting units: Time</option><option value=60>9. Differences</option><option value=6>10. Doubling</option><option value=29>11. Equations: 1 step</option><option value=38>12. Equations: 2 steps</option><option value=46>13. Equations: Brackets 1 side</option><option value=48>14. Equations: Brackets 2 sides</option><option value=44>15. Equations: Mixed</option><option value=43>16. Equations: Unknowns on both sides</option><option value=66>17. Expanding and simplifying single brackets</option><option value=87>18. Expanding double brackets</option><option value=65>19. Expanding single brackets</option><option value=15>20. Factors</option><option value=79>21. FDP: Converting from decimals</option><option value=80>22. FDP: Converting from fractions</option><option value=81>23. FDP: Converting from percentages</option><option value=13>24. FDP: Converting mixed</option><option value=67>25. FDP: Of one amount to another</option><option value=31>26. Fractions: Addition and subtraction</option><option value=42>27. Fractions: Converting improper and mixed</option><option value=54>28. Fractions: Four operations</option><option value=59>29. Fractions: Increase and decrease</option><option value=32>30. Fractions: Multiplication and division</option><option value=7>31. Fractions: Of amounts</option><option value=77>32. Fractions: Of one amount to another</option><option value=20>33. Fractions: Simplifying</option><option value=82>34. Graphs: Gradient from two points</option><option value=83>35. Graphs: Midpoint from two points</option><option value=5>36. Halving</option><option value=17>37. Highest common factors</option><option value=89>38. Indices: Division law</option><option value=91>39. Indices: Mixed Laws</option><option value=88>40. Indices: Multiplication law</option><option value=90>41. Indices: Power law</option><option value=68>42. Inequalities: Solving 1 step</option><option value=69>43. Inequalities: Solving 2 step</option><option value=70>44. Inequalities: Solving unknowns on both sides</option><option value=18>45. Lowest common multiples</option><option value=45>46. Metric units: Converting lengths</option><option value=57>47. Metric units: Converting mixed units</option><option value=56>48. Metric units: Converting volume</option><option value=55>49. Metric units: Converting weights</option><option value=24>50. Money: Adding coins</option><option value=25>51. Money: Counting coins</option><option value=16>52. Multiples</option><option value=64>53. Multiplying terms</option><option value=98>54. Negative numbers: Addition</option><option value=101>55. Negative numbers: Division</option><option value=10>56. Negative numbers: Mixed operations</option><option value=100>57. Negative numbers: Multiplication</option><option value=99>58. Negative numbers: Subtraction</option><option value=61>59. Negative numbers: Temperatures</option><option value=30>60. Number bonds</option><option value=104>61. Order of Operations: &#215 and &#247</option><option value=105>62. Order of Operations: + and &minus;</option><option value=28>63. Ordering numbers</option><option value=96>64. Percentages: Change</option><option value=49>65. Percentages: Increase and decrease</option><option value=95>66. Percentages: Multipliers</option><option value=8>67. Percentages: Of amounts</option><option value=78>68. Percentages: Of one amount to another</option><option value=97>69. Percentages: Repeated change</option><option value=50>70. Percentages: Reverse</option><option value=62>71. Polygons: Sides</option><option value=27>72. Powers and roots</option><option value=11>73. Powers of ten</option><option value=63>74. Probability: Expected frequency</option><option value=58>75. Probability: Simple events</option><option value=53>76. Proportion: Unitary method</option><option value=84>77. Quadratics: Completing the square</option><option value=86>78. Quadratics: Factorising</option><option value=85>79. Quadratics: Find equation given turning point</option><option value=93>80. Ratio: Combining</option><option value=94>81. Ratio: Difference</option><option value=92>82. Ratio: Mixed</option><option value=52>83. Ratio: Reverse</option><option value=12>84. Ratio: Sharing</option><option value=19>85. Ratio: Simplifying</option><option value=9>86. Rounding</option><option value=71>87. Sequences: Fibonacci</option><option value=47>88. Sequences: Finding the next term</option><option value=22>89. Sequences: Generating terms</option><option value=72>90. Sequences: Geometric</option><option value=21>91. Sequences: Linear nth term</option><option value=73>92. Sequences: Quadratic nth term</option><option value=26>93. Speed, distance, time</option><option value=40>94. Standard Form: Addition</option><option value=102>95. Standard Form: Converting from</option><option value=41>96. Standard Form: Converting to</option><option value=76>97. Standard Form: Division</option><option value=39>98. Standard Form: Multiplication</option><option value=75>99. Standard Form: Subtraction</option><option value=37>100. Statistics: Averages and range</option><option value=33>101. Statistics: Mean</option><option value=34>102. Statistics: Median</option><option value=36>103. Statistics: Mode</option><option value=35>104. Statistics: Range</option><option value=51>105. Substitution</option></select> <div>
+<label for="search">Search:</label>
+<input type="search" placeholder="Keyword" id="search" onclick="filter(this.value)" onkeyup="filter(this.value)">
+</div>
+</div>
+<div>
+<input id="newButton" type="button" value="New Questions" onclick="createSheet()">
+<input id="answerButton" type="button" value="Show Solution" onclick="toggleAnswers()">
+</div>
+</div>
+<div class="leftMenu">
+<label for='bgSelect'>Background:</label><input style='max-width: 4em' oninput='changeBG(this.value)' onchange='changeBG(this.value)' value='#ffffff' type='color' id='bgSelect'><br><label for='levelSelect'>Difficulty:</label><select id='levelSelect'><option value=0>0</option><option value=1>1</option><option value=2>2</option><option value=3>3</option><option value=4>4</option><option selected value=5>5</option><option value=6>6</option><option value=7>7</option><option value=8>8</option><option value=9>9</option><option value=10>10</option></select>  <div>
+<label for="splitScreen">Split Screen</label>
+<input id="splitScreen" checked=checked type="checkbox" onclick="toggleSplit(); createSheet()">
+</div>
+</div>
+<div class="rightMenu">
+<label for='timeSelect'>Time:</label><select id='timeSelect'><option value=5>5 seconds</option><option value=10>10 seconds</option><option value=15>15 seconds</option><option value=20>20 seconds</option><option value=25>25 seconds</option><option selected='selected' value=30>30 seconds</option><option value=35>35 seconds</option><option value=40>40 seconds</option><option value=45>45 seconds</option><option value=50>50 seconds</option><option value=55>55 seconds</option><option value=60>60 seconds</option><option value=65>65 seconds</option><option value=70>70 seconds</option><option value=75>75 seconds</option><option value=80>80 seconds</option><option value=85>85 seconds</option><option value=90>90 seconds</option></select> <div>
+<input type='button' onclick='changeTime(-9); timedCount()' value='-10 sec'>
+<input type='button' onclick='changeTime(11); timedCount()' value='+10 sec'>
+<div id='timeDisplay'></div>
+</div>
+</div>
+</section>
+<section>
+<div id="content" class="questionBox border">
+<div id="aflQuestion" class='question'>
+<div class='ad'>
+<script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+
+<ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-4338550553309231" data-ad-slot="8324391446" data-ad-format="auto"></ins>
+<script>
+    (adsbygoogle = window.adsbygoogle || []).push({});
+</script>
+<h2>Customise using the options above then click 'New Questions' to generate random questions on your chosen topic.</h2>
+</div>
+</div>
+</div>
+</section>
+<footer id="footer">
+<div>
+<small>
+<a href="/">Home</a> |
+<a href="/doNowMenu">Do Nows</a> |
+<a href="/gcseMenu">GCSE Resources</a> |
+<a href="/manipulativeMenu">Manipulatives</a> |
+<a href="/printableMenu">Printables</a> |
+<a href="/generatorMenu">Question Generators</a> |
+<a href="/starterMenu">Starters</a> |
+<a href="/toolMenu">Tools</a> |
+<a href="/privacy">Privacy</a> |
+<a href="/about">Contact</a> |
+Copyright &copy;
+</small>
+</div>
+</footer> <script type="text/javascript">(function(){window['__CF$cv$params']={r:'6828d7664894e855',m:'3b766b5704dc42fae303a1089846c178b6bc6aff-1629601127-1800-Ad9SyTkjMtlLHjSaxzQd5gVXTUDIGzi+OLvlMjLsXbksG/TE0q1v+/+9dtrn8eNQNcsHQycPDPcn3wx17do7q7ew7Vp4+wTIa7nmc8oxEjhlxckJc9CXiTxyDium8bcc6Q==',s:[0x3beba5471a,0x0b3dd61c08],}})();</script></body>
+</html>

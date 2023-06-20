@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang='en'>
+<head>
+<meta charset='UTF-8'>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="author" content="Jonathan Hall">
+<link rel="icon" type="image/png" href="/media/favicon192.png" sizes=192x192>
+<link rel="stylesheet" href="/styles/main.css">
+<script src='/scripts/questionBank.js'></script>
+<script src='/scripts/differentiator.js'></script>
+<script src='/scripts/utilities.js'></script> <meta name="description" content="Create a randomly generated, printer friendly GCSE maths exam paper. Customise your paper with specific topics, tier and calculator or non calculator questions. Mark scheme and worked solutions generated with every paper.">
+<title>Practice GCSE maths paper</title>
+<script src="scripts/examBank.js"></script>
+<script>
+            var currentQuestion;
+            var questions = [];
+            function createCover(marks) {
+                var minutes = Math.ceil(marks / 5) * 5;
+                var hours = Math.floor(minutes / 60);
+                minutes -= (hours * 60);
+                var time = "";
+                if (hours !== 0) {
+                    time += hours;
+                    if (hours === 1) {
+                        time += " hour ";
+                    } else {
+                        time += " hours ";
+                    }
+                }
+                if (minutes !== 0) {
+                    time += minutes;
+                    time += " minutes";
+                }
+                var cover = "<div class='cover'>";
+
+                cover += "<section class='boxedInfo'><div style='margin-left: 1%;'>Write your name here:</div>";
+                cover += "<div class='nameBox boxedInfo'>Surname</div><div class='nameBox boxedInfo'>Other names</div>";
+
+                cover += "<section class='boxedInfo'>";
+                cover += "<div class='numbers boxedInfo'>Centre Number</div><div class='numbers boxedInfo'>Candidate Number</div>";
+                cover += "<h3>MathsBot.com</h3>";
+                cover += "<h3>@StudyMaths</h3>";
+                cover += "<h3>GCSE (9-1)</h3>";
+                cover += "</section>";
+
+                cover += "<section class='boxedInfo'>";
+                cover += "<div>";
+                cover += "<h1>Mathematics</h1>";
+                if (calcSelect.value !== "1") {
+                    var calc = "Calculator";
+                } else {
+                    calc = "Non-Calculator";
+                }
+                cover += "</div>";
+                cover += "<h2>Randomly Generated Paper (" + calc + ")</h2>";
+                var tier = "";
+                switch (tierSelect.value) {
+                    case "5":
+                        tier = "Foundation Topics";
+                        break;
+                    case "1":
+                        tier = "Foundation/Crossover Topics";
+                        break;
+                    case "4":
+                        tier = "Crossover Topics";
+                        break;
+                    case "2":
+                        tier = "Crossover/Higher Topics";
+                        break;
+                    case "6":
+                        tier = "Higher Topics";
+                        break;
+                }
+
+
+                cover += "<h2 style='margin-top: 3em; text-align: right;'>" + tier + "</h2>";
+
+                cover += "<section class='boxedInfo'>";
+                cover += "<div style='margin-left: 1%;'>" + showDate() + "</div>";
+                cover += "<div style='margin-left: 1%;'><strong>Time: " + time + "</strong></div>";
+                cover += "</section>";
+
+                cover += "<section class='boxedInfo' style='float: left; width: 82%; height: 5em;'>";
+                cover += "<div><strong>You must have:</strong></div>";
+                cover += "<div>Ruler graduated in centimetres and millimetres, protractor, pair of compasses, pen, HB pencil, eraser.";
+                cover += " Tracing paper may be used.</div>";
+                cover += "</section>";
+                cover += "<section class='boxedInfo' style='float: left; width: 14%; height: 5em;text-align: center'>Total Marks";
+                cover += "</section>";
+                cover += "</section>";
+
+                cover += "<div style='margin-top: 3em;'>";
+                if (calcSelect.value !== "1") {
+                    cover += "<img style='float: right; margin-right: 3em;' src='/media/calcYes.jpg'>.";
+                } else {
+                    cover += "<img style='float: right; margin-right: 3em;' src='/media/calcNo.jpg'>.";
+                }
+                cover += "<h3>Instructions</h3>";
+                cover += "<ul>";
+                cover += "<li>Use <strong>black</strong> ink or ball-point pen.</li>";
+                cover += "<li><strong>Fill in the boxes</strong> at the top of this page with your name, centre number and candidate number.</li>";
+                cover += "<li>Answer <strong>all</strong> questions.</li>";
+                cover += "<li>Answer the questions in the spaces provided - <em>there may be more space than you need</em>.</li>";
+                cover += "<li>You must <strong>show all your working</strong>.</li>";
+                cover += "<li>Diagrams are <strong>NOT</strong> accurately drawn, unless otherwise indicated.</li>";
+                if (calcSelect.value !== "1") {
+                    cover += "<li><strong>Calculators may be used</strong>.</li>";
+                    cover += "<li>If your calculator does not have a &pi; button, take the value of &pi; to be 3.142 unless the question instructs otherwise.</li>";
+                } else {
+                    cover += "<li><strong>Calculators may not be used</strong>.</li>";
+                }
+                cover += "</ul>";
+                cover += "</div>";
+
+                cover += "<div>";
+                cover += "<h3>Information</h3>";
+                cover += "<ul>";
+                cover += "<li>The total mark for this paper is " + marks + ".</li>";
+                cover += "<li>The marks for <strong>each</strong> question are shown in brackets - <em>use this as a guide as to how much time to spend on each question</em>.</li>";
+                cover += "</ul>";
+                cover += "</div>";
+
+                cover += "<div>";
+                cover += "<h3>Advice</h3>";
+                cover += "<ul>";
+                cover += "<li>Read each question carefully before you start to answer it.</li>";
+                cover += "<li>Keep an eye on the time.</li>";
+                cover += "<li>Try to answer every question.</li>";
+                cover += "<li>Check your answers if you have time at the end.</li>";
+                cover += "</ul>";
+                cover += "</div>";
+                cover += "<div style='text-align: right; margin-top: 6em;'><em>Turn over</em> &#9658;</div>";
+                cover += "</section>";
+                cover += "</div>";
+                return cover;
+            }
+            function createQuestion() {
+                var totalQuestions = totalQuestionsSelect.value;
+                var currentTopic = parseInt(topicSelect.value);
+
+                var fontSize = fontSelect.value;
+                var examData = "<div style='font-size: " + fontSize + "em;'>";
+
+                var leftMarkSchemeData = "";
+                var rightMarkSchemeData = "";
+                questions = [];
+                var total = 0;
+                for (var i = 0; i < totalQuestions; i++) {
+                    questions.push(getGcseQuestion(currentTopic));
+                }
+                questions.sort(function (a, b) {
+                    return (a.tier > b.tier) ? 1 : ((b.tier > a.tier) ? -1 : 0);
+                });
+                for (i = 0; i < totalQuestions; i++) {
+                    if (i > 0 && i % 2 === 1 || fontSize > 1.2) {
+                        examData += "<div style='page-break-after:always;'>";
+                    } else {
+                        examData += "<div>";
+                    }
+                    examData += "<div class='questionNumber'>" + (i + 1) + ".<span onclick='refreshQuestion(" + (i) + ")' class='refreshQ'>&#8635;</span></div>";
+                    examData += "<div class='questionBox question' id='question" + i + "'>" + questions[i].question + "</div>";
+                    for (var j = 0; j < questions[i].marks; j++) {
+                        examData += "<div class='answerLine'></div>";
+                    }
+                    examData += "<div class='answerSpace'></div>";
+                    examData += "<div class='markInfo'>(Total for Question " + (i + 1) + " is " + questions[i].marks + " marks)</div>";
+                    examData += "</div>";
+                    if (i < totalQuestions / 2) {
+                        leftMarkSchemeData += "<div>";
+                        leftMarkSchemeData += "<h3>Question " + (i + 1) + " (" + questions[i].marks + " marks)</h3>";
+                        leftMarkSchemeData += "<div id='answer" + i + "'>" + questions[i].answer + "</div>";
+                        leftMarkSchemeData += "</div>";
+                    } else {
+                        rightMarkSchemeData += "<div>";
+                        rightMarkSchemeData += "<h3>Question " + (i + 1) + " (" + questions[i].marks + " marks)</h3>";
+                        rightMarkSchemeData += "<div id='answer" + i + "'>" + questions[i].answer + "</div>";
+                        rightMarkSchemeData += "</div>";
+                    }
+                    total += questions[i].marks;
+                }
+                examData += "</div>";
+                var coverData = createCover(total);
+                examPaper.innerHTML = coverData + examData;
+                markScheme.innerHTML = "<h2>Mark Scheme - Total Marks: " + total + "</h2>";
+                markScheme.innerHTML += "<div class='markScheme'>" + leftMarkSchemeData + "</div>";
+                markScheme.innerHTML += "<div class='markScheme'>" + rightMarkSchemeData + "</div>";
+                changeBG(bgSelect.value);
+            }
+            function refreshQuestion(i) {
+                var currentTopic = parseInt(topicSelect.value);
+                questions[i] = getGcseQuestion(currentTopic);
+                document.getElementById('question' + i).innerHTML = questions[i].question;
+                document.getElementById('answer' + i).innerHTML = questions[i].answer;
+            }
+            function updateFilter() {
+                var ajaxRequest;  // The variable that makes Ajax possible!
+                try {
+                    // Opera 8.0+, Firefox, Safari
+                    ajaxRequest = new XMLHttpRequest();
+                } catch (e) {
+                    // Internet Explorer Browsers
+                    try {
+                        ajaxRequest = new ActiveXObject("Msxml2.XMLHTTP");
+                    } catch (e) {
+                        try {
+                            ajaxRequest = new ActiveXObject("Microsoft.XMLHTTP");
+                        } catch (e) {
+                            // Something went wrong
+                            alert("Your browser broke!");
+                            return false;
+                        }
+                    }
+                }
+                // Create a function that will receive data sent from the server
+                ajaxRequest.onreadystatechange = function () {
+                    if (ajaxRequest.readyState === 4) {
+                        document.getElementById('topicSelect').innerHTML = ajaxRequest.responseText;
+                    }
+                };
+                var url = "";
+
+                var calculator = calcSelect.value;
+                var tier = tierSelect.value;
+                var topic = strandSelect.value;
+                var ao = aoSelect.value;
+
+                url += "calculator=" + calculator;
+                url += "&tier=" + tier;
+                url += "&topic=" + topic;
+                url += "&ao=" + ao;
+                url += "&rnd=" + Math.random();
+
+                ajaxRequest.open("GET", "scripts/database/filterGCSE.php?" + url, true);
+                ajaxRequest.send(null);
+            }
+        </script>
+<style>
+            div.cover {
+                font-family: "Arial";
+                page-break-after: always;
+                text-align: left;
+                font-size: 0.95em;
+            }
+            div.cover h1, div.cover h2, div.cover h3 {
+                margin: 1%;
+                font-family: "Arial";
+                font-weight: bold;
+            }
+            div.cover h1 {
+                font-size: 4em;
+            }
+            div.cover ul {
+                margin: 1%;
+            }
+            .boxedInfo {
+                border: 3px solid #666;
+                border-radius: 1em;
+                box-sizing: border-box;
+                margin: 1%;
+                padding: 1%;
+            }
+            .info {
+                margin: 1%;
+            }
+            div.nameBox {
+                float: left;
+                width: 48%;
+                height: 5em;
+            }
+            div.numbers {
+                float: right;
+                width: 30%;
+                height: 5em;
+            }
+            div.answerLine {
+                height: 3em;
+            }
+            div.answerSpace {
+                border-bottom: 2px dotted #bbb;
+                width: 10em;
+                float: right;
+            }
+            div.paper {
+                max-width: 1000px;
+                text-align: left;
+                margin: auto;
+                padding: 2%;
+                min-height: 300px;
+                font-family: "Times New Roman";
+            }
+            div.ad {
+                margin: 2em;
+            }
+            div.questionNumber {
+                float: left;
+                width: 2.5em;
+                font-weight: bold;
+            }
+            div.question {
+                margin-left: 2.5em;
+            }
+            div.questionBox img {
+                display: block;
+                margin: 0 auto;
+            }
+            #topicSelect {
+                display: none;
+            }
+            #markScheme {
+                color: #515;
+                overflow: auto;
+                page-break-before: always;
+            }
+            div.markInfo {
+                font-weight: bold;
+                text-align: right;
+                margin-top: 1.5em;
+                padding-right: 2em;
+                border-bottom: 2px solid #bbb;
+            }
+            div.markScheme {
+                width: 50%;
+                float: left;
+            }
+            div.middleMenu div {
+                margin: 0.4em;
+            }
+            div.rightMenu label, div.LeftMenu label {
+                display: inline-block;
+                min-width: 3em;
+                text-align: right;
+            }
+            @media print {
+                @page {size: portrait}
+                .border {
+                    border: none;
+                }
+            }
+        </style>
+<script async src='/cdn-cgi/challenge-platform/h/b/scripts/invisible.js'></script></head>
+<body>
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-44508399-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+<section class="controls border">
+<div>
+</div>
+<h1>Practice GCSE Papers</h1>
+<div class="leftMenu">
+<div>
+<label for="tierSelect">Tier:</label>
+<select onchange='updateFilter()' id="tierSelect">
+<option value="5">Foundation Only</option>
+<option value="1">Foundation/Crossover</option>
+<option selected value="4">Crossover Only</option>
+<option value="2">Crossover/Higher</option>
+<option value="6">Higher Only</option>
+</select>
+</div>
+ <div>
+<label for="strandSelect">Topic:</label>
+<select onchange='updateFilter()' id="strandSelect">
+<option value="6">All Topics</option>
+<option value="3">Number</option>
+<option value="1">Algebra</option>
+<option value="2">Geometry and Measures</option>
+<option value="5">Ratio and Proportion</option>
+<option value="4">Probability and Statistics</option>
+</select>
+</div>
+</div>
+<div class="rightMenu">
+<div>
+<label for='nonCalcSelect'>Type:</label>
+<select onchange='updateFilter()' id="calcSelect">
+<option value="3">All</option>
+<option value="1">Non Calculator</option>
+<option value="2">Calculator</option>
+</select>
+</div>
+<div>
+<label for='aoSelect'>AO:</label>
+<select onchange='updateFilter()' id="aoSelect">
+<option value="4">All</option>
+<option value="1">AO1</option>
+<option value="2">AO2</option>
+<option value="2.5">AO2 & AO3</option>
+<option value="3">AO3</option>
+</select>
+</div>
+</div>
+<div class="middleMenu">
+<div>
+<select onchange='createQuestion()' id='topicSelect'><option selected value=0>Random</option><option id='q90' value=90></option><option id='q36' value=36></option><option id='q109' value=109></option><option id='q98' value=98></option><option id='q105' value=105></option><option id='q103' value=103></option><option id='q67' value=67></option><option id='q34' value=34></option><option id='q51' value=51></option><option id='q78' value=78></option><option id='q110' value=110></option><option id='q104' value=104></option><option id='q61' value=61></option><option id='q6' value=6></option><option id='q108' value=108></option><option id='q84' value=84></option><option id='q94' value=94></option><option id='q64' value=64></option><option id='q100' value=100></option><option id='q8' value=8></option><option id='q73' value=73></option><option id='q9' value=9></option><option id='q83' value=83></option><option id='q62' value=62></option><option id='q7' value=7></option><option id='q93' value=93></option><option id='q10' value=10></option><option id='q82' value=82></option><option id='q85' value=85></option><option id='q48' value=48></option><option id='q54' value=54></option><option id='q12' value=12></option><option id='q86' value=86></option><option id='q81' value=81></option><option id='q18' value=18></option><option id='q17' value=17></option><option id='q107' value=107></option><option id='q5' value=5></option><option id='q39' value=39></option><option id='q79' value=79></option><option id='q71' value=71></option><option id='q87' value=87></option><option id='q106' value=106></option><option id='q57' value=57></option></select><label for='totalQuestionsSelect'>Questions:</label><select id='totalQuestionsSelect'><option value=1>1</option><option value=2>2</option><option value=3>3</option><option value=4>4</option><option value=5>5</option><option value=6>6</option><option value=7>7</option><option value=8>8</option><option value=9>9</option><option value=10>10</option><option value=11>11</option><option value=12>12</option><option value=13>13</option><option value=14>14</option><option value=15>15</option><option value=16>16</option><option value=17>17</option><option value=18>18</option><option value=19>19</option><option selected value=20>20</option><option value=21>21</option><option value=22>22</option><option value=23>23</option><option value=24>24</option><option value=25>25</option><option value=26>26</option><option value=27>27</option><option value=28>28</option><option value=29>29</option><option value=30>30</option><option value=31>31</option><option value=32>32</option><option value=33>33</option><option value=34>34</option><option value=35>35</option><option value=36>36</option><option value=37>37</option><option value=38>38</option><option value=39>39</option><option value=40>40</option><option value=41>41</option><option value=42>42</option><option value=43>43</option><option value=44>44</option><option value=45>45</option><option value=46>46</option><option value=47>47</option><option value=48>48</option><option value=49>49</option><option value=50>50</option></select> <label for="fontSelect">Font:</label>
+<select id="fontSelect">
+<option value="1.2">Normal</option>
+<option value="1.6">Large</option>
+<option value="2">Extra Large</option>
+</select>
+<label for='bgSelect'>Background:</label><input style='max-width: 4em' oninput='changeBG(this.value)' onchange='changeBG(this.value)' value='#ffffff' type='color' id='bgSelect'> </div>
+<div>
+<input type="button" value="Create Paper" onclick="createQuestion()">
+<input type="button" value="Print Paper" onclick="window.print()">
+</div>
+</div>
+</section>
+<section>
+<div class="questionBox border">
+<div class="paper">
+<div id="examPaper">
+<div class='ad'>
+<script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+
+<ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-4338550553309231" data-ad-slot="8324391446" data-ad-format="auto"></ins>
+<script>
+    (adsbygoogle = window.adsbygoogle || []).push({});
+</script>
+</div>
+<h2>Customise using the options above then click 'Create Paper' to generate a printable practice paper and mark scheme.</h2>
+</div>
+<div id="markScheme"></div>
+</div>
+</div>
+</section>
+<footer id="footer">
+<div>
+<small>
+<a href="/">Home</a> |
+<a href="/doNowMenu">Do Nows</a> |
+<a href="/gcseMenu">GCSE Resources</a> |
+<a href="/manipulativeMenu">Manipulatives</a> |
+<a href="/printableMenu">Printables</a> |
+<a href="/generatorMenu">Question Generators</a> |
+<a href="/starterMenu">Starters</a> |
+<a href="/toolMenu">Tools</a> |
+<a href="/privacy">Privacy</a> |
+<a href="/about">Contact</a> |
+Copyright &copy;
+</small>
+</div>
+</footer> <script type="text/javascript">(function(){window['__CF$cv$params']={r:'6828d7ad3832e855',m:'aec79bff76c566fbe5144e4734c432bc65d04c19-1629601138-1800-AcdMVD60jp1P8K/rCwpc2PfdG6bZgG8AaCj8rs9H78mfEjjTMgShtdgj81ZN66Hi/gMLyi8CJBpH3OiQ4iHDzY/cP4LsvOrOSvT2cE4bV6DOPmFztU+k4kyqysj19vxsvw==',s:[0x4325d51288,0xd995a30b65],u:'/cdn-cgi/challenge-platform/h/b'}})();</script></body>
+</html>

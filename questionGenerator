@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang='en'>
+<head>
+<meta charset='UTF-8'>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="author" content="Jonathan Hall">
+<link rel="icon" type="image/png" href="/media/favicon192.png" sizes=192x192>
+<link rel="stylesheet" href="/styles/main.css">
+<script src='/scripts/questionBank.js'></script>
+<script src='/scripts/differentiator.js'></script>
+<script src='/scripts/utilities.js'></script> <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+<meta name="description" content="Fully customisable Maths Question Generator. Create up to 9 different groups of randomly generated questions, each testing a specific topic and level of difficulty.">
+<title>Maths Question Generator</title>
+<script>
+            var strands = new Array("Number", "Algebra", "Geometry & Measures", "Ratio & Proportion", "Probability", "Statistics");
+            var topics = [];
+            var columns;
+            var colWidth;
+            var question = [];
+            var totalQuestions = 10;
+            var level = 0;
+            var time = 0;
+            var sheetTimer;
+            var timerStarted = false;
+            var showingAnswers = false;
+topics[0] = [];topics[0][0] = {};topics[0][0].topic = "Arithmetic: Addition";topics[0][0].id = "1";topics[0][1] = {};topics[0][1].topic = "Arithmetic: Division";topics[0][1].id = "4";topics[0][2] = {};topics[0][2].topic = "Arithmetic: Four operations";topics[0][2].id = "23";topics[0][3] = {};topics[0][3].topic = "Arithmetic: Multiplication";topics[0][3].id = "3";topics[0][4] = {};topics[0][4].topic = "Arithmetic: Subtraction";topics[0][4].id = "2";topics[0][5] = {};topics[0][5].topic = "Differences";topics[0][5].id = "60";topics[0][6] = {};topics[0][6].topic = "Doubling";topics[0][6].id = "6";topics[0][7] = {};topics[0][7].topic = "Factors";topics[0][7].id = "15";topics[0][8] = {};topics[0][8].topic = "FDP: Converting from decimals";topics[0][8].id = "79";topics[0][9] = {};topics[0][9].topic = "FDP: Converting from fractions";topics[0][9].id = "80";topics[0][10] = {};topics[0][10].topic = "FDP: Converting from percentages";topics[0][10].id = "81";topics[0][11] = {};topics[0][11].topic = "Fractions: Addition and subtraction";topics[0][11].id = "31";topics[0][12] = {};topics[0][12].topic = "Fractions: Converting improper and mixed";topics[0][12].id = "42";topics[0][13] = {};topics[0][13].topic = "Fractions: Four operations";topics[0][13].id = "54";topics[0][14] = {};topics[0][14].topic = "Fractions: Increase and decrease";topics[0][14].id = "59";topics[0][15] = {};topics[0][15].topic = "Fractions: Multiplication and division";topics[0][15].id = "32";topics[0][16] = {};topics[0][16].topic = "Fractions: Of amounts";topics[0][16].id = "7";topics[0][17] = {};topics[0][17].topic = "Fractions: Of one amount to another";topics[0][17].id = "77";topics[0][18] = {};topics[0][18].topic = "Fractions: Simplifying";topics[0][18].id = "20";topics[0][19] = {};topics[0][19].topic = "Halving";topics[0][19].id = "5";topics[0][20] = {};topics[0][20].topic = "Highest common factors";topics[0][20].id = "17";topics[0][21] = {};topics[0][21].topic = "Indices: Division law";topics[0][21].id = "89";topics[0][22] = {};topics[0][22].topic = "Indices: Mixed Laws";topics[0][22].id = "91";topics[0][23] = {};topics[0][23].topic = "Indices: Multiplication law";topics[0][23].id = "88";topics[0][24] = {};topics[0][24].topic = "Indices: Power law";topics[0][24].id = "90";topics[0][25] = {};topics[0][25].topic = "Lowest common multiples";topics[0][25].id = "18";topics[0][26] = {};topics[0][26].topic = "Multiples";topics[0][26].id = "16";topics[0][27] = {};topics[0][27].topic = "Negative numbers: Addition";topics[0][27].id = "98";topics[0][28] = {};topics[0][28].topic = "Negative numbers: Mixed operations";topics[0][28].id = "10";topics[0][29] = {};topics[0][29].topic = "Negative numbers: Multiplication";topics[0][29].id = "100";topics[0][30] = {};topics[0][30].topic = "Negative numbers: Subtraction";topics[0][30].id = "99";topics[0][31] = {};topics[0][31].topic = "Negative numbers: Temperatures";topics[0][31].id = "61";topics[0][32] = {};topics[0][32].topic = "Order of Operations: &#215 and &#247";topics[0][32].id = "104";topics[0][33] = {};topics[0][33].topic = "Order of Operations: + and &minus;";topics[0][33].id = "105";topics[0][34] = {};topics[0][34].topic = "Ordering numbers";topics[0][34].id = "28";topics[0][35] = {};topics[0][35].topic = "Percentages: Of one amount to another";topics[0][35].id = "78";topics[0][36] = {};topics[0][36].topic = "Powers and roots";topics[0][36].id = "27";topics[0][37] = {};topics[0][37].topic = "Powers of ten";topics[0][37].id = "11";topics[0][38] = {};topics[0][38].topic = "Rounding";topics[0][38].id = "9";topics[0][39] = {};topics[0][39].topic = "Standard Form: Addition";topics[0][39].id = "40";topics[0][40] = {};topics[0][40].topic = "Standard Form: Converting from";topics[0][40].id = "102";topics[0][41] = {};topics[0][41].topic = "Standard Form: Converting to";topics[0][41].id = "41";topics[0][42] = {};topics[0][42].topic = "Standard Form: Division";topics[0][42].id = "76";topics[0][43] = {};topics[0][43].topic = "Standard Form: Multiplication";topics[0][43].id = "39";topics[0][44] = {};topics[0][44].topic = "Standard Form: Subtraction";topics[0][44].id = "75";topics[1] = [];topics[1][0] = {};topics[1][0].topic = "Circles: Stating the equation";topics[1][0].id = "103";topics[1][1] = {};topics[1][1].topic = "Collecting like terms";topics[1][1].id = "14";topics[1][2] = {};topics[1][2].topic = "Equations: 1 step";topics[1][2].id = "29";topics[1][3] = {};topics[1][3].topic = "Equations: 2 steps";topics[1][3].id = "38";topics[1][4] = {};topics[1][4].topic = "Equations: Brackets 1 side";topics[1][4].id = "46";topics[1][5] = {};topics[1][5].topic = "Equations: Brackets 2 sides";topics[1][5].id = "48";topics[1][6] = {};topics[1][6].topic = "Equations: Mixed";topics[1][6].id = "44";topics[1][7] = {};topics[1][7].topic = "Equations: Unknowns on both sides";topics[1][7].id = "43";topics[1][8] = {};topics[1][8].topic = "Expanding and simplifying single brackets";topics[1][8].id = "66";topics[1][9] = {};topics[1][9].topic = "Expanding double brackets";topics[1][9].id = "87";topics[1][10] = {};topics[1][10].topic = "Expanding single brackets";topics[1][10].id = "65";topics[1][11] = {};topics[1][11].topic = "Graphs: Gradient from two points";topics[1][11].id = "82";topics[1][12] = {};topics[1][12].topic = "Graphs: Midpoint from two points";topics[1][12].id = "83";topics[1][13] = {};topics[1][13].topic = "Inequalities: Solving 1 step";topics[1][13].id = "68";topics[1][14] = {};topics[1][14].topic = "Inequalities: Solving 2 step";topics[1][14].id = "69";topics[1][15] = {};topics[1][15].topic = "Inequalities: Solving unknowns on both sides";topics[1][15].id = "70";topics[1][16] = {};topics[1][16].topic = "Multiplying terms";topics[1][16].id = "64";topics[1][17] = {};topics[1][17].topic = "Number bonds";topics[1][17].id = "30";topics[1][18] = {};topics[1][18].topic = "Quadratics: Completing the square";topics[1][18].id = "84";topics[1][19] = {};topics[1][19].topic = "Quadratics: Factorising";topics[1][19].id = "86";topics[1][20] = {};topics[1][20].topic = "Quadratics: Find equation given turning point";topics[1][20].id = "85";topics[1][21] = {};topics[1][21].topic = "Sequences: Fibonacci";topics[1][21].id = "71";topics[1][22] = {};topics[1][22].topic = "Sequences: Finding the next term";topics[1][22].id = "47";topics[1][23] = {};topics[1][23].topic = "Sequences: Generating terms";topics[1][23].id = "22";topics[1][24] = {};topics[1][24].topic = "Sequences: Geometric";topics[1][24].id = "72";topics[1][25] = {};topics[1][25].topic = "Sequences: Linear nth term";topics[1][25].id = "21";topics[1][26] = {};topics[1][26].topic = "Sequences: Quadratic nth term";topics[1][26].id = "73";topics[1][27] = {};topics[1][27].topic = "Substitution";topics[1][27].id = "51";topics[2] = [];topics[2][0] = {};topics[2][0].topic = "Converting units: Time";topics[2][0].id = "74";topics[2][1] = {};topics[2][1].topic = "Metric units: Converting lengths";topics[2][1].id = "45";topics[2][2] = {};topics[2][2].topic = "Metric units: Converting mixed units";topics[2][2].id = "57";topics[2][3] = {};topics[2][3].topic = "Metric units: Converting volume";topics[2][3].id = "56";topics[2][4] = {};topics[2][4].topic = "Metric units: Converting weights";topics[2][4].id = "55";topics[2][5] = {};topics[2][5].topic = "Money: Adding coins";topics[2][5].id = "24";topics[2][6] = {};topics[2][6].topic = "Money: Counting coins";topics[2][6].id = "25";topics[2][7] = {};topics[2][7].topic = "Polygons: Sides";topics[2][7].id = "62";topics[2][8] = {};topics[2][8].topic = "Speed, distance, time";topics[2][8].id = "26";topics[3] = [];topics[3][0] = {};topics[3][0].topic = "FDP: Converting mixed";topics[3][0].id = "13";topics[3][1] = {};topics[3][1].topic = "FDP: Of one amount to another";topics[3][1].id = "67";topics[3][2] = {};topics[3][2].topic = "Percentages: Change";topics[3][2].id = "96";topics[3][3] = {};topics[3][3].topic = "Percentages: Increase and decrease";topics[3][3].id = "49";topics[3][4] = {};topics[3][4].topic = "Percentages: Multipliers";topics[3][4].id = "95";topics[3][5] = {};topics[3][5].topic = "Percentages: Of amounts";topics[3][5].id = "8";topics[3][6] = {};topics[3][6].topic = "Percentages: Repeated change";topics[3][6].id = "97";topics[3][7] = {};topics[3][7].topic = "Percentages: Reverse";topics[3][7].id = "50";topics[3][8] = {};topics[3][8].topic = "Proportion: Unitary method";topics[3][8].id = "53";topics[3][9] = {};topics[3][9].topic = "Ratio: Combining";topics[3][9].id = "93";topics[3][10] = {};topics[3][10].topic = "Ratio: Difference";topics[3][10].id = "94";topics[3][11] = {};topics[3][11].topic = "Ratio: Mixed";topics[3][11].id = "92";topics[3][12] = {};topics[3][12].topic = "Ratio: Reverse";topics[3][12].id = "52";topics[3][13] = {};topics[3][13].topic = "Ratio: Sharing";topics[3][13].id = "12";topics[3][14] = {};topics[3][14].topic = "Ratio: Simplifying";topics[3][14].id = "19";topics[4] = [];topics[4][0] = {};topics[4][0].topic = "Probability: Expected frequency";topics[4][0].id = "63";topics[4][1] = {};topics[4][1].topic = "Probability: Simple events";topics[4][1].id = "58";topics[5] = [];topics[5][0] = {};topics[5][0].topic = "Statistics: Averages and range";topics[5][0].id = "37";topics[5][1] = {};topics[5][1].topic = "Statistics: Mean";topics[5][1].id = "33";topics[5][2] = {};topics[5][2].topic = "Statistics: Median";topics[5][2].id = "34";topics[5][3] = {};topics[5][3].topic = "Statistics: Mode";topics[5][3].id = "36";topics[5][4] = {};topics[5][4].topic = "Statistics: Range";topics[5][4].id = "35";            function createSheet() {
+                question = [];
+                totalQuestions = parseInt(totalQuestionsSelect.value);
+                clearTimeout(sheetTimer);
+                sheetTimer = setInterval(timedCount, 1000);
+                timerStarted = true;
+                time = timeSelect.value;
+                timedCount();
+                for (var i = 0; i < columns; i++) {
+                    createColumn(i);
+                }
+                document.getElementById('display').style.display = "block";
+                document.getElementById('controls').style.display = "none";
+                changeBG(bgSelect.value);
+                MathJax.typesetPromise();
+            }
+            function createColumn(i) {
+                var currentQ = 0;
+                var let = new Array("A", "B", "C", "D", "E", "F", "G", "H", "I");
+                var data = "<div class='questionBox border' style='width: " + colWidth + "%'>";
+                level = document.getElementById("level" + i).value;
+                for (var j = (i * totalQuestions); j < (i * totalQuestions) + totalQuestions; j++) {
+                    data += "<div class='question'>";
+                    getQuestion(document.getElementById("topic" + i).value, level / 10);
+                    var attempts = 0;
+                    do {
+                        var repeat = false;
+                        for (var k = 0; k < question.length; k++) {
+                            if (k !== currentQ && question[currentQ].answer === question[k].answer) {
+                                repeat = true;
+                            }
+                        }
+                        if (repeat) {
+                            getQuestion(document.getElementById("topic" + i).value, level / 10);
+                            question[currentQ] = question[question.length - 1];
+                            question.pop();
+                            attempts++;
+                            if (attempts % 40 === 0) {
+                                level++;
+                            }
+                        }
+                    } while (repeat === true && attempts < 300);
+                    currentQ++;
+
+                    question[j].showingQuestion = true;
+                    data += "<div class='questionNumber'>" + let[i] + (j + 1 - (i * totalQuestions)) + ".<span onclick='refreshQuestion(" + i + ", " + j + ")' class='refreshQ'>&#8635;</span></div>";
+                    data += "<div onclick='toggleAnswer(" + j + ")' id='a" + j + "'>" + question[j].question + "</div>";
+                    data += "</div>";
+                }
+                data += "</div>";
+                document.getElementById("col" + i).innerHTML = data;
+            }
+            function setUp() {
+                columns = colSelect.value;
+                if (columns === 1) {
+                    colWidth = (100 - 1) / 1;
+                } else if (columns % 3 === 0) {
+                    colWidth = (100 - 3) / 3;
+                } else {
+                    colWidth = (100 - 2) / 2;
+                }
+
+                var data = "";
+                questionsIWB.innerHTML = "";
+                for (var i = 0; i < columns; i++) {
+                    data += "<div class='topicHead' id='head" + i + "'>";
+                    data += "<h2>Group " + (i + 1) + "</h2>";
+                    data += "<div>";
+                    data += "<label for='strand" + i + "'>Strand:</label>";
+                    data += "<select onchange='updateTopics(" + i + ", this.value)' id='strand" + i + "'>";
+                    for (var j = 0; j < strands.length; j++) {
+                        data += "<option value=" + j + ">" + strands[j] + "</option>";
+                    }
+                    data += "</select>";
+                    data += "</div>";
+                    data += "<div>";
+                    data += "<label for='topic" + i + "'>Topic:</label>";
+                    data += "<select id='topic" + i + "'>";
+                    for (j = 0; j < topics[0].length; j++) {
+                        data += "<option value=" + topics[0][j].id + ">" + topics[0][j].topic + "</option>";
+                    }
+                    data += "</select>";
+                    data += "</div>";
+                    data += "<div>";
+                    data += "<label for='level" + i + "'>Difficulty:</label>";
+                    data += "<select id='level" + i + "'>";
+                    for (j = 0; j <= 10; j++) {
+                        if (j === 5) {
+                            data += "<option selected value=" + j + ">" + j + "</option>";
+                        } else {
+                            data += "<option value=" + j + ">" + j + "</option>";
+                        }
+                    }
+                    data += "</select>";
+                    data += "</div>";
+                    data += "</div>";
+                    questionsIWB.innerHTML += "<div id='col" + i + "'></div>";
+                }
+                menuTopics.innerHTML = data;
+            }
+            function updateTopics(i, s) {
+                document.getElementById("topic" + i).length = 0;
+                for (var j = 0; j < topics[s].length; j++) {
+                    document.getElementById("topic" + i).options[j] = new Option(topics[s][j].topic, topics[s][j].id, false, false);
+                }
+            }
+            function randomTopics() {
+                for (var i = 0; i < columns; i++) {
+                    document.getElementById("strand" + i).selectedIndex = getRandom(0, document.getElementById("strand" + i).length - 1);
+                    updateTopics(i, document.getElementById("strand" + i).value);
+                }
+                for (i = 0; i < columns; i++) {
+                    document.getElementById("topic" + i).selectedIndex = getRandom(0, document.getElementById("topic" + i).length - 1);
+                }
+            }
+            function showMenu() {
+                document.getElementById('controls').style.display = "block";
+                document.getElementById('display').style.display = "none";
+            }
+            function timedCount() {
+                if (!timerStarted) {
+                    sheetTimer = setInterval(timedCount, 1000);
+                    timerStarted = true;
+                }
+                var minutes = Math.floor(time / 60);
+                var seconds = time % 60;
+                if (seconds < 10) {
+                    seconds = "0" + seconds;
+                }
+                time--;
+                timeDisplay.innerHTML = "Time Left: " + minutes + ":" + seconds;
+                if (time < 0) {
+                    clearTimeout(sheetTimer);
+                    timerStarted = false;
+                    timeDisplay.innerHTML = "Time's up!";
+                    time = -1;
+                }
+            }
+            function toggleAnswer(i) {
+                if (question[i].showingQuestion) {
+                    document.getElementById('a' + i).innerHTML = question[i].answer;
+                    question[i].showingQuestion = false;
+                } else {
+                    document.getElementById('a' + i).innerHTML = question[i].question;
+                    question[i].showingQuestion = true;
+                }
+                MathJax.typesetPromise();
+            }
+
+            function toggleAnswers() {
+                if (question[0]) {
+                    if (showingAnswers) {
+                        var count = 0;
+                        for (var j = 0; j < columns; j++) {
+                            for (var i = 0; i < totalQuestions; i++) {
+                                document.getElementById('a' + count).innerHTML = question[count].question;
+                                answerButton.value = "Show Answers";
+                                showingAnswers = false;
+                                question[count].showingQuestion = true;
+                                count++;
+                            }
+                        }
+                    } else {
+                        count = 0;
+                        for (j = 0; j < columns; j++) {
+                            for (i = 0; i < totalQuestions; i++) {
+                                document.getElementById('a' + count).innerHTML = question[count].answer;
+                                answerButton.value = "Show Questions";
+                                showingAnswers = true;
+                                question[count].showingQuestion = false;
+                                count++;
+                            }
+                        }
+                    }
+                }
+                MathJax.typesetPromise();
+            }
+            function refreshQuestion(col, i) {
+                level = document.getElementById("level" + col).value;
+                getQuestion(document.getElementById("topic" + col).value, level / 10);
+                question[i] = question[question.length - 1];
+                question.pop();
+                var attempts = 0;
+                do {
+                    var repeat = false;
+                    for (var k = 0; k < totalQuestions * 3; k++) {
+                        if (i !== k && question[i].answer === question[k].answer) {
+                            repeat = true;
+                        }
+                    }
+                    if (repeat) {
+                        getQuestion(document.getElementById("topic" + col).value, level / 10);
+                        question[i] = question[question.length - 1];
+                        question.pop();
+                        attempts++;
+                        if (attempts % 30 === 0) {
+                            level++;
+                        }
+                    }
+                } while (repeat === true && attempts < 100);
+                toggleAnswer(i);
+            }
+        </script>
+<style>
+            section.controls h2 {
+                font-size: 1.2em;
+            }
+            section.controls div {
+                margin: 0.4em;
+            }
+            div.topicHead {
+                float: left;
+                width: calc(94% / 3);
+                margin: 0.4em;
+            }
+            div.questionNumber {
+                font-weight: bold;
+                float: left;
+                font-size: 0.6em;
+                margin-right: 0.5em;
+            }
+            div.questionBox {
+                font-size: 1.8em;
+                width:  calc(97% / 3);
+                float: left;
+                margin: 0.5%;
+                box-sizing: border-box;
+            }
+            div.question {
+                min-height: 2.1em;
+            }
+            div.question:hover {
+                color: #959;
+            }
+            div.smaller {
+                font-size: 0.6em;
+            }
+            #menuTopics {
+                overflow: auto;
+            }
+            #display {
+                display: none;
+            }
+            #timeDisplay {
+                font-size: 1.6em;
+            }
+            @media (max-width: 800px){
+                div.topicHead {
+                    width: 99%;
+                }
+                div.questionBox {
+                    width:  99%;
+                }
+            }
+            @media print {
+                @page {size: landscape}
+            }
+        </style>
+<script async src='/cdn-cgi/bm/cv/669835187/api.js'></script></head>
+<body onload="setUp();">
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-44508399-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+<section id="controls" class="controls border">
+<h1>Question Generator</h1>
+<div>
+<div>
+<label>I want </label>
+<select onchange='setUp();' id='colSelect'>
+<option value=1>1</option><option value=2>2</option><option selected value=3>3</option><option value=4>4</option><option value=5>5</option><option value=6>6</option><option value=7>7</option><option value=8>8</option><option value=9>9</option> </select>
+<label for='colSelect'>groups containing</label>
+<select id='totalQuestionsSelect'>
+<option value=1>1</option><option value=2>2</option><option value=3>3</option><option value=4>4</option><option selected value=5>5</option><option value=6>6</option><option value=7>7</option><option value=8>8</option><option value=9>9</option><option value=10>10</option><option value=11>11</option><option value=12>12</option><option value=13>13</option><option value=14>14</option><option value=15>15</option><option value=16>16</option><option value=17>17</option><option value=18>18</option><option value=19>19</option><option value=20>20</option><option value=21>21</option><option value=22>22</option><option value=23>23</option><option value=24>24</option><option value=25>25</option> </select>
+<label for='totalQuestionsSelect'>questions per group.</label>
+<label for='bgSelect'>Background:</label>
+<input style='max-width: 4em' oninput='changeBG(this.value)' onchange='changeBG(this.value)' value='#ffffff' type='color' id='bgSelect'>
+</div>
+ </div>
+<div id='menuTopics'></div>
+<div>
+<label for='timeSelect'>Time:</label><select id='timeSelect'><option value=60>1 minute</option><option value=120>2 minutes</option><option value=180>3 minutes</option><option value=240>4 minutes</option><option value=300>5 minutes</option><option value=360>6 minutes</option><option value=420>7 minutes</option><option value=480>8 minutes</option><option value=540>9 minutes</option><option selected='selected' value=600>10 minutes</option><option value=660>11 minutes</option><option value=720>12 minutes</option><option value=780>13 minutes</option><option value=840>14 minutes</option><option value=900>15 minutes</option><option value=960>16 minutes</option><option value=1020>17 minutes</option><option value=1080>18 minutes</option><option value=1140>19 minutes</option><option value=1200>20 minutes</option><option value=1260>21 minutes</option><option value=1320>22 minutes</option><option value=1380>23 minutes</option><option value=1440>24 minutes</option><option value=1500>25 minutes</option><option value=1560>26 minutes</option><option value=1620>27 minutes</option><option value=1680>28 minutes</option><option value=1740>29 minutes</option><option value=1800>30 minutes</option></select> <input type='button' value='Create Questions' onclick='createSheet()'>
+<input type='button' value='Random Topics' onclick='randomTopics()'>
+</div>
+<div class='border ad'>
+<script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+
+<ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-4338550553309231" data-ad-slot="8324391446" data-ad-format="auto"></ins>
+<script>
+    (adsbygoogle = window.adsbygoogle || []).push({});
+</script>
+</div>
+</section>
+<section id="display" class="controls border">
+<div id='timeDisplay'></div>
+<input type='button' onclick='time -= 59;
+                    timedCount()' value='-1 min'>
+<input type='button' value='New Questions' onclick='createSheet()'>
+<input id="menuButton" type="button" value="Main Menu" onclick="showMenu()">
+<input type="button" value="Print Sheet" onclick="window.print()">
+<input type="button" id="answerButton" value="Show Answers" onclick="toggleAnswers()">
+<input type='button' onclick='time += 61;
+                    timedCount()' value='+1 min'>
+</section>
+<section id="questionsIWB" class="noSelect">
+</section>
+<footer id="footer">
+<div>
+<small>
+<a href="/">Home</a> |
+<a href="/doNowMenu">Do Nows</a> |
+<a href="/gcseMenu">GCSE Resources</a> |
+<a href="/manipulativeMenu">Manipulatives</a> |
+<a href="/printableMenu">Printables</a> |
+<a href="/generatorMenu">Question Generators</a> |
+<a href="/starterMenu">Starters</a> |
+<a href="/toolMenu">Tools</a> |
+<a href="/privacy">Privacy</a> |
+<a href="/about">Contact</a> |
+Copyright &copy;
+</small>
+</div>
+</footer> <script type="text/javascript">(function(){window['__CF$cv$params']={r:'6828d775cb0be855',m:'b64e4b401cb854b9ee52795b784e756ad29e87e2-1629601130-1800-AXGyBd9CD/8CSaaJteB96ZY2GbDiAUAswg/eljU5c1anLTStc8qtJsYDnrhP7D1iS/l4UeEvQvMj+kaOyA78EJ7Jh3fqrHQxHP/HvLLP3wOQ4PlBol/Rn4V0h4myzT0VGvsdITfVeG0SDXeq2Db638M=',s:[0x43c29222e7,0xae996c6fd4],}})();</script></body>
+</html>

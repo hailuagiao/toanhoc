@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang='en'>
+<head>
+<meta charset='UTF-8'>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="author" content="Jonathan Hall">
+<link rel="icon" type="image/png" href="/media/favicon192.png" sizes=192x192>
+<link rel="stylesheet" href="/styles/main.css"> <meta name="description" content="Information about MathsBot.com and its creator Jonathan Hall.">
+<title>Information and Contact - MathsBot</title>
+<style>
+            input:hover {
+                background-color: transparent;
+                color: #000;
+            }
+            div.questionBox {
+                min-height: 70vh;
+            }
+            div.socialButton {
+                margin: 1.8em;
+                text-align: center;
+            }
+            p {
+                margin-top: 0.6em;
+                margin-bottom: 0.6em;
+            }
+        </style>
+<script async src='/cdn-cgi/bm/cv/669835187/api.js'></script></head>
+<body>
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-44508399-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+<header>
+<h1>Information and Contact - MathsBot.com</h1>
+</header>
+<div class="questionBox border" style="overflow: auto;">
+<div style="max-width: 800px; margin: auto;">
+<div style="width: 50%; float: left; margin-top: 2%;">
+<script async src="//platform.twitter.com/widgets.js" charset="utf-8"></script>
+<img style="border-radius: 1em" alt="Jonathan Hall (@StudyMaths) at MathsConf7 in Leeds 2016" src='media/profilePicture.jpg'>
+<p>
+MathsBot.com is designed, written and maintained by Jonathan Hall, a maths teacher working in Leeds.
+</p>
+<p>
+He also created the popular <a href="//formtimeideas.com">FormTimeIdeas.com</a> and <a href="//nonexamples.com">NonExamples.com</a>.
+</p>
+</div>
+<div style="width: 50%; float: left; margin-top: 2%;">
+<div class='contactForm'>
+<h2>Contact</h2>
+<p>
+If you have any suggestions or ideas for the site, my preferred method of contact is via Twitter.
+</p>
+<p>
+Alternatively, email me at <a href="/cdn-cgi/l/email-protection#3c5653525d48545d527c515d48544f5e5348125f5351"><span class="__cf_email__" data-cfemail="fd9792939c89959c93bd909c89958e9f9289d39e9290d3">[email&#160;protected]</span></a>
+</p>
+</div>
+<div class="socialButton">
+<a href="https://twitter.com/StudyMaths" data-size=large class="twitter-follow-button" data-show-count="false">Follow @StudyMaths</a>
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script async src="//platform.twitter.com/widgets.js" charset="utf-8"></script>
+</div>
+<div class="socialButton">
+<form action="https://www.paypal.com/donate" method="post" target="_top">
+<input type="hidden" name="hosted_button_id" value="JTDXWNQS44R3Y" />
+<input type="image" src="https://www.paypalobjects.com/en_GB/i/btn/btn_donate_LG.gif" border="0" name="submit" title="PayPal - The safer, easier way to pay online!" alt="Donate with PayPal button" />
+<img alt="" border="0" src="https://www.paypal.com/en_GB/i/scr/pixel.gif" width="1" height="1" />
+</form>
+</div>
+<div class="socialButton">
+<a href="https://www.patreon.com/bePatron?u=41819389" data-patreon-widget-type="become-patron-button">Become a Patron!</a>
+<script async src="https://c6.patreon.com/becomePatronButton.bundle.js"></script>
+</div>
+</div>
+</div>
+</div>
+</div>
+<footer id="footer">
+<div>
+<small>
+<a href="/">Home</a> |
+<a href="/doNowMenu">Do Nows</a> |
+<a href="/gcseMenu">GCSE Resources</a> |
+<a href="/manipulativeMenu">Manipulatives</a> |
+<a href="/printableMenu">Printables</a> |
+<a href="/generatorMenu">Question Generators</a> |
+<a href="/starterMenu">Starters</a> |
+<a href="/toolMenu">Tools</a> |
+<a href="/privacy">Privacy</a> |
+<a href="/about">Contact</a> |
+Copyright &copy;
+</small>
+</div>
+</footer><script type="text/javascript">(function(){window['__CF$cv$params']={r:'6828d7a20a59e855',m:'1ff9c6a28270b47816feaa5bbe37b09e67bdea94-1629601137-1800-ASInQZBYnoJbC0jk/TGHj/o8d/NyLJsT8RmdRfLNMiWMKbATQ8FYxU6bpS3651ClYuuo8YxbJDyiB7YE3ojZOslqFXYP/qSTPhlydpLuVFsHJ9UbKsTfe2V33xmKUAvm+Q==',s:[0xc6adcbd16c,0x5645ae1ac9],}})();</script></body>
+</html>

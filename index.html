@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang='en'>
+<head>
+<meta charset='UTF-8'>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="author" content="Jonathan Hall">
+<link rel="stylesheet" href="/styles/main.css">
+
+<meta name="description" content="Interactive tools and activites to aid the teaching of mathematics. Hundreds of randomly generated questions and answers.">
+<link rel="icon" type="image/png" href="/media/favicon192.png" sizes=192x192>
+<link rel="apple-touch-icon" href="/media/favicon192.png" sizes=192x192>
+<link rel='stylesheet' href='https://fonts.googleapis.com/css?family=Arvo:400,700,400italic,700italic'>
+<link rel="stylesheet" type="text/css" href="//cdnjs.cloudflare.com/ajax/libs/cookieconsent2/3.0.3/cookieconsent.min.css" />
+<script src='/scripts/utilities.js'></script>
+
+<script src="//cdnjs.cloudflare.com/ajax/libs/cookieconsent2/3.0.3/cookieconsent.min.js"></script>
+
+<script>
+            var count = 0;
+            function hideDiv(type) {
+                var divsToHide = document.getElementsByClassName(type); //divsToHide is an array
+                for (var i = 0; i < divsToHide.length; i++) {
+                    divsToHide[i].style.display = "none";
+                }
+            }
+            document.addEventListener("keydown", function (event) {
+                switch (event.key) {
+                    case "Delete":
+                        count++;
+                        if (count === 8) {
+                            hideDiv("ad");
+                            hideDiv("social");
+                        }
+                        break;
+                }
+            });
+            function pickQuote() {
+                var data = "";
+                switch (getRandom(0, 2)) {
+                    case 0:
+                        data = "There's always a prime between n and 2n.";
+                        break;
+                    case 1:
+                        var a = getRandom(2, 5);
+                        data = "What's larger, " + a + "n or n + " + a + "?";
+                        break;
+                    case 2:
+                        var a = getRandom(2, 5);
+                        data = "Does multiplying always make it bigger?";
+                        break;
+                }
+                quote.innerHTML = data;
+            }
+        </script>
+<title>MathsBot.com - Tools for Maths Teachers</title>
+<style>
+            header {
+                position: relative;
+                z-index: 1; 
+            }
+            h1 {
+                font-family: 'Arvo', sans-serif;
+                font-size: 3em;
+                padding-bottom: 0;
+            }
+            h2 {
+                padding-top: 0
+            }
+            div.social {
+                position: absolute;
+                left: 6px;
+                top: 5px;
+                z-index: 1;
+            }
+            section.menu {
+                background-color: #959;
+                padding: 0;
+                margin: 0;
+                z-index: 1;
+            }
+            div.ad {
+                text-align: center;
+                background-color: #fff;
+                margin: 1%;
+                padding: 1%;
+                border-radius: 0.3em;
+                box-shadow: 4px 4px 4px #303;   
+            }
+            div.viewAll {
+                width: 100%;
+                overflow: auto;
+                text-align: center;
+            }
+            div.viewAll h4 {
+                background: #515;
+                color: #fff;
+                display: inline-block;
+                padding: 0.8%;
+                font-size: 1.2em;
+                font-weight: bold;
+                border-radius: 0.3em;
+                border: 1px solid #515;
+                font-weight: normal;
+                margin: 0;
+                margin-bottom: 1%;
+            }
+            div.viewAll h4 a {
+                color: #fff;
+            }
+            div.viewAll h4:hover {
+                color: #fff;
+                background: #959;
+            }
+            div.menuRow {
+                background-color: #fff;
+                overflow: auto;
+                margin: 1%;
+                border-radius: 0.3em;
+                box-shadow: 4px 4px 4px #303;
+            }
+            div.menuRow h3 {
+                font-family: 'Arial', sans-serif;
+                font-weight: normal;
+                font-size: 1.6em;
+                text-align: center;
+                margin-top: 1%;
+                margin-bottom: 0;
+            }
+            div.menuRow a {
+                text-decoration: none;
+                color: #515;
+                position: relative;
+                z-index: 1;
+            }
+            div.menuItem {
+                width: 18%;
+                margin: 1%;
+                padding: 0.5%;
+                float: left;
+                text-align: center;
+                border-radius: 0.3em;
+                border: 1px solid #515;
+                box-sizing: border-box;
+            }
+            div.menuItem a{
+                text-decoration: none;
+                color: #000;
+            }
+            div.menuItem h4 {
+                margin-top: 0.2em;
+                margin-bottom: 0.2em;
+                font-size: 1vw;
+                color: #515;
+            }
+            div.menuItem:hover {
+                border: 1px solid #959;
+                background-color: #fdf;
+                transition: 0.2s;
+            }
+            body {
+                position: relative;
+            }
+            #snowCanvas {
+                width: 100vw;
+                height: 50vh;
+                position: fixed;
+                height: 90vh;
+                background: transparent;
+                z-index: 0;
+            }
+            @media (max-width: 900px){
+                div.menuItem {
+                    width: 31.3%;
+                    margin: 1%;
+                }
+                div.menuItem h4 {
+                    font-size: 2vw;
+                }
+                div.nav li {
+                    width: 31.2%;
+                }
+            }
+            @media (max-width: 600px){
+                div.menuItem {
+                    width: 48%;
+                    margin: 1%;
+                }
+                div.menuItem h4 {
+                    font-size: 3vw;
+                }
+                div.nav li {
+                    width: 49%;
+                }
+                div.social {
+                    display: none;
+                }
+                div.search {
+                    display: none;
+                }
+            }
+            header h2 a {
+                color: #ffffff;
+                text-decoration: none;
+            }
+            header h2 a:hover {
+                text-decoration: underline;
+            }
+            .snowButton {
+                width: 7em;
+                margin-bottom: 0.8em;
+            }
+            .snowButton:hover {
+                background: #959;
+                transition: 0.2s;
+                cursor: pointer
+            }
+        </style>
+<script async src='/cdn-cgi/challenge-platform/h/b/scripts/invisible.js'></script></head>
+<body id='Home'>
+<canvas id='snowCanvas'></canvas>
+<header>
+<h1>MathsBot.com</h1>
+<h2 id="quote">Tools for Maths Teachers</h2>
+<div class="homeIcon">
+<img title="Camera" class="icon" onclick="window.open('/cam', '_blank', 'toolbar=0,width=' + screen.width + ',height=' + screen.height + '');" src="/media/icons/camera.svg">
+<img title="Timer" class="icon" src="/media/icons/clock.svg" onclick="window.open('/timer', '_blank', 'width=500,height=220');">
+<img title="Symbols" class="icon" src="/media/icons/functions.svg" onclick="window.open('/symbols', '_blank', 'width=300,height=350');">
+<img title="Calculator" class="icon" src="/media/icons/calc.svg" onclick="window.open('/calc', '_blank', 'width=300,height=450');">
+</div>
+<div class="border search">
+<form action="/search" method="post">
+<input onclick="this.select()" type="search" placeholder="Search.." name="search" id="search">
+<input title="Search" type="image" name="submit" src="/media/icons/search.svg" border="0" alt="Submit">
+</form>
+</div>
+
+</header>
+<section class="menu">
+<div id='Home' class='menuRow nav'>
+<ul>
+<li><a title="GCSE Resources" href="/gcseMenu">GCSE Resources</a></li>
+<li><a title="Random Question Generators" href="/generatorMenu">Question Generators</a></li>
+<li><a title="Virtual Manipulatives" href="/manipulativeMenu">Manipulatives</a></li>
+<li><a title="Printable Resources" href="/printableMenu">Printables</a></li>
+<li><a title="Puzzles and Games" href="/puzzleMenu">Puzzles</a></li>
+<li><a title="Lesson Starters and Drills" href="/starterMenu">Starters</a></li>
+<li><a title="Interactive Tools, Tables and Charts" href="/toolMenu">Tools</a></li>
+<li><a title="Support the Site" href="/friends">Support</a></li>
+</ul>
+</div> 
+</div><div class='menuRow'><h3 id='Do Now'><a href='#Home'>Do Now</a></h3><div class='menuItem'><a href='doNows/addition'><img class='thumb' alt='1. Addition thumbnail' src='/media/thumbnails/doNowAddition.jpg' /><h4>1. Addition</h4></a></div><div class='menuItem'><a href='doNows/subtraction'><img class='thumb' alt='2. Subtraction thumbnail' src='/media/thumbnails/doNowSubtraction.jpg' /><h4>2. Subtraction</h4></a></div><div class='menuItem'><a href='doNows/multiplication'><img class='thumb' alt='3. Multiplication thumbnail' src='/media/thumbnails/doNowMultiplication.jpg' /><h4>3. Multiplication</h4></a></div><div class='menuItem'><a href='doNows/division'><img class='thumb' alt='4. Division thumbnail' src='/media/thumbnails/doNowDivision.jpg' /><h4>4. Division</h4></a></div><div class='menuItem'><a href='doNows/equationsIntro'><img class='thumb' alt='5. Introduction to Equations thumbnail' src='/media/thumbnails/algebraBasics.jpg' /><h4>5. Introduction to Equations</h4></a></div><div class='viewAll'><a href='doNowMenu'><h4>View All Do Now</h4></a></div></div><div class='menuRow'><h3 id='GCSE Resources'><a href='#Home'>GCSE Resources</a></h3><div class='menuItem'><a href='activities/countdown'><img class='thumb' alt='Exam Countdown thumbnail' src='/media/thumbnails/countdown.jpg' /><h4>Exam Countdown</h4></a></div><div class='menuItem'><a href='gcse/formulae'><img class='thumb' alt='Formulae thumbnail' src='/media/thumbnails/formulae.jpg' /><h4>Formulae</h4></a></div><div class='menuItem'><a href='gcseQuestions'><img class='thumb' alt='GCSE Exam Style Questions thumbnail' src='/media/thumbnails/gcseQuestions.jpg' /><h4>GCSE Exam Style Questions</h4></a></div><div class='menuItem'><a href='gcse/revisionRecall'><img class='thumb' alt='GCSE Recall and Recap thumbnail' src='/media/thumbnails//revisionRecall.jpg' /><h4>GCSE Recall and Recap</h4></a></div><div class='menuItem'><a href='gcseRevisionGrid'><img class='thumb' alt='GCSE Revision Grid thumbnail' src='/media/thumbnails/gcseRevisionGrid.jpg' /><h4>GCSE Revision Grid</h4></a></div><div class='viewAll'><a href='gcseMenu'><h4>View All GCSE Resources</h4></a></div></div> 
+
+<div class='menuRow'><h3 id='Manipulatives'><a href='#Home'>Manipulatives</a></h3><div class='menuItem'><a href='manipulatives/discs'><img class='thumb' alt='Algebra Discs thumbnail' src='/media/thumbnails/discs.jpg' /><h4>Algebra Discs</h4></a></div><div class='menuItem'><a href='manipulatives/tiles'><img class='thumb' alt='Algebra Tiles thumbnail' src='/media/thumbnails/tiles.jpg' /><h4>Algebra Tiles</h4></a></div><div class='menuItem'><a href='manipulatives/bar'><img class='thumb' alt='Bar Modelling thumbnail' src='/media/thumbnails/bar.jpg' /><h4>Bar Modelling</h4></a></div><div class='menuItem'><a href='manipulatives/coins'><img class='thumb' alt='Coins thumbnail' src='/media/thumbnails/coins.jpg' /><h4>Coins</h4></a></div><div class='menuItem'><a href='manipulatives/pegboard'><img class='thumb' alt='Coordinate Pegboard thumbnail' src='/media/thumbnails/pegboard.jpg' /><h4>Coordinate Pegboard</h4></a></div><div class='viewAll'><a href='manipulativeMenu'><h4>View All Manipulatives</h4></a></div></div><div class='menuRow'><h3 id='Printables'><a href='#Home'>Printables</a></h3><div class='menuItem'><a href='printables/angleNames'><img class='thumb' alt='Angle Names thumbnail' src='/media/thumbnails/angleNames.jpg' /><h4>Angle Names</h4></a></div><div class='menuItem'><a href='printables/arithmagons'><img class='thumb' alt='Arithmogons thumbnail' src='/media/thumbnails/printableArithmagons.jpg' /><h4>Arithmogons</h4></a></div><div class='menuItem'><a href='printables/axes'><img class='thumb' alt='Axes thumbnail' src='/media/thumbnails/axes.jpg' /><h4>Axes</h4></a></div><div class='menuItem'><a href='printables/angleRules'><img class='thumb' alt='Basic Angle Rules thumbnail' src='/media/thumbnails/angleRules.jpg' /><h4>Basic Angle Rules</h4></a></div><div class='menuItem'><a href='printables/dottyGrids'><img class='thumb' alt='Dotty Grids thumbnail' src='/media/thumbnails/dottyGrids.jpg' /><h4>Dotty Grids</h4></a></div><div class='viewAll'><a href='printableMenu'><h4>View All Printables</h4></a></div></div> 
+<div class='menuRow'><h3 id='Puzzles'><a href='#Home'>Puzzles</a></h3><div class='menuItem'><a href='tools/arithmagons'><img class='thumb' alt='Arithmagons thumbnail' src='/media/thumbnails/arithmagons.jpg' /><h4>Arithmagons</h4></a></div><div class='menuItem'><a href='tools/cardioids'><img class='thumb' alt='Cardioids and Curve Stitching thumbnail' src='/media/thumbnails/cardioids.jpg' /><h4>Cardioids and Curve Stitching</h4></a></div><div class='menuItem'><a href='activities/chaos'><img class='thumb' alt='Chaos Game thumbnail' src='/media/thumbnails/chaos.jpg' /><h4>Chaos Game</h4></a></div><div class='menuItem'><a href='puzzles/cisterianNumerals'><img class='thumb' alt='Cistercian Numerals thumbnail' src='/media/thumbnails/cisterianNumerals.jpg' /><h4>Cistercian Numerals</h4></a></div><div class='menuItem'><a href='puzzles/consecutiveNumberTypes'><img class='thumb' alt='Consecutive Number Types thumbnail' src='/media/thumbnails/consecutiveNumberTypes.jpg' /><h4>Consecutive Number Types</h4></a></div><div class='viewAll'><a href='puzzleMenu'><h4>View All Puzzles</h4></a></div></div><div class='menuRow'><h3 id='Question Generators'><a href='#Home'>Question Generators</a></h3><div class='menuItem'><a href='aflCheckUp'><img class='thumb' alt='AfL Check Up thumbnail' src='/media/thumbnails/aflCheckUp.jpg' /><h4>AfL Check Up</h4></a></div><div class='menuItem'><a href='questionsIWB'><img class='thumb' alt='Differentiated Questions thumbnail' src='/media/thumbnails/questionsIWB.jpg' /><h4>Differentiated Questions</h4></a></div><div class='menuItem'><a href='generators/directedMCQs'><img class='thumb' alt='Directed MQC thumbnail' src='/media/thumbnails/directedMCQ.jpg' /><h4>Directed MQC</h4></a></div><div class='menuItem'><a href='activities/loopCards'><img class='thumb' alt='Loop Cards thumbnail' src='/media/thumbnails/loopCards.jpg' /><h4>Loop Cards</h4></a></div><div class='menuItem'><a href='questionGenerator'><img class='thumb' alt='Question Generator thumbnail' src='/media/thumbnails/questionGenerator.jpg' /><h4>Question Generator</h4></a></div><div class='viewAll'><a href='generatorMenu'><h4>View All Question Generators</h4></a></div></div> 
+<div class='menuRow'><h3 id='Starters and Drills'><a href='#Home'>Starters and Drills</a></h3><div class='menuItem'><a href='starters/fluentCalcs'><img class='thumb' alt='Fluent Calculations thumbnail' src='/media/thumbnails/fluentCalcs.jpg' /><h4>Fluent Calculations</h4></a></div><div class='menuItem'><a href='starters/matchingPairs'><img class='thumb' alt='Matching Pairs thumbnail' src='/media/thumbnails/matchingPairs.jpg' /><h4>Matching Pairs</h4></a></div><div class='menuItem'><a href='activities/drills'><img class='thumb' alt='Maths Drills thumbnail' src='/media/thumbnails/drills.jpg' /><h4>Maths Drills</h4></a></div><div class='menuItem'><a href='starters/multiplicationGrids'><img class='thumb' alt='Multiplication Grids thumbnail' src='/media/thumbnails/multiplicationGrids.jpg' /><h4>Multiplication Grids</h4></a></div><div class='menuItem'><a href='starters/numberOfTheDay'><img class='thumb' alt='Number of the Day thumbnail' src='/media/thumbnails/numberOfTheDay.jpg' /><h4>Number of the Day</h4></a></div><div class='viewAll'><a href='starterMenu'><h4>View All Starters and Drills</h4></a></div></div><div class='menuRow'><h3 id='Tools'><a href='#Home'>Tools</a></h3><div class='menuItem'><a href='tools/circlesVG'><img class='thumb' alt='Area and Circumference of Circles thumbnail' src='/media/thumbnails/circlesVG.jpg' /><h4>Area and Circumference of Circles</h4></a></div><div class='menuItem'><a href='activities/negativePatterns'><img class='thumb' alt='Directed Number Patterns thumbnail' src='/media/thumbnails/negativePatterns.jpg' /><h4>Directed Number Patterns</h4></a></div><div class='menuItem'><a href='tools/fractionGrids'><img class='thumb' alt='Fraction and Ratio Shading thumbnail' src='/media/thumbnails/fractionGrids.jpg' /><h4>Fraction and Ratio Shading</h4></a></div><div class='menuItem'><a href='tools/frequencyTables'><img class='thumb' alt='Frequency Tables thumbnail' src='/media/thumbnails/frequencyTables.jpg' /><h4>Frequency Tables</h4></a></div><div class='menuItem'><a href='tools/functionMachines'><img class='thumb' alt='Function Machines thumbnail' src='/media/thumbnails/functionMachines.jpg' /><h4>Function Machines</h4></a></div><div class='viewAll'><h4><a id='tool' href='toolMenu'>View All Tools</a></h4></div></div> </section>
+<footer id="footer">
+<div>
+<small>
+<a href="/">Home</a> |
+<a href="/doNowMenu">Do Nows</a> |
+<a href="/gcseMenu">GCSE Resources</a> |
+<a href="/manipulativeMenu">Manipulatives</a> |
+<a href="/printableMenu">Printables</a> |
+<a href="/generatorMenu">Question Generators</a> |
+<a href="/starterMenu">Starters</a> |
+<a href="/toolMenu">Tools</a> |
+<a href="/privacy">Privacy</a> |
+<a href="/about">Contact</a> |
+Copyright &copy;
+</small>
+</div>
+</footer> 
+</body>
+</html>

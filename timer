@@ -1,0 +1,211 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="author" content="Jonathan Hall">
+<link rel="icon" type="image/png" href="/media/favicon192.png" sizes="192x192">
+<link rel="stylesheet" href="/styles/main.css">
+<script src="/scripts/questionBank.js"></script>
+<script src="/scripts/differentiator.js"></script>
+<script src="/scripts/utilities.js"></script> <meta name="description" content="A simple to use timer. Ideal for use in the classroom.">
+<title>Timer</title>
+<script>
+            var timer;
+            function Timer(value) {
+                this.value = value;
+                this.step = 1;
+                this.increasing = false;
+                this.timerCount;
+                this.running = false;
+                this.toggle = function () {
+                    this.increasing = !this.increasing;
+                    if (this.increasing) {
+                        countToggle.src = "/media/icons/arrowUp.svg";
+                        countToggle.title = "Count Up";
+                    } else {
+                        countToggle.src = "/media/icons/arrowDown.svg";
+                        countToggle.title = "Count Down";
+                    }
+                };
+                this.start = function () {
+                    if (!this.running) {
+                        if (this.increasing) {
+                            this.value -= this.step;
+                        } else {
+                            this.value += this.step;
+                        }
+                        tick();
+                        this.running = true;
+                    }
+                };
+                this.stop = function () {
+                    this.running = false;
+                    clearInterval(this.timerCount);
+                };
+                this.reset = function (x) {
+                    this.value = parseInt(x);
+                    this.stop();
+                    this.update();
+                };
+                this.changeTime = function (x) {
+                    this.value += parseInt(x);
+                    if (this.value < 0) {
+                        this.value = 0;
+                    }
+                    this.update();
+                };
+                this.update = function () {
+                    var seconds = this.value;
+                    var hours = Math.floor(seconds / (60 * 60));
+                    seconds -= hours * (60 * 60);
+                    var minutes = Math.floor(seconds / 60);
+                    seconds -= minutes * 60;
+                    if (hours < 10) {
+                        hours = "0" + hours;
+                    }
+                    if (minutes < 10) {
+                        minutes = "0" + minutes;
+                    }
+                    if (seconds < 10) {
+                        seconds = "0" + seconds;
+                    }
+                    document.getElementById('hours').innerHTML = hours;
+                    document.getElementById('minutes').innerHTML = minutes;
+                    document.getElementById('seconds').innerHTML = seconds;
+                };
+                this.count = function () {
+                    if (this.increasing) {
+                        this.value += this.step;
+                    } else {
+                        this.value -= this.step;
+                    }
+
+                    if (this.value < 0) {
+                        this.value = 0;
+                    }
+
+                    var seconds = this.value;
+                    var hours = Math.floor(seconds / (60 * 60));
+                    seconds -= hours * (60 * 60);
+                    var minutes = Math.floor(seconds / 60);
+                    seconds -= minutes * 60;
+                    if (hours < 10) {
+                        hours = "0" + hours;
+                    }
+                    if (minutes < 10) {
+                        minutes = "0" + minutes;
+                    }
+                    if (seconds < 10) {
+                        seconds = "0" + seconds;
+                    }
+                    document.getElementById('hours').innerHTML = hours;
+                    document.getElementById('minutes').innerHTML = minutes;
+                    document.getElementById('seconds').innerHTML = seconds;
+                    this.timerCount = setInterval(tick, 1000);
+
+                };
+            }
+            function init() {
+                timer = new Timer(300);
+                timer.update();
+            }
+            function tick() {
+                clearInterval(timer.timerCount);
+                timer.count();
+            }
+
+        </script>
+<style>
+            #timerDiv {
+                height: 92vh;
+                padding: 1%;
+                color: #515;
+            }
+            #timerDiv .controls {
+                height: 1vh;
+                background: #959;
+            }
+            table {
+                top: 20vh;
+                margin: 2% auto;
+                width: 96%;
+            }
+            #timerDiv .controls img {
+                margin: 1%;
+                font-size: 2vw;
+            }
+            #timerDiv .display {
+                height: 40vmin;
+                font-size: 30vmin;
+                margin: 0;
+                padding: 0;
+            }
+            #timerDiv .colon {
+                width: 0.1em;
+            }
+            #timerDiv table {
+                margin: auto;
+            }
+            #timerDiv table td {
+                width: 1.8vmin;
+                border: none;
+            }
+            div.buttons {
+                margin: 1.5%;
+            }
+            div.buttons img {
+                font-size: 4.8vmin;
+                height: 6vmax;
+                width: 6vmax;
+                margin: 1%;
+            }
+        </style>
+</head>
+<body onload="init();">
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-JYHV7BKFZS"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-JYHV7BKFZS');
+</script> <section>
+<div id="content" class="questionBox border">
+<div id="timerDiv">
+<table class="border">
+<tr class="controls">
+<td><img title="+1 hour" class="icon" onclick="timer.changeTime(60 * 60)" src="/media/icons/arrowUp.svg"></td>
+<td class="colon"></td>
+<td><img title="+1 minute" class="icon" onclick="timer.changeTime(60)" src="/media/icons/arrowUp.svg"></td>
+<td class="colon"></td>
+<td><img title="+1 second" class="icon" onclick="timer.changeTime(5)" src="/media/icons/arrowUp.svg"></td>
+</tr>
+<tr class="display">
+<td id="hours"></td>
+<td class="colon">:</td>
+<td id="minutes"></td>
+<td class="colon">:</td>
+<td id="seconds"></td>
+</tr>
+<tr class="controls">
+<td><img title="-1 hour" class="icon" onclick="timer.changeTime(-60 * 60)" src="/media/icons/arrowDown.svg"></td>
+<td class="colon"></td>
+<td><img title="-1 minute" class="icon" onclick="timer.changeTime(-60)" src="/media/icons/arrowDown.svg"></td>
+<td class="colon"></td>
+<td><img title="-1 second" class="icon" onclick="timer.changeTime(-5)" src="/media/icons/arrowDown.svg"></td>
+</tr>
+</table>
+<div class="buttons">
+<img title="Reset Timer" class="icon" onclick="timer.reset(parseInt(300))" src="/media/icons/replay.svg">
+<img title="Stop Timer" class="icon" onclick="timer.stop()" src="/media/icons/stop.svg">
+<img title="Start Timer" class="icon" onclick="timer.start()" src="/media/icons/play.svg">
+<img title="Count Down" id="countToggle" class="icon" onclick="timer.toggle()" src="/media/icons/arrowDown.svg">
+</div>
+</div>
+</div>
+</section>
+</body>
+</html>

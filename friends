@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang='en'>
+<head>
+<meta charset='UTF-8'>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="author" content="Jonathan Hall">
+<link rel="stylesheet" href="/styles/main.css">
+<meta name="description" content="Friends and supporters of MathsBot.com">
+<link rel="icon" type="image/png" href="/media/favicon192.png" sizes=192x192>
+<link rel="apple-touch-icon" href="/media/favicon192.png" sizes=192x192>
+<link rel='stylesheet' href='https://fonts.googleapis.com/css?family=Arvo:400,700,400italic,700italic'>
+<script src='/scripts/utilities.js'></script>
+<title>MathsBot - Friends</title>
+<style>
+            header {
+                position: relative;
+                z-index: 1; 
+            }
+            h1 {
+                font-family: 'Arvo', sans-serif;
+                font-size: 3em;
+            }
+            section.menu {
+                background-color: #959;
+                padding: 0;
+                margin: 0;
+                z-index: 1;
+            }
+            div.menuRow {
+                background-color: #fff;
+                overflow: auto;
+                margin: 1%;
+                border-radius: 0.3em;
+                box-shadow: 4px 4px 4px #303;
+            }
+            div.menuRow h3 {
+                font-family: 'Arial', sans-serif;
+                font-weight: normal;
+                font-size: 1.6em;
+                text-align: center;
+                margin: 1%;
+            }
+            div.menuRow a {
+                text-decoration: none;
+                color: #515;
+                position: relative;
+                z-index: 1;
+            }
+            body {
+                position: relative;
+            }
+            div.patreon {
+                margin: 1%;
+                text-align: center;
+            }
+            div.donateButton {
+                display: inline-block;
+                margin-left: 2em;
+                margin-right: 2em;
+            }
+            h4 {
+                text-align: center;
+            }
+            table {
+                font-size: 1.4em;
+                text-align: center;
+                margin: 1% auto;
+            }
+            td, th {
+                padding: 0.2em;
+            }
+            table a:hover {
+                text-decoration: underline;
+            }
+            @media (max-width: 568px){
+                table {
+                    font-size: 0.85em;
+                    margin: 1% auto;
+                }
+            }
+        </style>
+<script async src='/cdn-cgi/challenge-platform/h/b/scripts/invisible.js'></script></head>
+<body id='Home'>
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-44508399-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+<header>
+<h1>Support MathsBot</h1>
+<h2>A huge thank you to everyone supporting and using the site.</h2>
+<div class="homeIcon">
+<img title="Home" class="icon" onclick="window.location.href = '/';" src="/media/icons/home.svg">
+<img title="Camera" class="icon" onclick="window.open('/cam', '_blank', 'toolbar=0,width=' + screen.width + ',height=' + screen.height + '');" src="/media/icons/camera.svg">
+<img title="Timer" class="icon" src="/media/icons/clock.svg" onclick="window.open('/timer', '_blank', 'width=500,height=220');">
+<img title="Symbols" class="icon" src="/media/icons/functions.svg" onclick="window.open('/symbols', '_blank', 'width=300,height=350');">
+<img title="Calculator" class="icon" src="/media/icons/calc.svg" onclick="window.open('/calc', '_blank', 'width=300,height=450');">
+</div> <div class="border search">
+<form action="/search" method="post">
+<input onclick="this.select()" type="search" placeholder="Search.." name="search" id="search">
+<input title="Search" type="image" name="submit" src="/media/icons/search.svg" border="0" alt="Submit">
+</form>
+</div>
+</header>
+<section class="menu">
+<div id='Home' class='menuRow nav'>
+<ul>
+<li><a title="GCSE Resources" href="/gcseMenu">GCSE Resources</a></li>
+<li><a title="Random Question Generators" href="/generatorMenu">Question Generators</a></li>
+<li><a title="Virtual Manipulatives" href="/manipulativeMenu">Manipulatives</a></li>
+<li><a title="Printable Resources" href="/printableMenu">Printables</a></li>
+<li><a title="Puzzles and Games" href="/puzzleMenu">Puzzles</a></li>
+<li><a title="Lesson Starters and Drills" href="/starterMenu">Starters</a></li>
+<li><a title="Interactive Tools, Tables and Charts" href="/toolMenu">Tools</a></li>
+<li><a title="Support the Site" href="/friends">Support</a></li>
+</ul>
+</div> <div class='menuRow'>
+<div class="patreon">
+<p>You can support using the PayPal Button or you can become a Patron of the site.</p>
+<div class="donateButton">
+<form action="https://www.paypal.com/donate" method="post" target="_top">
+<input type="hidden" name="hosted_button_id" value="JTDXWNQS44R3Y" />
+<input type="image" src="https://www.paypalobjects.com/en_GB/i/btn/btn_donate_LG.gif" border="0" name="submit" title="PayPal - The safer, easier way to pay online!" alt="Donate with PayPal button" />
+<img alt="" border="0" src="https://www.paypal.com/en_GB/i/scr/pixel.gif" width="1" height="1" />
+</form>
+</div>
+<div class="donateButton">
+<a href="https://www.patreon.com/bePatron?u=41819389" data-patreon-widget-type="become-patron-button">Become a Patron!</a>
+<script async src="https://c6.patreon.com/becomePatronButton.bundle.js"></script>
+</div>
+</div>
+<h3>Friends of MathsBot</h3>
+<table>
+<tr><th>Twitter</th><th>Website</th></tr>
+<tr><td><a href='https://twitter.com/giftedHKO'>@giftedHKO</a></td><td><a href='https://mathshko.com/'>Mathshko.com</a></td></tr>
+<tr><td><a href='https://twitter.com/MrMattock'>@MrMattock</a></td><td><a href='https://visiblemaths.co.uk/'>VisibleMaths.co.uk</a></td></tr>
+<tr><td><a href='https://twitter.com/atulrana'>@atulrana</a></td><td><a href='http://www.atulranatutors.co.uk/'>AtulRanaTutors.co.uk</a></td></tr>
+<tr><td><a href='https://twitter.com/danicquinn'>@danicquinn</a></td><td><a href='https://missquinnmaths.wordpress.com/'>MissQuinnMaths.wordpress.com</a></td></tr>
+<tr><td><a href='https://twitter.com/tessmaths'>@tessmaths</a></td><td><a href='http://www.5rs.co.uk/'>5rs.co.uk</a></td></tr>
+<tr><td><a href='https://twitter.com/MoreThanMaths'>@MoreThanMaths</a></td><td><a href='http://www.morethanmaths.com/teacher/'>morethanmaths.com/teacher</a></td></tr>
+<tr><td><a href='https://twitter.com/mrshawthorne7'>@mrshawthorne7</a></td><td><a href='https://sketchcpd.com/'>SketchCPD.com</a></td></tr>
+<tr><td><a href='https://twitter.com/Arithmaticks'>@Arithmaticks</a></td><td><a href='https://arithmaticks.wordpress.com/'>arithmaticks.wordpress.com</a></td></tr>
+<tr><td><a href='https://twitter.com/MissSDoherty'>@MissSDoherty</a></td><td><a href='https://missdohertysthoughts.wordpress.com/'>missdohertysthoughts.wordpress.com</a></td></tr>
+<tr><td><a href='https://twitter.com/mathszest'>@mathszest</a></td><td><a href='https://mathszest.com/'>MathsZest.com</a></td></tr>
+<tr><td><a href='https://twitter.com/ColleenYoung'>@ColleenYoung</a></td><td><a href='https://colleenyoung.wordpress.com/'>colleenyoung.wordpress.com</a></td></tr>
+</table>
+<h4>If you support MathsBot and would like to add your site to this list then please let me know.</h4>
+</div>
+</section>
+<footer id="footer">
+<div>
+<small>
+<a href="/">Home</a> |
+<a href="/doNowMenu">Do Nows</a> |
+<a href="/gcseMenu">GCSE Resources</a> |
+<a href="/manipulativeMenu">Manipulatives</a> |
+<a href="/printableMenu">Printables</a> |
+<a href="/generatorMenu">Question Generators</a> |
+<a href="/starterMenu">Starters</a> |
+<a href="/toolMenu">Tools</a> |
+<a href="/privacy">Privacy</a> |
+<a href="/about">Contact</a> |
+Copyright &copy;
+</small>
+</div>
+</footer> <script type="text/javascript">(function(){window['__CF$cv$params']={r:'6828d7000bb8e855',m:'df091eafec46a2d7360533a170fc1a6729f76326-1629601111-1800-AR2oEAHwaZM+RhNtYZKMGjdvvexmhsrsIr+ZbLaIx6WAHRg6ncO4MLeuzc33THatAu6++lvJvbOlhHWMk5jbryqC1XCPB5HIURedvJpdf1bGDouc2hzAi2wgl0r+DQU4hQ==',s:[0x792cfff166,0x2bbab11163],u:'/cdn-cgi/challenge-platform/h/b'}})();</script></body>
+</html>

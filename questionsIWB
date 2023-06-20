@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang='en'>
+<head>
+<meta charset='UTF-8'>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="author" content="Jonathan Hall">
+<link rel="icon" type="image/png" href="/media/favicon192.png" sizes=192x192>
+<link rel="stylesheet" href="/styles/main.css">
+<script src='/scripts/questionBank.js'></script>
+<script src='/scripts/differentiator.js'></script>
+<script src='/scripts/utilities.js'></script> <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+<meta name="description" content="Differentiated question generator for the interactive white board">
+<title>Question Generator - Differentiated question generator for IWB</title>
+<script>
+            var totalQuestions;
+            var time = 0;
+            var question = new Array();
+            var sheetTimer;
+            var timerStarted = false;
+            var showingAnswers = false;
+            var anchorLink = false;
+
+            function createSheet() {
+                var sheet = "";
+                showingAnswers = false;
+                answerButton.value = "Show Answers";
+                clearTimeout(sheetTimer);
+                sheetTimer = setInterval(timedCount, 1000);
+                timerStarted = true;
+                totalQuestions = totalQuestionsSelect.value;
+                time = timeSelect.value;
+                timedCount();
+                createQuestions();
+                sheet += "<div><table>";
+                var colour1, colour2, colour3;
+                switch (colourSelect.value) {
+                    case "0":
+                        colour1 = 'min';
+                        colour2 = 'mid';
+                        colour3 = 'max';
+                        break;
+                    case "1":
+                        colour1 = 'max';
+                        colour2 = 'mid';
+                        colour3 = 'min';
+                        break;
+                    case "2":
+                        colour1 = 'bronze';
+                        colour2 = 'silver';
+                        colour3 = 'gold';
+                        break;
+                    case "3":
+                        colour1 = 'none';
+                        colour2 = 'none';
+                        colour3 = 'none';
+                        break;
+                }
+                sheet += "<tr id='headers'><th class='" + colour1 + "'>&#9733;</th>";
+                sheet += "<th class='" + colour2 + "'>&#9733;&#9733;</th>";
+                sheet += "<th class='" + colour3 + "'>&#9733;&#9733;&#9733;</th></tr>";
+
+                for (var i = 0; i < totalQuestions; i++) {
+                    sheet += "<tr>";
+                    sheet += "<td class='question'>";
+                    sheet += "<div class='questionNumber'>" + "A" + (i + 1) + "</div>";
+                    sheet += "<div class='refreshQ'><img title='Refresh Question' onclick='refreshQuestion(" + (i * 3) + ")' src='/media/icons/refresh.svg'></div>";
+                    sheet += "<div class='qContent' onclick='toggleAnswer(" + (i * 3) + ")' id='a" + (i * 3) + "'>" + question[i * 3].question + "</div>";
+                    sheet += "</td>";
+                    sheet += "<td class='question'>";
+                    sheet += "<div class='questionNumber'>" + "B" + (i + 1) + "</div>";
+                    sheet += "<div class='refreshQ'><img title='Refresh Question' onclick='refreshQuestion(" + (i * 3 + 1) + ")' src='/media/icons/refresh.svg'></div>";
+                    sheet += "<div class='qContent' onclick='toggleAnswer(" + (i * 3 + 1) + ")' id='a" + (i * 3 + 1) + "'>" + question[i * 3 + 1].question + "</div>";
+                    sheet += "</td>";
+                    sheet += "<td class='question'>";
+                    sheet += "<div class='questionNumber'>" + "C" + (i + 1) + "</div>";
+                    sheet += "<div class='refreshQ'><img title='Refresh Question' onclick='refreshQuestion(" + (i * 3 + 2) + ")' src='/media/icons/refresh.svg'></div>";
+                    sheet += "<div class='qContent' onclick='toggleAnswer(" + (i * 3 + 2) + ")' id='a" + (i * 3 + 2) + "'>" + question[i * 3 + 2].question + "</div>";
+                    sheet += "</td>";
+                    sheet += "</tr>";
+                }
+                sheet += "</table></div>";
+                questionsIWB.innerHTML = sheet;
+                document.getElementById('display').style.display = "block";
+                document.getElementById('controls').style.display = "none";
+                MathJax.typesetPromise();
+            }
+            function showMenu() {
+                document.getElementById('controls').style.display = "block";
+                document.getElementById('display').style.display = "none";
+            }
+            function setUp() {
+                if (!anchorLink) {
+                    var url = window.location.href;
+                    var anchor = url.substring(url.indexOf("#") + 1, url.length);
+                    document.getElementById("topicSelect").selectedIndex = anchor;
+                    anchorLink = true;
+                }
+            }
+            function timedCount() {
+                if (!timerStarted) {
+                    sheetTimer = setInterval(timedCount, 1000);
+                    timerStarted = true;
+                }
+                var minutes = Math.floor(time / 60);
+                var seconds = time % 60;
+                if (seconds < 10) {
+                    seconds = "0" + seconds;
+                }
+                time--;
+                timeDisplay.innerHTML = "Time Left: " + minutes + ":" + seconds;
+                if (time < 0) {
+                    clearTimeout(sheetTimer);
+                    timerStarted = false;
+                    timeDisplay.innerHTML = "Time's up!";
+                    time = -1;
+                }
+            }
+
+            function toggleAnswer(i) {
+                if (question[i].showingQuestion) {
+                    document.getElementById('a' + i).innerHTML = question[i].answer;
+                    question[i].showingQuestion = false;
+                } else {
+                    document.getElementById('a' + i).innerHTML = question[i].question;
+                    question[i].showingQuestion = true;
+                }
+                MathJax.typesetPromise();
+            }
+
+            function toggleAnswers() {
+                if (question[0]) {
+                    if (showingAnswers) {
+                        for (var i = 0; i < totalQuestions; i++) {
+                            document.getElementById('a' + i * 3).innerHTML = question[i * 3].question;
+                            document.getElementById('a' + (i * 3 + 1)).innerHTML = question[i * 3 + 1].question;
+                            document.getElementById('a' + (i * 3 + 2)).innerHTML = question[i * 3 + 2].question;
+                            answerButton.value = "Show Answers";
+                            showingAnswers = false;
+                            question[i * 3].showingQuestion = true;
+                            question[i * 3 + 1].showingQuestion = true;
+                            question[i * 3 + 2].showingQuestion = true;
+                        }
+                    } else {
+                        for (i = 0; i < totalQuestions; i++) {
+                            document.getElementById('a' + i * 3).innerHTML = question[i * 3].answer;
+                            document.getElementById('a' + (i * 3 + 1)).innerHTML = question[i * 3 + 1].answer;
+                            document.getElementById('a' + (i * 3 + 2)).innerHTML = question[i * 3 + 2].answer;
+                            answerButton.value = "Show Questions";
+                            showingAnswers = true;
+                            question[i * 3].showingQuestion = false;
+                            question[i * 3 + 1].showingQuestion = false;
+                            question[i * 3 + 2].showingQuestion = false;
+                        }
+                    }
+                }
+                MathJax.typesetPromise();
+            }
+            function refreshQuestion(i) {
+                var minLevel = parseInt(minLevelSelect.value);
+                var maxLevel = parseInt(maxLevelSelect.value);
+                var level;
+                var currentTopic = topicSelect.value;
+                if (currentTopic === 0) {
+                    currentTopic = "" + getRandom(1, 96);
+                }
+                var type = i % 3;
+                switch (type) {
+                    case 0:
+                        level = minLevel;
+                        break;
+                    case 1:
+                        level = Math.round((minLevel + maxLevel) / 2);
+                        break;
+                    case 2:
+                        level = maxLevel;
+                        break;
+                }
+                getQuestion(currentTopic, level / 10);
+                question[i] = question[question.length - 1];
+                question.pop();
+                var attempts = 0;
+                do {
+                    var repeat = false;
+                    for (var k = 0; k < totalQuestions * 3; k++) {
+                        if (i !== k && question[i].answer === question[k].answer) {
+                            repeat = true;
+                        }
+                    }
+                    if (repeat) {
+                        getQuestion(topicSelect.value, level / 10);
+                        question[i] = question[question.length - 1];
+                        question.pop();
+                        attempts++;
+                        if (attempts % 30 === 0) {
+                            level++;
+                        }
+                    }
+                } while (repeat === true && attempts < 100);
+                toggleAnswer(i);
+                MathJax.typesetPromise();
+            }
+            function createQuestions() {
+                var minLevel = parseInt(minLevelSelect.value);
+                var maxLevel = parseInt(maxLevelSelect.value);
+                var level;
+                var currentQ = 0;
+                question = new Array();
+                for (var i = 0; i < totalQuestions; i++) {
+                    var currentTopic = topicSelect.value;
+                    if (currentTopic === 0) {
+                        currentTopic = "" + getRandom(1, 99);
+                    }
+                    for (var j = 0; j < 3; j++) {
+                        switch (j) {
+                            case 0:
+                                level = minLevel;
+                                break;
+                            case 1:
+                                level = Math.round((minLevel + maxLevel) / 2);
+                                break;
+                            case 2:
+                                level = maxLevel;
+                                break;
+                        }
+                        getQuestion(currentTopic, level / 10);
+                        var attempts = 0;
+                        do {
+                            var repeat = false;
+                            for (var k = 0; k < question.length; k++) {
+                                if (k !== currentQ && question[currentQ].answer === question[k].answer) {
+                                    repeat = true;
+                                }
+                            }
+                            if (repeat) {
+                                getQuestion(topicSelect.value, level / 10);
+                                question[currentQ] = question[question.length - 1];
+                                question.pop();
+                                attempts++;
+                                if (attempts % 40 === 0) {
+                                    level++;
+                                }
+                            }
+                        } while (repeat === true && attempts < 300);
+                        currentQ++;
+                    }
+                    question[i * 3].showingQuestion = true;
+                    question[i * 3 + 1].showingQuestion = true;
+                    question[i * 3 + 2].showingQuestion = true;
+                }
+            }
+            function goFull() {
+                if (controls.style.display !== "none" || display.style.display !== "none") {
+                    controls.style.display = "none";
+                    display.style.display = "none";
+                    content.style.height = 0.98 * window.innerHeight + "px";
+                    footer.style.display = "none";
+                } else {
+                    controls.style.display = "none";
+                    display.style.display = "block";
+                    content.style.height = "100%";
+                    footer.style.display = "block";
+                }
+            }
+            function filter(keyword) {
+                for (var i = 0; i < topicSelect.length; i++) {
+                    var txt = topicSelect.options[i].text;
+                    var include = txt.toLowerCase().search(keyword.toLowerCase());
+                    if (include > -1) {
+                        topicSelect.options[i].style.display = 'list-item';
+                        topicSelect.options[i].disabled = false;
+                    } else {
+                        topicSelect.options[i].style.display = 'none';
+                        topicSelect.options[i].disabled = true;
+                    }
+                }
+                for (var i = 1; i < topicSelect.length; i++) {
+                    var random = true;
+                    if (topicSelect.options[i].disabled !== true) {
+                        topicSelect.selectedIndex = i;
+                        random = false;
+                        i = topicSelect.length;
+                    }
+                }
+                if (random) {
+                    topicSelect.selectedIndex = 0;
+                }
+            }
+        </script>
+<style>
+            .questionBox {
+                border: none;
+                min-height: 70vh;
+                overflow: auto;
+            }
+            table {
+                width: 98%;
+            }
+            td, th {
+                font-size: 1.75em;
+                padding: 0.4em;
+                text-align: center;
+            }
+            th {
+                font-weight: normal;
+                width: 33.3%;
+                font-size: 1.8em;
+                padding: 0;
+                margin: 0;
+                background-color: #959;
+            }
+            .min {
+                background-color: #afa;
+                color: #373;
+            }
+            .mid {
+                background-color: #fd9;
+                color: #751;
+            }
+            .max {
+                background-color: #faa;
+                color: #733;
+            }
+            .bronze {
+                background-color: #fa8;
+                color: #920;
+            }
+            .silver {
+                background-color: #ccc;
+                color: #444;
+            }
+            .gold {
+                background-color: #fc2;
+                color: #740;
+            }
+            .none {
+                color: #fff;
+            }
+            td.question {
+                position: relative;
+            }
+            div.questionNumber {
+                position: absolute;
+                left: 0.2em;
+                top: 0.2em;
+                font-weight: bold;
+                font-size: 0.6em;
+            }
+            div.qContent {
+                margin-top: 0.4em;
+                cursor: pointer;
+            }
+            .refreshQ {
+                position: absolute;
+                right: 0.1em;
+                top: 0.1em;
+            }
+            .refreshQ img {
+                border: 1px solid #fff;
+            }
+            .refreshQ img:hover {
+                border: 1px solid #515;
+            }
+            #display {
+                display: none;
+            }
+            #timeDisplay {
+                font-size: 1.6em;
+            }
+            @media print {
+                @page {size: landscape}
+            }
+            #search {
+                width: 8em;
+                border-radius: 0;
+            }
+            div.adBox {
+                margin: 1em;
+                padding: 1em;
+            }
+            @media (max-width: 800px){ 
+                div.adBox {
+                    width: 96%;
+                }
+            }
+        </style>
+<script async src='/cdn-cgi/bm/cv/669835187/api.js'></script></head>
+<body onload="setUp();">
+ <script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-44508399-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+<div class="iconMenu">
+<input title="Background colour" class="icon" title='Background colour' oninput='changeBG(this.value)' type='color' value='#ffffff'>
+<img title="Toggle Fullscreen" class="icon" onclick='goFull()' src="/media/icons/fullscreen.svg">
+</div>
+<section id="controls" class="controls border">
+<h1>Differentiated Questions</h1>
+<div class="middleMenu">
+<label for="topicSelect">Topic:</label><select id="topicSelect"><option selected value = 0>Random</option><option value=1>1. Arithmetic: Addition</option><option value=4>2. Arithmetic: Division</option><option value=23>3. Arithmetic: Four operations</option><option value=3>4. Arithmetic: Multiplication</option><option value=2>5. Arithmetic: Subtraction</option><option value=103>6. Circles: Stating the equation</option><option value=14>7. Collecting like terms</option><option value=74>8. Converting units: Time</option><option value=60>9. Differences</option><option value=6>10. Doubling</option><option value=29>11. Equations: 1 step</option><option value=38>12. Equations: 2 steps</option><option value=46>13. Equations: Brackets 1 side</option><option value=48>14. Equations: Brackets 2 sides</option><option value=44>15. Equations: Mixed</option><option value=43>16. Equations: Unknowns on both sides</option><option value=66>17. Expanding and simplifying single brackets</option><option value=87>18. Expanding double brackets</option><option value=65>19. Expanding single brackets</option><option value=15>20. Factors</option><option value=79>21. FDP: Converting from decimals</option><option value=80>22. FDP: Converting from fractions</option><option value=81>23. FDP: Converting from percentages</option><option value=13>24. FDP: Converting mixed</option><option value=67>25. FDP: Of one amount to another</option><option value=31>26. Fractions: Addition and subtraction</option><option value=42>27. Fractions: Converting improper and mixed</option><option value=54>28. Fractions: Four operations</option><option value=59>29. Fractions: Increase and decrease</option><option value=32>30. Fractions: Multiplication and division</option><option value=7>31. Fractions: Of amounts</option><option value=77>32. Fractions: Of one amount to another</option><option value=20>33. Fractions: Simplifying</option><option value=82>34. Graphs: Gradient from two points</option><option value=83>35. Graphs: Midpoint from two points</option><option value=5>36. Halving</option><option value=17>37. Highest common factors</option><option value=89>38. Indices: Division law</option><option value=91>39. Indices: Mixed Laws</option><option value=88>40. Indices: Multiplication law</option><option value=90>41. Indices: Power law</option><option value=68>42. Inequalities: Solving 1 step</option><option value=69>43. Inequalities: Solving 2 step</option><option value=70>44. Inequalities: Solving unknowns on both sides</option><option value=18>45. Lowest common multiples</option><option value=45>46. Metric units: Converting lengths</option><option value=57>47. Metric units: Converting mixed units</option><option value=56>48. Metric units: Converting volume</option><option value=55>49. Metric units: Converting weights</option><option value=24>50. Money: Adding coins</option><option value=25>51. Money: Counting coins</option><option value=16>52. Multiples</option><option value=64>53. Multiplying terms</option><option value=98>54. Negative numbers: Addition</option><option value=101>55. Negative numbers: Division</option><option value=10>56. Negative numbers: Mixed operations</option><option value=100>57. Negative numbers: Multiplication</option><option value=99>58. Negative numbers: Subtraction</option><option value=61>59. Negative numbers: Temperatures</option><option value=30>60. Number bonds</option><option value=104>61. Order of Operations: &#215 and &#247</option><option value=105>62. Order of Operations: + and &minus;</option><option value=28>63. Ordering numbers</option><option value=96>64. Percentages: Change</option><option value=49>65. Percentages: Increase and decrease</option><option value=95>66. Percentages: Multipliers</option><option value=8>67. Percentages: Of amounts</option><option value=78>68. Percentages: Of one amount to another</option><option value=97>69. Percentages: Repeated change</option><option value=50>70. Percentages: Reverse</option><option value=62>71. Polygons: Sides</option><option value=27>72. Powers and roots</option><option value=11>73. Powers of ten</option><option value=63>74. Probability: Expected frequency</option><option value=58>75. Probability: Simple events</option><option value=53>76. Proportion: Unitary method</option><option value=84>77. Quadratics: Completing the square</option><option value=86>78. Quadratics: Factorising</option><option value=85>79. Quadratics: Find equation given turning point</option><option value=93>80. Ratio: Combining</option><option value=94>81. Ratio: Difference</option><option value=92>82. Ratio: Mixed</option><option value=52>83. Ratio: Reverse</option><option value=12>84. Ratio: Sharing</option><option value=19>85. Ratio: Simplifying</option><option value=9>86. Rounding</option><option value=71>87. Sequences: Fibonacci</option><option value=47>88. Sequences: Finding the next term</option><option value=22>89. Sequences: Generating terms</option><option value=72>90. Sequences: Geometric</option><option value=21>91. Sequences: Linear nth term</option><option value=73>92. Sequences: Quadratic nth term</option><option value=26>93. Speed, distance, time</option><option value=40>94. Standard Form: Addition</option><option value=102>95. Standard Form: Converting from</option><option value=41>96. Standard Form: Converting to</option><option value=76>97. Standard Form: Division</option><option value=39>98. Standard Form: Multiplication</option><option value=75>99. Standard Form: Subtraction</option><option value=37>100. Statistics: Averages and range</option><option value=33>101. Statistics: Mean</option><option value=34>102. Statistics: Median</option><option value=36>103. Statistics: Mode</option><option value=35>104. Statistics: Range</option><option value=51>105. Substitution</option></select> <div>
+<label for="search">Search:</label>
+<input type="search" placeholder="Keyword" id="search" onclick="filter(this.value)" onkeyup="filter(this.value)">
+</div>
+<div>
+<input type='button' value='Create Questions' onclick='createSheet()'>
+</div>
+</div>
+<div class="leftMenu">
+<div>
+<label for='colourSelect'>Header:</label>
+<select onchange='setUp()' id='colourSelect'>
+<option value="2">Bronze, Silver, Gold</option>
+<option value="0">Green, Amber, Red</option>
+<option value="1">Red, Amber, Green</option>
+<option value="3">None</option>
+</select>
+</div>
+<div>
+<label for='timeSelect'>Time:</label><select id='timeSelect'><option value=60>1 minute</option><option value=120>2 minutes</option><option value=180>3 minutes</option><option value=240>4 minutes</option><option value=300>5 minutes</option><option value=360>6 minutes</option><option value=420>7 minutes</option><option value=480>8 minutes</option><option value=540>9 minutes</option><option selected='selected' value=600>10 minutes</option><option value=660>11 minutes</option><option value=720>12 minutes</option><option value=780>13 minutes</option><option value=840>14 minutes</option><option value=900>15 minutes</option><option value=960>16 minutes</option><option value=1020>17 minutes</option><option value=1080>18 minutes</option><option value=1140>19 minutes</option><option value=1200>20 minutes</option><option value=1260>21 minutes</option><option value=1320>22 minutes</option><option value=1380>23 minutes</option><option value=1440>24 minutes</option><option value=1500>25 minutes</option><option value=1560>26 minutes</option><option value=1620>27 minutes</option><option value=1680>28 minutes</option><option value=1740>29 minutes</option><option value=1800>30 minutes</option></select> </div>
+</div>
+<div class="rightMenu">
+<div>
+<label for='totalQuestionsSelect'>Questions:</label><select id='totalQuestionsSelect'><option value=1>1</option><option value=2>2</option><option value=3>3</option><option value=4>4</option><option value=5>5</option><option value=6>6</option><option value=7>7</option><option value=8>8</option><option value=9>9</option><option selected value=10>10</option><option value=11>11</option><option value=12>12</option><option value=13>13</option><option value=14>14</option><option value=15>15</option><option value=16>16</option><option value=17>17</option><option value=18>18</option><option value=19>19</option><option value=20>20</option><option value=21>21</option><option value=22>22</option><option value=23>23</option><option value=24>24</option><option value=25>25</option><option value=26>26</option><option value=27>27</option><option value=28>28</option><option value=29>29</option><option value=30>30</option><option value=31>31</option><option value=32>32</option><option value=33>33</option><option value=34>34</option><option value=35>35</option><option value=36>36</option><option value=37>37</option><option value=38>38</option><option value=39>39</option><option value=40>40</option><option value=41>41</option><option value=42>42</option><option value=43>43</option><option value=44>44</option><option value=45>45</option><option value=46>46</option><option value=47>47</option><option value=48>48</option><option value=49>49</option><option value=50>50</option></select> </div>
+<div>
+<label for='minLevelSelect'>Min. Difficulty:</label><select id='minLevelSelect'><option selected value=0>0</option><option value=1>1</option><option value=2>2</option><option value=3>3</option><option value=4>4</option><option value=5>5</option><option value=6>6</option><option value=7>7</option><option value=8>8</option><option value=9>9</option><option value=10>10</option></select><br><label for='maxLevelSelect'>Max. Difficulty</label><select id='maxLevelSelect'><option value=0>0</option><option value=1>1</option><option value=2>2</option><option value=3>3</option><option value=4>4</option><option value=5>5</option><option value=6>6</option><option value=7>7</option><option value=8>8</option><option value=9>9</option><option selected value=10>10</option></select> </div>
+</div>
+</section>
+<section id="display" class="controls border">
+<div id='timeDisplay'></div>
+<input type='button' onclick='time -= 59;
+                    timedCount()' value='-1 min'>
+<input type='button' value='New Questions' onclick='createSheet()'>
+<input id="menuButton" type="button" value="Main Menu" onclick="showMenu()">
+<input type="button" value="Print Sheet" onclick="window.print()">
+<input type="button" id="answerButton" value="Show Answers" onclick="toggleAnswers()">
+<input type='button' onclick='time += 61;
+                    timedCount()' value='+1 min'>
+</section>
+<section>
+<div id="content" class="questionBox border">
+<div id="questionsIWB" class="noSelect">
+<div class='ad'>
+<div class="adBox">
+<script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+
+<ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-4338550553309231" data-ad-slot="8324391446" data-ad-format="auto"></ins>
+<script>
+    (adsbygoogle = window.adsbygoogle || []).push({});
+</script>
+</div>
+<h2>Customise using the options above then click 'Create Questions' to generate a random set of differentiated questions on your chosen topic.</h2>
+</div>
+</div>
+</div>
+</section>
+</section>
+<footer id="footer">
+<div>
+<small>
+<a href="/">Home</a> |
+<a href="/doNowMenu">Do Nows</a> |
+<a href="/gcseMenu">GCSE Resources</a> |
+<a href="/manipulativeMenu">Manipulatives</a> |
+<a href="/printableMenu">Printables</a> |
+<a href="/generatorMenu">Question Generators</a> |
+<a href="/starterMenu">Starters</a> |
+<a href="/toolMenu">Tools</a> |
+<a href="/privacy">Privacy</a> |
+<a href="/about">Contact</a> |
+Copyright &copy;
+</small>
+</div>
+</footer><script type="text/javascript">(function(){window['__CF$cv$params']={r:'6828d769dc83e855',m:'b4ab206c425bfc481c627663146a348cf4c605d7-1629601128-1800-AetTiQu4dJW0QXdBFlA5QDaydS/RbJopBVdXFqyQAotvQhSF91h280MQ8CgEzxbUacFRlvAe9ZTm2lXOrToidFIUhdvKC3flggL+3q6Dy+aWfuSxqe2JU88r+9CPSC8QmQ==',s:[0x8666dc0aa4,0xc3790ee4dd],}})();</script></body>
+</html>
